@@ -1,7 +1,8 @@
 import './CoursePromo.css';
 import React, { Component } from "react";
 import {Container, Jumbotron, Row} from 'reactstrap';
-import {CardDeck, Card, CardBody, CardTitle, CardText, CardFooter, Button, Badge} from 'reactstrap';
+import {CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardFooter, Button, Badge} from 'reactstrap';
+import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
 
 export default class CoursePromo extends Component {
@@ -60,13 +61,31 @@ export default class CoursePromo extends Component {
         <Container>
           <Row>
             <div className="col-12">
+              <h4 className="display-4">Table of Contents</h4>
+            </div>
+            <div className="col-12">
+              <CardColumns>{ Array.from( Array(12).keys() ).map( (e,i) => {
+                return (<Card key={i} className="text-left">
+                  <CardBody>
+                    <CardTitle>{loremIpsum({count:randomInt(3,5), units:'words'})}</CardTitle>
+                    <CardText>{loremIpsum({count:randomInt(2,3) })}</CardText>
+                  </CardBody>
+                </Card>);
+              })}</CardColumns>
+            </div>
+            <div  className="col-12">
+              <Button color="primary">Get Started!!!</Button>
+            </div>
+          </Row>
+          <Row>
+            <div className="col-12">
               <h3 className="display-4">Final Thoughts</h3>
               { [1,2,3].map( (e,i) => {
                 return (<p className="lead" key={i}>{loremIpsum()}</p>)
               })}
               <p>
               { [1,2,3].map( (e,i) => {
-                return (<Badge href="#" color="secondary" className="mr-2">{loremIpsum({count:2, units:'words'})}</Badge>)
+                return (<Badge key={i} href="#" color="secondary" className="mr-2">{loremIpsum({count:2, units:'words'})}</Badge>)
               })}
               </p>
             </div>

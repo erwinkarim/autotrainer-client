@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import Routes from "./Routes";
-import { Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
+import { Alert, Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Container } from 'reactstrap';
 import './App.css';
@@ -15,7 +15,8 @@ class App extends Component {
       isOpen: false,
       courseIsOpen: false,
       userIsOpen: false,
-      systemIsOpen: false
+      systemIsOpen: false,
+      announceIsVisible: true
 
     };
   }
@@ -23,9 +24,13 @@ class App extends Component {
   toggleCourse = () => { this.setState({ courseIsOpen: !this.state.courseIsOpen }); }
   toggleUser = () => { this.setState({ userIsOpen: !this.state.userIsOpen }); }
   toggleSystem = () => { this.setState({ systemIsOpen: !this.state.systemIsOpen }); }
+  dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
   render() {
     return (
       <div className="App">
+        <Alert color="primary" className="mb-0 text-left" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}>
+          Announcement Here !!!
+        </Alert>
         <Navbar className="bg-light" light expand="md">
           <Link to="/" className="navbar-brand">AutoTrainer</Link>
           <NavbarToggler onClick={this.toggle} />
@@ -61,7 +66,11 @@ class App extends Component {
         <Routes />
         <footer className="footer text-muted">
           <Container>
-            <p> &copy; AutoTrainer 2017 </p>
+            <p>
+              &copy; AutoTrainer 2017
+              &bull; Legal
+              &bull; Contact
+            </p>
           </Container>
         </footer>
       </div>

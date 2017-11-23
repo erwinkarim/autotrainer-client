@@ -11,3 +11,14 @@
 .Home .lander p {
   color: #999;
 }
+
+#jumbotron-1 {
+  background-image: url('/videos/learn.gif');
+  background-repeat: no-repeat;
+  background-size: cover;
+  height: 90vh;
+}
+
+#panel-1 {
+  background-color: rgba(100,100,100,0.3);
+}

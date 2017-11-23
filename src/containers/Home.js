@@ -1,9 +1,10 @@
 import React, { Component } from "react";
 import {Jumbotron, Button, Container} from 'reactstrap';
-import {Row,Card, CardBody, CardTitle, CardText, CardFooter} from 'reactstrap';
+import {Row, CardDeck,Card, CardBody, CardTitle, CardText, CardFooter} from 'reactstrap';
 import { Link } from "react-router-dom";
 import "./Home.css";
 import loremIpsum from 'lorem-ipsum';
+import randomInt from 'random-int';
 
 export default class Home extends Component {
   constructor(props){
@@ -15,12 +16,13 @@ export default class Home extends Component {
   render() {
     return (
       <div className="Home">
-        <Jumbotron fluid className="mb-0">
-          <Container>
+        <Jumbotron fluid className="mb-0" id="jumbotron-1">
+          <Container className="text-white pb-3" id="panel-1">
             <h1 className="display-3">A Point is Made</h1>
             <p className="lead">{loremIpsum()}</p>
-            <div className="d-flex">
-              <Link className="btn btn-primary mx-auto" to='/'>Learn More</Link>
+            <div className="">
+              <Link className="btn btn-primary mr-2" to='/'>Learn More</Link>
+              <Button tag="a" href="#video">Watch Video</Button>
             </div>
           </Container>
         </Jumbotron>
@@ -38,37 +40,35 @@ export default class Home extends Component {
              })}
           </Row>
         </Container>
-        <Jumbotron fluid className="mb-0">
-          <Container>
-            <h1 className="display- text-center">Another Point is Made</h1>
-            <p className="lead">{loremIpsum()}</p>
-            <div className="d-flex">
-              <Button className="mx-auto" color="primary">Learn More</Button>
-            </div>
-          </Container>
-        </Jumbotron>
         <Jumbotron className="mb-0">
           <Container>
-            <h3 className="display-4 text-center">Featured Courses</h3>
+            <h3 className="display-4 text-center">Another Point is Made</h3>
             <Row>
-              {
+              <CardDeck>{
                 [1,2,3].map( (e,i) => {
                   return (
-                    <div key={i} className="col-12 col-md-4">
-                      <Card className="mb-3">
-                        <CardBody>
-                          <CardTitle>Course {e}</CardTitle>
-                          <CardText>{ loremIpsum()}</CardText>
-                        </CardBody>
-                        <CardFooter className="d-flex">
-                          <Button className="mx-auto" color="primary">Learn More</Button>
-                        </CardFooter>
-                      </Card>
-                    </div>
+                    <Card className="mb-3">
+                      <CardBody>
+                        <CardTitle>Course {e}</CardTitle>
+                        <CardText>{ loremIpsum()}</CardText>
+                      </CardBody>
+                    </Card>
                   )
                 })
-              }
+              }</CardDeck>
+              <div className="col-12 d-flex">
+                <Button color="primary" className="mx-auto" href="/login" tag="a">Register Now</Button>
+              </div>
             </Row>
+          </Container>
+        </Jumbotron>
+        <Jumbotron fluid className="mb-0">
+          <div id="video" className="embed-responsive embed-responsive-16-by-9" style={{height:'80vh', width:'100vw'}}>
+            <iframe src="https://www.youtube.com/embed/pk6BhWxlWXc" width="1600"></iframe>
+          </div>
+          <Container>
+            <h1 className="display-3">Final Points</h1>
+            <p className="lead text-left">{loremIpsum({count:randomInt(2,4), unit:'sentances'})}</p>
           </Container>
         </Jumbotron>
       </div>

@@ -54,9 +54,9 @@ export default class Login extends Component {
       IdentityPoolId : process.env.REACT_APP_COGNITO_IDENTITY_POOL_ID, // your identity pool id here
       Logins: { 'accounts.google.com': id_token }
     }
-    AWS.config.credentials = new AWS.CognitoIdentityCredentials(params);
+    //AWS.config.credentials = new AWS.CognitoIdentityCredentials(params);
 
-    console.log('AWS.config.credentials', AWS.config.credentials);
+    //console.log('AWS.config.credentials', AWS.config.credentials);
 
     //should put in promises so not to mess things up
     // getId
