@@ -3,6 +3,7 @@ import { Container, Row, Breadcrumb, BreadcrumbItem , Progress} from 'reactstrap
 import {CardDeck, Card, CardImg, CardTitle, CardBody, CardFooter, CardText, Button} from 'reactstrap';
 import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
+import { Link } from 'react-router-dom';
 import './UserLanding.css';
 
 
@@ -14,8 +15,8 @@ export default class UserLanding extends Component {
       <Container className="text-left mt-2">
         <Row>
           <div className="col-12">
-            <Breadcrumb nav>
-              <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
+            <Breadcrumb>
+              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
               <BreadcrumbItem active>FirstName LastName</BreadcrumbItem>
             </Breadcrumb>
           </div>
@@ -50,7 +51,7 @@ export default class UserLanding extends Component {
               </div>
             ) : (<Row>{ Array.from( Array(courseCount).keys() ).map( (e,i) => {
               return (<div key={i} className="col-12 col-md-3">
-                <Card className="mb-2">
+                <Card key={i} className="mb-2">
                   <CardBody>
                     <CardTitle tag="h4">
                       <a href="/courses/toc">{loremIpsum()}</a>
@@ -70,7 +71,7 @@ export default class UserLanding extends Component {
             <p>Applicable if you have admin access</p>
           </div>
           <div className="col-12 col-md-8">{ Array.from( Array(randomInt(0,4)).keys()).map( (e,i) => {
-            return (<Card className="mb-3">
+            return (<Card key={i} className="mb-3">
               <CardBody>
                 <CardTitle>{loremIpsum()}</CardTitle>
                 <CardText className="lead">{loremIpsum({count:randomInt(1,2), unit:'paragraphs'})}</CardText>

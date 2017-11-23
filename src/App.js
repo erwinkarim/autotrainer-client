@@ -4,6 +4,7 @@ import Routes from "./Routes";
 import { Alert, Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Container } from 'reactstrap';
+//import RouteNavItem from './components/RouteNavItem';
 import './App.css';
 
 class App extends Component {
@@ -39,25 +40,25 @@ class App extends Component {
               <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.systemIsOpen} toggle={this.toggleSystem}>
                 <DropdownToggle caret nav>System</DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag={'a'} href={'/login'}>Login</DropdownItem>
+                  <DropdownItem tag={Link} to={'/login'}>Login</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
               <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.userIsOpen} toggle={this.toggleUser}>
                 <DropdownToggle caret nav>User</DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag={'a'} href={'/user/landing'}>Landing</DropdownItem>
-                  <DropdownItem tag={'a'} href={'/user/course_builder'}>Course Builder</DropdownItem>
-                  <DropdownItem tag={'a'} href={'/user/article_builder'}>Article Builder</DropdownItem>
-                  <DropdownItem tag={'a'} href={'/user/quiz_builder'}>Quiz Builder</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/landing'}>Landing</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/course_builder'}>Course Builder</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/article_builder'}>Article Builder</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/quiz_builder'}>Quiz Builder</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
               <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.courseIsOpen} toggle={this.toggleCourse}>
                 <DropdownToggle caret nav>Course</DropdownToggle>
                 <DropdownMenu>
-                  <DropdownItem tag={'a'} href={'/courses/promo'}>Promo</DropdownItem>
-                  <DropdownItem tag={'a'} href={'/courses/toc'}>Toc</DropdownItem>
-                  <DropdownItem tag={'a'} href={'/courses/article'}>Article</DropdownItem>
-                  <DropdownItem tag={'a'} href={'/courses/quiz'}>Quiz</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/promo'}>Promo</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/toc'}>Toc</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/quiz'}>Quiz</DropdownItem>
                 </DropdownMenu>
               </Dropdown>
             </Nav>
@@ -67,9 +68,7 @@ class App extends Component {
         <footer className="footer text-muted">
           <Container>
             <p>
-              &copy; AutoTrainer 2017
-              &bull; Legal
-              &bull; Contact
+              &copy; AutoTrainer 2017 &bull; <Link to="/legal">Legal</Link> &bull; <Link to="/contact">Contact</Link>
             </p>
           </Container>
         </footer>

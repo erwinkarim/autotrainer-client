@@ -3,6 +3,7 @@ import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardText, CardFooter} from 'reactstrap';
 import { FormGroup, Input, Label, Button } from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
+import {Link} from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 import './QuizBuilder.css';
@@ -22,10 +23,10 @@ export default class QuizBuilder extends Component {
       <Container className="text-left">
         <Row>
           <div className="col-12">
-            <Breadcrumb tag="nav">
-              <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
-              <BreadcrumbItem tag="a" href="/user/landing">FirstName LastName</BreadcrumbItem>
-              <BreadcrumbItem tag="a" href="/user/course_builder">Course Builder</BreadcrumbItem>
+            <Breadcrumb>
+              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/user/landing">FirstName LastName</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/user/course_builder">Course Builder</Link></BreadcrumbItem>
               <BreadcrumbItem active>Quiz Builder</BreadcrumbItem>
             </Breadcrumb>
           </div>

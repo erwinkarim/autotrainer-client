@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Container, Row } from 'reactstrap'
 import {Breadcrumb, BreadcrumbItem, FormGroup, Input, Button} from 'reactstrap';
+import { Link } from 'react-router-dom';
 import './ArticleBuilder.css';
 
 
@@ -10,10 +11,10 @@ export default class ArticleBuilder extends Component {
       <Container className="mt-2 text-left">
         <Row>
           <div className="col-12">
-            <Breadcrumb tag="nav">
-              <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
-              <BreadcrumbItem tag="a" href="/user/landing">FirstName LastName</BreadcrumbItem>
-              <BreadcrumbItem tag="a" href="/user/course_builder">Course Builder</BreadcrumbItem>
+            <Breadcrumb>
+              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/user/landing">FirstName LastName</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/user/course_builder">Course Builder</Link></BreadcrumbItem>
               <BreadcrumbItem active>Article Builder</BreadcrumbItem>
             </Breadcrumb>
           </div>

@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {Jumbotron, Button, Container} from 'reactstrap';
-import {Row, CardDeck,Card, CardBody, CardTitle, CardText, CardFooter} from 'reactstrap';
+import {Row, CardDeck,Card, CardBody, CardTitle, CardText} from 'reactstrap';
 import { Link } from "react-router-dom";
 import "./Home.css";
 import loremIpsum from 'lorem-ipsum';
@@ -17,6 +17,9 @@ export default class Home extends Component {
     return (
       <div className="Home">
         <Jumbotron fluid className="mb-0" id="jumbotron-1">
+          <video playsinline={true} autoplay={true} muted={true} loop>
+            <source src="videos/learn.mp4" />
+          </video>
           <Container className="text-white pb-3" id="panel-1">
             <h1 className="display-3">A Point is Made</h1>
             <p className="lead">{loremIpsum()}</p>
@@ -47,7 +50,7 @@ export default class Home extends Component {
               <CardDeck>{
                 [1,2,3].map( (e,i) => {
                   return (
-                    <Card className="mb-3">
+                    <Card key={i} className="mb-3">
                       <CardBody>
                         <CardTitle>Course {e}</CardTitle>
                         <CardText>{ loremIpsum()}</CardText>
@@ -57,7 +60,7 @@ export default class Home extends Component {
                 })
               }</CardDeck>
               <div className="col-12 d-flex">
-                <Button color="primary" className="mx-auto" href="/login" tag="a">Register Now</Button>
+                <Button color="primary" className="mx-auto" href="/login" tag="Link">Register Now</Button>
               </div>
             </Row>
           </Container>

@@ -3,6 +3,7 @@ import { Container, Jumbotron, Row, Breadcrumb, BreadcrumbItem } from 'reactstra
 import { CardDeck, Card, CardBody, CardText, CardTitle, Button} from 'reactstrap';
 import {Carousel, CarouselItem} from 'reactstrap';
 import {FormGroup, Label, Input} from 'reactstrap';
+import { Link } from 'react-router-dom';
 import randomInt from 'random-int'
 import loremIpsum from 'lorem-ipsum';
 import './Quiz.css';
@@ -18,10 +19,10 @@ export default class Quiz extends Component {
         <Container className="mt-2 text-left">
           <Row>
             <div className="col-12">
-              <Breadcrumb tag="nav">
-                <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
-                <BreadcrumbItem tag="a" href="/courses/tag">Course Tag</BreadcrumbItem>
-                <BreadcrumbItem tag="a" href="/courses/toc">Course Name</BreadcrumbItem>
+              <Breadcrumb>
+                <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
+                <BreadcrumbItem><Link to="/courses/tag">Course Tag</Link></BreadcrumbItem>
+                <BreadcrumbItem><Link to="/courses/toc">Course Name</Link></BreadcrumbItem>
                 <BreadcrumbItem active>Module X: Blah, Blah, Blah</BreadcrumbItem>
               </Breadcrumb>
             </div>
@@ -51,7 +52,7 @@ export default class Quiz extends Component {
                     <CardText>{`Question ${i+1}:`} </CardText>
                     <CardText className="lead">{ loremIpsum()}?</CardText>
                     { Array.from( Array(randomInt(3,6)).keys() ).map( (e2,i2) => {
-                      return (<FormGroup check>
+                      return (<FormGroup key={i2} check>
                         <Label check><Input type="radio" name={`radio-${i}`} /> { loremIpsum()}</Label>
                       </FormGroup>);
                     })}
@@ -76,7 +77,7 @@ export default class Quiz extends Component {
                   <CardBody>
                     <CardText className="lead">{ loremIpsum()}?</CardText>
                     { Array.from( Array(randomInt(2,4) ).keys() ).map( (e2,i2) => {
-                      return (<FormGroup>
+                      return (<FormGroup key={i}>
                         <Label check>
                           <Input type="radio" name={`radio-carousel-${i}`} /> {loremIpsum()}.
                         </Label>

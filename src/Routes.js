@@ -7,7 +7,11 @@ import CourseTOC from "./containers/CourseTOC";
 import Article from "./containers/Article";
 import Quiz from "./containers/Quiz";
 import UserLanding from './containers/UserLanding';
+import Legal from './containers/Legal';
+import Contact from './containers/Contact';
+import Logout from './containers/Logout';
 import NotFound from "./containers/NotFound";
+
 
 import CourseBuilder from './containers/CourseBuilder';
 import ArticleBuilder from './containers/ArticleBuilder';
@@ -18,6 +22,7 @@ export default () =>
   <Switch>
     <Route path="/" exact component={Home} />
     <Route path="/login" exact component={Login} />
+    <Route path="/logout" exact component={Logout} />
     <Route path="/courses/promo" exact component={CoursePromo} />
     <Route path="/courses/toc" exact component={CourseTOC} />
     <Route path="/courses/article" exact component={Article} />
@@ -26,6 +31,9 @@ export default () =>
     <Route path="/user/course_builder" exact component={CourseBuilder} />
     <Route path="/user/article_builder" exact component={ArticleBuilder} />
     <Route path="/user/quiz_builder" exact component={QuizBuilder} />
+    <Route path="/legal" exact component={Legal} />
+    <Route path="/contact" exact component={Contact} />
+
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />
   </Switch>;

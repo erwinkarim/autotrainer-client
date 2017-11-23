@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { Container, Row, Jumbotron, Breadcrumb, BreadcrumbItem, Collapse } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardImg, CardText } from 'reactstrap';
 import './Article.css';
+import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 
@@ -17,10 +18,10 @@ export default class Article extends Component {
         <Container className="mt-2">
           <Row>
           </Row>
-          <Breadcrumb tag="nav">
-            <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem tag="a" href="/courses/tag">Course Tag</BreadcrumbItem>
-            <BreadcrumbItem tag="a" href="/courses/toc">Course Name</BreadcrumbItem>
+          <Breadcrumb>
+            <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/courses/tag">Course Tag</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/courses/toc">Course Name</Link></BreadcrumbItem>
             <BreadcrumbItem active>Module X: Blah, Blah, Blah</BreadcrumbItem>
           </Breadcrumb>
         </Container>

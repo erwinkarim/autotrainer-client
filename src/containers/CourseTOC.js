@@ -13,9 +13,9 @@ export default class CourseTOC extends Component {
         <Container className="mt-2">
           <Row>
           </Row>
-          <Breadcrumb tag="nav">
-            <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
-            <BreadcrumbItem tag="a" href="/courses/tag">Course Tag</BreadcrumbItem>
+          <Breadcrumb>
+            <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/courses/tag">Course Tag</Link></BreadcrumbItem>
             <BreadcrumbItem active>Course Name</BreadcrumbItem>
           </Breadcrumb>
         </Container>

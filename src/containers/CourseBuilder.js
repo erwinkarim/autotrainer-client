@@ -4,6 +4,7 @@ import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import { FormGroup, Label, Input, Button, Table }from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText} from 'reactstrap';
+import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
@@ -49,9 +50,9 @@ export default class CourseBuilder extends Component {
       <Container className="mt-2 text-left">
         <Row>
           <div className="col-12">
-            <Breadcrumb nav>
-              <BreadcrumbItem tag="a" href="/">Home</BreadcrumbItem>
-              <BreadcrumbItem tag="a" href="/user/landing">FirstName LastName</BreadcrumbItem>
+            <Breadcrumb>
+              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/user/landing">FirstName LastName</Link></BreadcrumbItem>
               <BreadcrumbItem active>Course Builder</BreadcrumbItem>
             </Breadcrumb>
           </div>
@@ -102,7 +103,7 @@ export default class CourseBuilder extends Component {
                     </tr>
                   </thead>
                   <tbody>{ Array.from( Array( randomInt(5,25)).keys() ).map( (e,i) => {
-                    return (<tr>
+                    return (<tr key={i}>
                         <td>{i+1}</td>
                         <td>Some User</td>
                         <td>{['Distributed', 'Signed Up', 'Started', 'Finished & Certified'][randomInt(3)]}</td>
@@ -129,8 +130,8 @@ export default class CourseBuilder extends Component {
                     <li> Questions: {randomInt(5,25)}</li>
                     <li> Style: {['Inline', 'Carousel'][randomInt(1)]}</li>
                   </ul>
-                  <Button color="primary" className="mr-2">View Quiz</Button>
-                  <Button color="info">Edit Quiz</Button>
+                  <Link className="btn btn-primary mr-2" to="/courses/quiz">View Quiz</Link>
+                  <Link className="btn btn-info" to="/user/quiz_builder">Edit Quiz</Link>
                 </CardBody>
               </Card> ) : ( <Card key={i} className="mb-2">
                 <CardBody>
@@ -147,8 +148,8 @@ export default class CourseBuilder extends Component {
                   <CardTitle tag="h4">Preview</CardTitle>
                   <CardText className="lead">{loremIpsum()}</CardText>
                   <CardText >...</CardText>
-                  <Button color="primary" className="mr-2">View Article</Button>
-                  <Button color="info">Edit Article</Button>
+                  <Link className="btn btn-primary mr-2" to="/courses/article">View Article</Link>
+                  <Link className="btn btn-info" to="/user/article_builder">Edit Article</Link>
                 </CardBody>
               </Card>);
             return result;
