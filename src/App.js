@@ -5,6 +5,7 @@ import { Alert, Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
 import { Container } from 'reactstrap';
 //import RouteNavItem from './components/RouteNavItem';
+import MainNav from './containers/MainNav';
 import './App.css';
 
 class App extends Component {
@@ -17,8 +18,8 @@ class App extends Component {
       courseIsOpen: false,
       userIsOpen: false,
       systemIsOpen: false,
-      announceIsVisible: true
-
+      announceIsVisible: true,
+      currentUser:null
     };
   }
   toggle() { this.setState({ isOpen: !this.state.isOpen }); }
@@ -26,44 +27,17 @@ class App extends Component {
   toggleUser = () => { this.setState({ userIsOpen: !this.state.userIsOpen }); }
   toggleSystem = () => { this.setState({ systemIsOpen: !this.state.systemIsOpen }); }
   dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
+  componentDidMount = () => {
+    //check for current user, if there is stored in storage, loaded and sign up
+
+  }
   render() {
     return (
       <div className="App">
         <Alert color="primary" className="mb-0 text-left" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}>
           Announcement Here !!!
         </Alert>
-        <Navbar className="bg-light" light expand="md">
-          <Link to="/" className="navbar-brand">AutoTrainer</Link>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.systemIsOpen} toggle={this.toggleSystem}>
-                <DropdownToggle caret nav>System</DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to={'/login'}>Login</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.userIsOpen} toggle={this.toggleUser}>
-                <DropdownToggle caret nav>User</DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to={'/user/landing'}>Landing</DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/course_builder'}>Course Builder</DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/article_builder'}>Article Builder</DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/quiz_builder'}>Quiz Builder</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.courseIsOpen} toggle={this.toggleCourse}>
-                <DropdownToggle caret nav>Course</DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem tag={Link} to={'/courses/promo'}>Promo</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/toc'}>Toc</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/quiz'}>Quiz</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-            </Nav>
-          </Collapse>
-        </Navbar>
+        <MainNav />
         <Routes />
         <footer className="footer text-muted">
           <Container>

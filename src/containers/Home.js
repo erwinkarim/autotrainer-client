@@ -16,25 +16,27 @@ export default class Home extends Component {
   render() {
     return (
       <div className="Home">
-        <Jumbotron fluid className="mb-0" id="jumbotron-1">
-          <video playsinline={true} autoplay={true} muted={true} loop>
-            <source src="videos/learn.mp4" />
-          </video>
-          <Container className="text-white pb-3" id="panel-1">
-            <h1 className="display-3">A Point is Made</h1>
-            <p className="lead">{loremIpsum()}</p>
-            <div className="">
-              <Link className="btn btn-primary mr-2" to='/'>Learn More</Link>
-              <Button tag="a" href="#video">Watch Video</Button>
-            </div>
-          </Container>
+        <Jumbotron fluid className="mb-0 position-relative py-0" id="jumbotron-1">
+          <div id="video-1" className="video-container">
+            <video playsInline autoPlay muted={true} loop>
+              <source src="http://d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
+            </video>
+          </div>
+          <div id="panel-1" className="position-absolute">
+            <Container className="text-white">
+                <h1 className="display-3">A Point is Made</h1>
+                <p className="lead">{loremIpsum()}</p>
+                <div className="">
+                  <Link className="btn btn-primary mr-2" to='/'>Learn More</Link>
+                  <Button tag="a" href="#video">Watch Video</Button>
+                </div>
+            </Container>
+          </div>
         </Jumbotron>
         <Container className="mt-2">
           <Row>
            { ['bnm.png', 'hsbc_amanah.gif', 'takaful_ikhlas.png', 'etiqa.png', 'liberty_insurance.png',
-             '7a603d_6d305286957b485db4d1148c7d4fcc02-mv2.webp', '7a603d_70c9ffa2ba1545eeb266efcf1c12ffda-mv2.webp',
-             '7a603d_816d303f34f04c5392ea492d67d756a3-mv2.webp', '7a603d_8640671a7acd4d56be7107289af6eb3b-mv2.webp',
-             'rhb.png', 'axa.png', '7a603d_61665b71f69e472d8cc57952922f0617-mv2.webp'].map( (e,i) => {
+             'rhb.png' ].map( (e,i) => {
                return (
                 <div className="col-3 col-md-2 mb-2" key={i}>
                  <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
@@ -67,7 +69,9 @@ export default class Home extends Component {
         </Jumbotron>
         <Jumbotron fluid className="mb-0">
           <div id="video" className="embed-responsive embed-responsive-16-by-9" style={{height:'80vh', width:'100vw'}}>
-            <iframe src="https://www.youtube.com/embed/pk6BhWxlWXc" width="1600"></iframe>
+            <video controls poster="/videos/668515766_1200x680.webp">
+              <source src="http://d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
+            </video>
           </div>
           <Container>
             <h1 className="display-3">Final Points</h1>
