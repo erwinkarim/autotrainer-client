@@ -1,5 +1,6 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
+import AppliedRoute from "./components/AppliedRoute";
 import Home from "./containers/Home";
 import Login from "./containers/Login";
 import CoursePromo from "./containers/CoursePromo";
@@ -18,16 +19,16 @@ import ArticleBuilder from './containers/ArticleBuilder';
 import QuizBuilder from './containers/QuizBuilder';
 
 
-export default () =>
+export default ({childProps}) =>
   <Switch>
-    <Route path="/" exact component={Home} />
-    <Route path="/login" exact component={Login} />
+    <AppliedRoute path="/" exact component={Home} props={childProps} />
+    <AppliedRoute path="/login" exact component={Login} props={childProps}/>
     <Route path="/logout" exact component={Logout} />
     <Route path="/courses/promo" exact component={CoursePromo} />
     <Route path="/courses/toc" exact component={CourseTOC} />
     <Route path="/courses/article" exact component={Article} />
     <Route path="/courses/quiz" exact component={Quiz} />
-    <Route path="/user/landing" exact component={UserLanding} />
+    <AppliedRoute path="/user/landing" exact component={UserLanding} props={childProps} />
     <Route path="/user/course_builder" exact component={CourseBuilder} />
     <Route path="/user/article_builder" exact component={ArticleBuilder} />
     <Route path="/user/quiz_builder" exact component={QuizBuilder} />

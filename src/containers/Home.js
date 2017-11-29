@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import {Jumbotron, Button, Container} from 'reactstrap';
 import {Row, CardDeck,Card, CardBody, CardTitle, CardText} from 'reactstrap';
-import { Link } from "react-router-dom";
+//import { Link } from "react-router-dom";
+import { HashLink as Link } from "react-router-hash-link";
 import "./Home.css";
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
@@ -28,15 +29,15 @@ export default class Home extends Component {
                 <p className="lead">{loremIpsum()}</p>
                 <div className="">
                   <Link className="btn btn-primary mr-2" to='/'>Learn More</Link>
-                  <Button tag="a" href="#video">Watch Video</Button>
+                  <Link className="btn btn-secondary" to='/#video'>Watch Video</Link>
                 </div>
             </Container>
           </div>
         </Jumbotron>
         <Container className="mt-2">
           <Row>
-           { ['bnm.png', 'hsbc_amanah.gif', 'takaful_ikhlas.png', 'etiqa.png', 'liberty_insurance.png',
-             'rhb.png' ].map( (e,i) => {
+           { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 ITA-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
+              '256x256 TMIG-rd.png', '256x256 WBG-rd.png', '512x200 NPPF-rd.png' ].map( (e,i) => {
                return (
                 <div className="col-3 col-md-2 mb-2" key={i}>
                  <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />

@@ -102,6 +102,7 @@ export default class Login extends Component {
   }
 
   componentDidMount = () => {
+    var handle = this;
     //begin remove this
     var i, items, tabs;
     items = document.getElementsByClassName("tab-pane");
@@ -113,9 +114,10 @@ export default class Login extends Component {
     //end remove this
 
     // Initiatlize CognitoAuth object
+    // need to tell user upstairs that auth has been set
+    var curUrl = window.location.href;
     var auth = this.initCognitoSDK();
     this.setState({cognitoUser:auth});
-    var curUrl = window.location.href;
     auth.parseCognitoWebResponse(curUrl);
 
     //get current cognito user
@@ -125,9 +127,11 @@ export default class Login extends Component {
 
     if(cognitoUser != null){
       auth.getSession();
+      /*
       var session = auth.getSignInUserSession();
       console.log('auth',auth);
       console.log('session', JSON.parse(atob(session.getIdToken().getJwtToken().split('.')[1])) );
+      */
       //console.log('auth',auth.signInUserSession.accessToken.jwtToken);
     }
 

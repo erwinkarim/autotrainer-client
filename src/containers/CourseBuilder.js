@@ -119,7 +119,7 @@ export default class CourseBuilder extends Component {
         </Row>
         <Row>
           <div className="col-12">
-            <h3 className="display-4">Content Manager</h3>
+            <h3 className="display-4">Module Manager</h3>
           </div>
           <div className="col-12 col-md-8">{ Array.from( Array(randomInt(3,8)).keys() ).map( (e,i) => {
             var result = 8 < randomInt(10) ? (

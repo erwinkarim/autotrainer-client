@@ -10,6 +10,11 @@ import './UserLanding.css';
 export default class UserLanding extends Component {
   render(){
     var courseCount = randomInt(20);
+    var handle = this;
+
+    if(!this.props.isAuthenticated){
+      return (<div>User is not authenticated</div>);
+    }
 
     return (
       <Container className="text-left mt-2">
@@ -17,13 +22,13 @@ export default class UserLanding extends Component {
           <div className="col-12">
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem active>FirstName LastName</BreadcrumbItem>
+              <BreadcrumbItem active>{handle.props.currentUser.name}</BreadcrumbItem>
             </Breadcrumb>
           </div>
         </Row>
         <Row>
           <div className="col-12">
-            <p className="lead">Welcome, FirstName LastName</p>
+            <p className="lead">Welcome, {handle.props.currentUser.name}</p>
           </div>
           <div className="col-12 mb-3">
             <h4 className="display-5">Course Highlights</h4>
@@ -70,8 +75,9 @@ export default class UserLanding extends Component {
             <h4 className="display-4">Courses you manage</h4>
             <p>Applicable if you have admin access</p>
           </div>
-          <div className="col-12 col-md-8">{ Array.from( Array(randomInt(0,4)).keys()).map( (e,i) => {
-            return (<Card key={i} className="mb-3">
+          <div className="col-12 col-md-8">
+            <h3>Example</h3>
+            <Card className="mb-3">
               <CardBody>
                 <CardTitle>{loremIpsum()}</CardTitle>
                 <CardText className="lead">{loremIpsum({count:randomInt(1,2), unit:'paragraphs'})}</CardText>
@@ -83,9 +89,15 @@ export default class UserLanding extends Component {
                   <Button color="primary" tag="a" href="/user/course_builder">Edit</Button>
                 </p>
               </CardBody>
-            </Card>);
-
-          })}</div>
+            </Card>
+          </div>
+          <div className="col-12 col-md-8">
+            <h3>Actual</h3>
+            <p>...Load from DynamoDB here...</p>
+          </div>
+          <div className="col-12">
+            <Link className="btn btn-primary" to="/user/course_builder">New Course</Link>
+          </div>
         </Row>
       </Container>
     )

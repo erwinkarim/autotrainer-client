@@ -1,22 +1,33 @@
 import React, { Component } from "react";
-import { Nav, Navbar, NavbarToggler, Collapse,  Dropdown, DropdownItem, DropdownMenu, DropdownToggle } from "reactstrap";
-import { NavItem, NavLink } from 'reactstrap';
+import { Nav, Navbar, NavbarToggler, Collapse, UncontrolledDropdown, Dropdown, DropdownItem, DropdownMenu, DropdownToggle, Button } from "reactstrap";
+import { NavItem, NavLink, FormGroup } from 'reactstrap';
 import { Link } from "react-router-dom";
+import './MainNav.css'
 
 class MainNav extends Component {
   constructor(props){
     super(props);
     this.state = {
-      isOpen: false,
-      courseIsOpen: false,
-      userIsOpen: false,
-      systemIsOpen: false
+      isOpen: false
+    }
+  }
+  signInUser = () => {
+    if(this.props.auth != null){
+      this.props.auth.getSession();
+    } else {
+      console.log('auth is null');
+    }
+  }
+  signOutUser = () => {
+    if(this.props.auth != null){
+      this.props.auth.signOut();
+
+    } else {
+      console.log('auth is null');
     }
   }
   toggle = () => { this.setState({ isOpen: !this.state.isOpen }); }
-  toggleCourse = () => { this.setState({ courseIsOpen: !this.state.courseIsOpen }); }
-  toggleUser = () => { this.setState({ userIsOpen: !this.state.userIsOpen }); }
-  toggleSystem = () => { this.setState({ systemIsOpen: !this.state.systemIsOpen }); }
+  toggleSession = () => { this.setState({ sessionIsOpen: !this.state.sessionIsOpen }); }
   render(){
     return (
         <Navbar className="bg-light" light expand="md">
@@ -24,33 +35,50 @@ class MainNav extends Component {
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
-              <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.systemIsOpen} toggle={this.toggleSystem}>
-                <DropdownToggle caret nav>System</DropdownToggle>
-                <DropdownMenu>
+              <UncontrolledDropdown className="nav-item" tag="li">
+                <DropdownToggle caret nav>Mocks</DropdownToggle>
+                <DropdownMenu right>
                   <DropdownItem tag={Link} to={'/login'}>Login</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.userIsOpen} toggle={this.toggleUser}>
-                <DropdownToggle caret nav>User</DropdownToggle>
-                <DropdownMenu>
+                  <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/user/landing'}>Landing</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/course_builder'}>Course Builder</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/article_builder'}>Article Builder</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/quiz_builder'}>Quiz Builder</DropdownItem>
-                </DropdownMenu>
-              </Dropdown>
-              <Dropdown className={'nav-item'} tag={'li'} isOpen={this.state.courseIsOpen} toggle={this.toggleCourse}>
-                <DropdownToggle caret nav>Course</DropdownToggle>
-                <DropdownMenu>
+                  <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/courses/promo'}>Promo</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/toc'}>Toc</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/quiz'}>Quiz</DropdownItem>
                 </DropdownMenu>
-              </Dropdown>
-              <NavItem>
-                <NavLink tag={Link} to="/">Login</NavLink>
-              </NavItem>
+              </UncontrolledDropdown>
+              {
+                this.props.isAuthenticated ? (
+                  <UncontrolledDropdown className="nav-item" tag="li">
+                    <DropdownToggle nav className="py-0" >
+                      <img height="42" className="circle" src={this.props.currentUser.picture} />
+                    </DropdownToggle>
+                    <DropdownMenu right style={ {width:'300px'}}>
+                      <DropdownItem tag={Link} to="/user/landing">
+                        <FormGroup className="row mb-0">
+                          <div className="col-3">
+                            <img height="45" className="circle" src={this.props.currentUser.picture} />
+                          </div>
+                          <div className="col-9">
+                            <span>{this.props.currentUser.name}</span><br />
+                            <span>{this.props.currentUser.email}</span>
+                          </div>
+                        </FormGroup>
+                      </DropdownItem>
+                      <DropdownItem divider />
+                      <Button color="link" className="dropdown-item" onClick={this.signOutUser}>Logout</Button>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                ) : (
+                  <NavItem>
+                    <Button outline color="primary" onClick={this.signInUser}>Login</Button>
+                  </NavItem>
+                )
+              }
             </Nav>
           </Collapse>
         </Navbar>
