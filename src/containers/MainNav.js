@@ -41,14 +41,14 @@ class MainNav extends Component {
                 <DropdownMenu right className="" >
                   <DropdownItem tag={Link} to={'/login'}>Login</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={'/user/landing'}>Landing</DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/course_builder'}>Course Builder</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/landing'}><strike>Landing</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/course_builder'}><strike>Course Builder</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/article_builder'}>Article Builder</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/quiz_builder'}>Quiz Builder</DropdownItem>
                   <DropdownItem divider />
-                  <DropdownItem tag={Link} to={'/courses/new'}>New Course</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/promo'}>Promo</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/toc'}>Toc</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/new'}><strike>New Course</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/promo'}><strike>Promo</strike> - Basic</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/toc'}><strike>TOC</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/quiz'}>Quiz</DropdownItem>
                 </DropdownMenu>

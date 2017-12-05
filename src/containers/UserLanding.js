@@ -108,8 +108,9 @@ export default class UserLanding extends Component {
                     <p>Chapters: (x), Quiz questions: (y)</p>
                     <p>Price: RM{e.price}</p>
                     <p>
-                      <Button className="mr-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>View Course</Button>
-                      <Button color="primary" tag={Link} to="/user/course_builder">Edit</Button>
+                      <Button className="mr-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
+                      <Button className="mr-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
+                      <Button color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Edit</Button>
                     </p>
                   </CardBody>
                 </Card>);

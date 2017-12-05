@@ -8,12 +8,19 @@ import randomInt from 'random-int';
 import { invokeApig } from "../libs/awsLibs";
 
 export default class CourseTOC extends Component {
+  constructor(props){
+    super(props);
+    this.state = { course:null }
+  }
   componentDidMount = async () => {
     //load the course here
     var handle = this;
     try {
       var result = await this.getCourse();
       console.log('results', result);
+      if(result != null){
+        handle.setState({course:result});
+      }
     } catch(e){
       console.log(e);
     };
@@ -22,6 +29,16 @@ export default class CourseTOC extends Component {
     return invokeApig({path:`/courses/${this.props.match.params.id}`})
   }
   render(){
+    //render nothing is course is null
+    if(this.state.course === null){
+      return (<Container>
+        <Row>
+          <div className="col-12 col-md-8">
+            <p>Course not found or loading ...</p>
+          </div>
+        </Row>
+      </Container>);
+    }
     return (
       <div>
         <Container className="mt-2">
@@ -30,12 +47,12 @@ export default class CourseTOC extends Component {
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to="/courses/tag">Course Tag</Link></BreadcrumbItem>
-            <BreadcrumbItem active>Course Name</BreadcrumbItem>
+            <BreadcrumbItem active>{this.state.course.name}</BreadcrumbItem>
           </Breadcrumb>
         </Container>
         <Jumbotron fluid>
           <Container>
-            <h1 className="display-3">Welcome to Subject!!!</h1>
+            <h1 className="display-3">Welcome to {this.state.course.name}!!!</h1>
             <p className="lead">Something about subject here</p>
           </Container>
         </Jumbotron>
@@ -43,7 +60,9 @@ export default class CourseTOC extends Component {
           <Row>
             <div className="col-12">
               <h3 className="display-4">Executive Summary</h3>
-              <p className="lead">{loremIpsum()}</p>
+              { this.state.course.description.split('\n').map( (para,i) => {
+                return (<p key={i} className="lead">{para}</p>);
+              })}
             </div>
             <div className="col-12">
               <h3 className="display-4">Table of Contents</h3>

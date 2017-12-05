@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
+import { invokeApig } from "../libs/awsLibs";
 import './CourseBuilder.css';
 
 class CourseUser extends Component {
@@ -38,22 +39,80 @@ class CourseUser extends Component {
 export default class CourseBuilder extends Component {
   constructor(props){
     super(props);
-    this.state = {settingActiveTab:'general', userDropdownOpen:false };
+    this.state = {settingActiveTab:'general', userDropdownOpen:false, course:null };
   }
   toggle = (tab) => {
     if(this.state.settingActiveTab !== tab){
       this.setState({settingActiveTab:tab});
     }
   }
+  componentDidMount = async() => {
+    //load the course
+    var handle = this;
+    try {
+      var result = await this.getCourse();
+      console.log('results', result);
+      if(result != null){
+        handle.setState({course:result});
+      }
+    } catch(e){
+      console.log(e);
+    };
+  }
+  getCourse = () => {
+    return invokeApig({path:`/courses/${this.props.match.params.id}`})
+  }
+  handleUpdateCourse = async (e) => {
+    e.preventDefault();
+    console.log('should send updates on new course settings');
+    try{
+      await this.updateCourse();
+      this.props.history.push(`/courses/toc/${this.state.course.courseId}`);
+    }catch(e){
+      console.log(e);
+    }
+
+  }
+  updateCourse = () => {
+    return invokeApig({
+      path:`/courses/${this.props.match.params.id}`,
+      method:'PUT',
+      body:this.state.course
+    })
+  }
+  handleChange = event => {
+    var newCourse = this.state.course;
+    newCourse[event.target.id] = event.target.value;
+    this.setState({ course:newCourse});
+  }
   render(){
+    var note = (msg) => {
+      return (<Container><Row>
+          <div className="col-12 col-md-8">
+            <p>{msg}</p>
+          </div>
+      </Row></Container>);
+    }
+    //user is authenticated
+    if(!this.props.isAuthenticated){
+      return note('User is not authenticated yet ...')
+    };
+
+    //course has been loaded
+    if(this.state.course === null){
+      return note('Course is note loaded yet ...')
+    }
+
+    //TODO: check course belongs to the current user
+
     return (
       <Container className="mt-2 text-left">
         <Row>
           <div className="col-12">
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to="/user/landing">FirstName LastName</Link></BreadcrumbItem>
-              <BreadcrumbItem active>Course Builder</BreadcrumbItem>
+              <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
+              <BreadcrumbItem active>Course Builder for {this.state.course.courseId}</BreadcrumbItem>
             </Breadcrumb>
           </div>
         </Row>
@@ -77,12 +136,17 @@ export default class CourseBuilder extends Component {
               <TabPane tabId='general'>
                 <FormGroup>
                   <Label>Name</Label>
-                  <Input type="text" placeholder="Course Name"/>
+                  <Input type="text" placeholder="Course Name" id="name" value={this.state.course.name} onChange={this.handleChange} />
                 </FormGroup>
                 <FormGroup>
                   <Label>Description</Label>
-                  <Input type="textarea" rows="20">{loremIpsum()}</Input>
+                  <Input type="textarea" rows="20" id="description" value={this.state.course.description} onChange={this.handleChange} />
                 </FormGroup>
+                <FormGroup>
+                  <Label>Price</Label>
+                  <Input type="number" id="price" onChange={this.handleChange} value={this.state.course.price} />
+                </FormGroup>
+                <Button color="primary" onClick={this.handleUpdateCourse}>Update Course Setting</Button>
               </TabPane>
               <TabPane tabId='stats'>
                 <h4 className="display-4">User Stats</h4>

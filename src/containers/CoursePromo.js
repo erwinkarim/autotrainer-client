@@ -4,14 +4,41 @@ import {Container, Jumbotron, Row} from 'reactstrap';
 import {CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardFooter, Button, Badge} from 'reactstrap';
 import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
+import { invokeApig } from "../libs/awsLibs";
 
 export default class CoursePromo extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      course:null
+    }
+  }
+  componentDidMount = async() => {
+    //load the course
+    var handle = this;
+    try {
+      var result = await this.getCourse();
+      console.log('results', result);
+      if(result != null){
+        handle.setState({course:result});
+      }
+    } catch(e){
+      console.log(e);
+    };
+  }
+  getCourse = () => {
+    return invokeApig({path:`/courses/${this.props.match.params.id}`})
+  }
   render(){
+    //check if course is loaded
+    if(this.state.course === null){
+      return (<div>Course not yet loaded ...</div>)
+    }
     return (
       <div>
         <Jumbotron fluid>
           <Container>
-            <h1 className="display-3 text-center">Course Title</h1>
+            <h1 className="display-3 text-center">{this.state.course.name}</h1>
             <p className="lead">{loremIpsum()}</p>
           </Container>
         </Jumbotron>
@@ -52,7 +79,7 @@ export default class CoursePromo extends Component {
         <Jumbotron fluid>
           <Container>
             <h1 className="display-3">Pricing</h1>
-            <p className="lead">Just RM39.99</p>
+            <p className="lead">Just RM{this.state.course.price}</p>
             <div className="d-flex">
               <Button color="primary" className="mx-auto">Get Started!</Button>
             </div>

@@ -4,32 +4,31 @@ import config from '../config.js'
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 
 export async function authUser() {
-  console.log('authUser: check Credentials');
-  console.log('AWS.config.credentials', AWS.config.credentials);
+  //console.log('authUser: check Credentials');
   if (
     AWS.config.credentials &&
     Date.now() < AWS.config.credentials.expireTime - 60000
   ) {
-    console.log('authUser: credentials is valid');
+    //console.log('authUser: credentials is valid');
     return true;
   }
 
-  console.log('authUser: initCognitoSDK and getCurrentUser');
+  //console.log('authUser: initCognitoSDK and getCurrentUser');
   var auth = initCognitoSDK();
   const currentUser = auth.getCurrentUser();
   //const currentUser = getCurrentUser();
 
   if (currentUser === null) {
-    console.log('authUser: user is null');
+    //console.log('authUser: user is null');
     return false;
   }
 
   //const userToken = await getUserToken(currentUser);
-  console.log('authUser: getUserToken');
+  //console.log('authUser: getUserToken');
   const userToken = await getUserToken(auth);
 
 
-  console.log('authUser: getAwsCredentials');
+  //console.log('authUser: getAwsCredentials');
   await getAwsCredentials(userToken);
 
   return true;
@@ -53,7 +52,7 @@ async function getUserToken(auth) {
   try {
     auth.getSession();
   } catch(e){
-    console.log(e);
+    //console.log(e);
     return ('failed to get user session');
   }
   return auth.signInUserSession.idToken.jwtToken;
@@ -76,7 +75,6 @@ async function getUserToken(auth) {
 
 
 export function initCognitoSDK(){
-  var handle = this;
   var authData = {
 		//ClientId : '1pdpd2tbujfndf8fbb4udmh301',
     ClientId : process.env.REACT_APP_COGNITO_APP_ID, // Your client id here
@@ -93,14 +91,14 @@ export function initCognitoSDK(){
 
     */
     onSuccess: async function(result) {
-      console.log("Sign in success");
+      //console.log("Sign in success");
       //handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
       //handle.userHasAuthenticated(true);
       getAwsCredentials(result.idToken.jwtToken);
       return true;
     },
     onFailure: function(err) {
-      console.log("Error!" + err);
+      //console.log("Error!" + err);
       //handle.userHasAuthenticated(false);
       return false;
     }
@@ -126,21 +124,14 @@ export async function getAwsCredentials(userToken) {
   return AWS.config.credentials.getPromise();
 }
 
-export async function invokeApig({
-  path,
-  method = "GET",
-  headers = {},
-  queryParams = {},
-  body
-}) {
+export async function invokeApig({ path, method = "GET", headers = {}, queryParams = {}, body }) {
 
   //should handle this, ensure user is authenticated before proceeding
-  console.log('invokeApig: check user');
   if (!await authUser()) {
     throw new Error("User is not logged in");
   }
 
-  console.log('invokeApig: new signedRequest');
+  //console.log('invokeApig: new signedRequest');
   const signedRequest = sigV4Client
     .newClient({
       accessKey: AWS.config.credentials.accessKeyId,

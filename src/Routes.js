@@ -23,17 +23,26 @@ import QuizBuilder from './containers/QuizBuilder';
 export default ({childProps}) =>
   <Switch>
     <AppliedRoute path="/" exact component={Home} props={childProps} />
+
+    {/* system */}
     <AppliedRoute path="/login" exact component={Login} props={childProps}/>
     <Route path="/logout" exact component={Logout} />
-    <AppliedRoute path="/courses/new" exact component={NewCourse} props={childProps} />
-    <Route path="/courses/promo" exact component={CoursePromo} />
+
+    {/* public course page */}
+    <AppliedRoute path="/courses/promo/:id" exact component={CoursePromo} props={childProps} />
+    {/* course pages that is valid for people who enrolled */}
     <AppliedRoute path="/courses/toc/:id" exact component={CourseTOC} props={childProps} />
     <Route path="/courses/article" exact component={Article} />
     <Route path="/courses/quiz" exact component={Quiz} />
+
+    {/* user pages */}
+    <AppliedRoute path="/courses/new" exact component={NewCourse} props={childProps} />
     <AppliedRoute path="/user/landing" exact component={UserLanding} props={childProps} />
-    <Route path="/user/course_builder" exact component={CourseBuilder} />
+    <AppliedRoute path="/user/course_builder/:id" exact component={CourseBuilder} props={childProps} />
     <Route path="/user/article_builder" exact component={ArticleBuilder} />
     <Route path="/user/quiz_builder" exact component={QuizBuilder} />
+
+    {/* misc pages */}
     <Route path="/legal" exact component={Legal} />
     <Route path="/contact" exact component={Contact} />
 
