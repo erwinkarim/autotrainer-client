@@ -20,26 +20,25 @@ export default class Home extends Component {
         <Jumbotron fluid className="mb-0 position-relative py-0" id="jumbotron-1">
           <div id="video-1" className="video-container">
             <video playsInline autoPlay muted={true} loop>
-              <source src="http://d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
+              <source src={`//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4`} />
             </video>
           </div>
           <div id="panel-1" className="position-absolute">
-            <Container className="text-white">
-                <h1 className="display-3">A Point is Made</h1>
-                <p className="lead">{loremIpsum()}</p>
-                <div className="">
-                  <Link className="btn btn-primary mr-2" to='/'>Learn More</Link>
-                  <Link className="btn btn-secondary" to='/#video'>Watch Video</Link>
-                </div>
-            </Container>
           </div>
+          <Container id="panel-2" className="text-white position-absolute">
+              <h3 className="display-4">We Provide Actuarial, Insurance and Financial Training Programs</h3>
+              <div className="">
+                <Link className="btn btn-primary mr-2" to='/'>REGISTER NOW</Link>
+                <Link className="btn btn-secondary" to='/#video'>WATCH VIDEO</Link>
+              </div>
+          </Container>
         </Jumbotron>
         <Container className="mt-2">
           <Row>
-           { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 ITA-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
-              '256x256 TMIG-rd.png', '256x256 WBG-rd.png', '512x200 NPPF-rd.png' ].map( (e,i) => {
+           { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
+              '256x256 TMIG-rd.png', '256x256 WBG-rd.png' ].map( (e,i) => {
                return (
-                <div className="col-3 col-md-2 mb-2" key={i}>
+                <div className="col-4 col-md-2 mb-2" key={i}>
                  <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
                 </div>
                );
@@ -71,7 +70,7 @@ export default class Home extends Component {
         <Jumbotron fluid className="mb-0">
           <div id="video" className="embed-responsive embed-responsive-16-by-9" style={{height:'80vh', width:'100vw'}}>
             <video controls poster="/videos/668515766_1200x680.webp">
-              <source src="http://d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
+              <source src={`//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4`} />
             </video>
           </div>
           <Container>

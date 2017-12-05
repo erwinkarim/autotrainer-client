@@ -1,3 +1,7 @@
 .circle {
   border-radius: 1.5rem !important;
 }
+
+.notransform {
+  transform: none !important;
+}

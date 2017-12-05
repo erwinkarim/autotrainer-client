@@ -5,8 +5,22 @@ import './CourseTOC.css';
 import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
+import { invokeApig } from "../libs/awsLibs";
 
 export default class CourseTOC extends Component {
+  componentDidMount = async () => {
+    //load the course here
+    var handle = this;
+    try {
+      var result = await this.getCourse();
+      console.log('results', result);
+    } catch(e){
+      console.log(e);
+    };
+  }
+  getCourse = () => {
+    return invokeApig({path:`/courses/${this.props.match.params.id}`})
+  }
   render(){
     return (
       <div>
@@ -37,8 +51,8 @@ export default class CourseTOC extends Component {
                 {
                   Array.from(Array(randomInt(5,10)).keys()).map( (e,i) => {
                   var isPopQuiz = 0.7 < Math.random();
-                  return (<Card>
-                    <CardBody key={i}>
+                  return (<Card key={i}>
+                    <CardBody>
                       <CardTitle>
                         <Link to={`${isPopQuiz ? "/courses/quiz" : "/courses/article"}`}>
                           {`${e}: ${isPopQuiz ? "(Quiz):" : ""}${loremIpsum()}`}

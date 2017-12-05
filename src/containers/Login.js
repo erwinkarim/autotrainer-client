@@ -1,6 +1,5 @@
 import React, { Component } from "react";
-import {Container, CardText, Card, CardBody } from "reactstrap";
-import AWS from 'aws-sdk';
+import {Container, Row } from "reactstrap";
 import "./Login.css";
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 
@@ -28,8 +27,8 @@ export default class Login extends Component {
       }
       var accToken = session.getAccessToken().getJwtToken();
       if (accToken) {
-        var payload = accToken.split('.')[1];
-        var formatted = JSON.stringify(atob(payload), null, 4);
+        payload = accToken.split('.')[1];
+        formatted = JSON.stringify(atob(payload), null, 4);
         document.getElementById('acctoken').innerHTML = formatted;
       }
       var refToken = session.getRefreshToken().getToken();
@@ -52,8 +51,8 @@ export default class Login extends Component {
       ClientId : process.env.REACT_APP_COGNITO_APP_ID, // Your client id here
       AppWebDomain : process.env.REACT_APP_APP_WEB_DOMAIN,
       TokenScopesArray : ['email', 'openid','profile'],
-      RedirectUriSignIn : `${process.env.REACT_APP_LOCALADDR}/login`,
-      RedirectUriSignOut : `${process.env.REACT_APP_LOCALADDR}/logoff`
+      RedirectUriSignIn : `${window.location.protocol}${process.env.REACT_APP_LOCALADDR}/login`,
+      RedirectUriSignOut : `${window.location.protocol}${process.env.REACT_APP_LOCALADDR}/logoff`
 
     };
     var auth = new CognitoAuth(authData);
@@ -102,9 +101,8 @@ export default class Login extends Component {
   }
 
   componentDidMount = () => {
-    var handle = this;
     //begin remove this
-    var i, items, tabs;
+    var i, items;
     items = document.getElementsByClassName("tab-pane");
     for (i = 0; i < items.length; i++) {
       items[i].style.display = 'none';
@@ -141,33 +139,39 @@ export default class Login extends Component {
     //actually, can remove almost everything
     return (
       <Container className="mt-2">
-        <div>
+        <Row>
+          <div className="col-12">
             <p id="statusNotAuth" title="Status">
                 Sign-In to Continue
             </p>
             <p id="statusAuth" title="Status">
                 You have Signed-In
             </p>
-        </div>
+          </div>
+        </Row>
 
-      	<div className="tabsWell">
-      		<div id="startButtons">
-      			<div className="button">
-      				<a className="nav-tabs" id="signInButton" href="javascript:void(0)" title="Sign in" onClick={this.userButton}>Sign In</a>
-      			</div>
-      		</div>
-      		<div className="tab-content">
-      			<div className="tab-pane" id="userdetails">
-      				<br />
-      				<h2 id="usertabtitle">Tokens</h2>
-      				<div className="user-form" id="usertab">
-      					<p id="idtoken"> ... </p>
-                <p id="acctoken"> ... </p>
-                <p id="reftoken"> ... </p>
-      				</div>
-      			</div>
-      		</div>
-      	</div>
+        <Row>
+          <div className="col-12">
+          	<div className="tabsWell">
+          		<div id="startButtons">
+          			<div className="button">
+          				<a className="nav-tabs" id="signInButton" href="javascript:void(0)" title="Sign in" onClick={this.userButton}>Sign In</a>
+          			</div>
+          		</div>
+          		<div className="tab-content">
+          			<div className="tab-pane" id="userdetails">
+          				<br />
+          				<h2 id="usertabtitle">Tokens</h2>
+          				<div className="user-form" id="usertab">
+          					<p id="idtoken"> ... </p>
+                    <p id="acctoken"> ... </p>
+                    <p id="reftoken"> ... </p>
+          				</div>
+          			</div>
+          		</div>
+          	</div>
+          </div>
+        </Row>
       </Container>
     );
   }

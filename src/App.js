@@ -1,13 +1,13 @@
 import React, { Component } from 'react';
 import { Link } from "react-router-dom";
 import Routes from "./Routes";
-import { Alert, Collapse, Navbar, NavbarToggler, Nav } from 'reactstrap';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem } from 'reactstrap';
+import { Alert, Button } from 'reactstrap';
 import { Container } from 'reactstrap';
 //import RouteNavItem from './components/RouteNavItem';
 import MainNav from './containers/MainNav';
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 import './App.css';
+import {getAwsCredentials } from './libs/awsLibs'
 
 class App extends Component {
   constructor(props) {
@@ -25,13 +25,12 @@ class App extends Component {
     var handle = this;
 
     //check for current user, if there is stored in storage, loaded and sign up
+    //var auth = this.initCognitoSDK();
     var auth = this.initCognitoSDK();
     handle.setState({auth:auth});
     var currentUser = auth.getCurrentUser();
-    console.log('currentUser', currentUser);
     if(currentUser != null){
-      console.log('should get current User');
-      auth.getSession();
+      auth.getSession()
     }
 
   }
@@ -45,24 +44,27 @@ class App extends Component {
       ClientId : process.env.REACT_APP_COGNITO_APP_ID, // Your client id here
       AppWebDomain : process.env.REACT_APP_APP_WEB_DOMAIN,
       TokenScopesArray : ['email', 'openid','profile'],
-      RedirectUriSignIn : `${process.env.REACT_APP_LOCALADDR}/login`,
-      RedirectUriSignOut : `${process.env.REACT_APP_LOCALADDR}/logout`
-
+      RedirectUriSignIn : `${window.location.protocol}//${window.location.host}/login`,
+      RedirectUriSignOut : `${window.location.protocol}//${window.location.host}/logout`
     };
     var auth = new CognitoAuth(authData);
     auth.userhandler = {
       /*
       onSuccess: (result) => {console.log('logged in!!')},
       onFailure: (err) => {console.log(err)}
+
       */
-      onSuccess: function(result) {
+      onSuccess: async function(result) {
         console.log("Sign in success");
         handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
         handle.userHasAuthenticated(true);
+        getAwsCredentials(result.idToken.jwtToken);
+        return true;
       },
       onFailure: function(err) {
         console.log("Error!" + err);
         handle.userHasAuthenticated(false);
+        return false;
       }
     };
     // The default response_type is "token", uncomment the next line will make it be "code".
@@ -78,6 +80,7 @@ class App extends Component {
       <div className="App">
         <Alert color="primary" className="mb-0 text-left" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}>
           Announcement Here !!!
+          <Button outline color="primary" className="ml-2">Register Now</Button>
         </Alert>
         <MainNav {...this.state} />
         <Routes childProps={childProps} />

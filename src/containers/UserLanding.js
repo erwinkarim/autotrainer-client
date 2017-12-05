@@ -5,9 +5,29 @@ import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
 import { Link } from 'react-router-dom';
 import './UserLanding.css';
-
+import { invokeApig } from "../libs/awsLibs";
 
 export default class UserLanding extends Component {
+  constructor(props){
+    super(props);
+    this.state = {courses:[]};
+  }
+  componentDidMount = async() => {
+    var handle = this;
+    try {
+      var results = await this.getCourses();
+      console.log('results', results);
+      handle.setState({courses:results});
+    } catch(e){
+      console.log(e);
+    }
+
+  }
+  getCourses = () => {
+    return invokeApig({
+      path:'/courses/user'
+    })
+  }
   render(){
     var courseCount = randomInt(20);
     var handle = this;
@@ -76,27 +96,29 @@ export default class UserLanding extends Component {
             <p>Applicable if you have admin access</p>
           </div>
           <div className="col-12 col-md-8">
-            <h3>Example</h3>
-            <Card className="mb-3">
-              <CardBody>
-                <CardTitle>{loremIpsum()}</CardTitle>
-                <CardText className="lead">{loremIpsum({count:randomInt(1,2), unit:'paragraphs'})}</CardText>
-                <h4>Stats</h4>
-                <p>Chapters: {randomInt(5,12)}, Quiz questions: {randomInt(5,30)}</p>
-                <p>Price: RM39.99</p>
-                <p>
-                  <Button className="mr-2" color="info" tag="a" href="/courses/toc">View Course</Button>
-                  <Button color="primary" tag="a" href="/user/course_builder">Edit</Button>
-                </p>
-              </CardBody>
-            </Card>
-          </div>
-          <div className="col-12 col-md-8">
-            <h3>Actual</h3>
+            { this.state.courses.length === 0 ? (<div>No courses yet ...</div>) : (
+              this.state.courses.map( (e,i) => {
+                return (<Card key={i} className="mb-3">
+                  <CardBody>
+                    <CardTitle>{e.name}</CardTitle>
+                    { e.description.split('\n').map( (p,key) => {
+                      return (<CardText key={key} className={key===0?'lead':''}>{p}</CardText>);
+                    })}
+                    <h4>Stats</h4>
+                    <p>Chapters: (x), Quiz questions: (y)</p>
+                    <p>Price: RM{e.price}</p>
+                    <p>
+                      <Button className="mr-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>View Course</Button>
+                      <Button color="primary" tag={Link} to="/user/course_builder">Edit</Button>
+                    </p>
+                  </CardBody>
+                </Card>);
+              })
+            )}
             <p>...Load from DynamoDB here...</p>
           </div>
           <div className="col-12">
-            <Link className="btn btn-primary" to="/user/course_builder">New Course</Link>
+            <Link className="btn btn-primary" to="/courses/new">New Course</Link>
           </div>
         </Row>
       </Container>

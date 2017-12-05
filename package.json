@@ -8,6 +8,7 @@
     "aws-sdk": "^2.154.0",
     "bootstrap": "^4.0.0-beta.2",
     "crypto-browserify": "^3.12.0",
+    "crypto-js": "^3.1.9-1",
     "dotenv": "^4.0.0",
     "google-login": "^1.0.3",
     "lorem-ipsum": "^1.0.4",
