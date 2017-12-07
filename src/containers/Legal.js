@@ -1,9 +1,7 @@
 import React, { Component } from "react";
 import {Container, Row, Nav, NavItem, NavLink, TabContent, TabPane} from "reactstrap";
-import loremIpsum from 'lorem-ipsum';
 import './Legal.css'
 import classnames from 'classnames';
-import randomInt from 'random-int';
 
 var TOC = `This site is provided by Actuarial Partners Consulting ("APC") for informational purposes only. By accessing the site, you are indicating your acceptance of these Terms of Use.
 
@@ -133,13 +131,13 @@ export default class Legal extends Component {
             <TabPane tabId="TermsOfUse" className="text-left">
               <h4>Terms of Use</h4>
               { TOC.split('\n').map( (para, i) => {
-                return (<p>{para}</p>)
+                return (<p key={i}>{para}</p>)
               }) }
             </TabPane>
             <TabPane tabId="PrivacyPolicy" className="text-left">
               <h4>Privacy Policy</h4>
               { privacy_policy.split('\n').map( (para, i) => {
-                return (<p>{para}</p>)
+                return (<p key={i}>{para}</p>)
               }) }
             </TabPane>
 

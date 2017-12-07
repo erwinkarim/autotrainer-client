@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import {Container, Row } from "reactstrap";
+import {Container, Row, Table } from "reactstrap";
 import "./Login.css";
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 
@@ -162,11 +162,19 @@ export default class Login extends Component {
           			<div className="tab-pane" id="userdetails">
           				<br />
           				<h2 id="usertabtitle">Tokens</h2>
-          				<div className="user-form" id="usertab">
-          					<p id="idtoken"> ... </p>
-                    <p id="acctoken"> ... </p>
-                    <p id="reftoken"> ... </p>
-          				</div>
+                  <Table responsive>
+                    <tbody>
+                      <tr id="usertab" className="user-form">
+                        <td id="idtoken"> ... </td>
+                      </tr>
+                      <tr>
+                        <td id="acctoken"> ... </td>
+                      </tr>
+                      <tr>
+                        <td id="reftoken"> ... </td>
+                      </tr>
+                    </tbody>
+                  </Table>
           			</div>
           		</div>
           	</div>

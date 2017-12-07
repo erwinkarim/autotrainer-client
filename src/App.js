@@ -30,6 +30,7 @@ class App extends Component {
     handle.setState({auth:auth});
     var currentUser = auth.getCurrentUser();
     if(currentUser != null){
+      //TODO: use AWS credentials to refresh token??
       auth.getSession()
     }
 

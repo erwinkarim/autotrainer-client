@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Row, Nav, Navbar, NavbarToggler, Collapse, UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Button } from "reactstrap";
+import { Row, Nav, NavbarBrand, Navbar, NavbarToggler, Collapse, UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Button } from "reactstrap";
 import { NavItem } from 'reactstrap';
 import { Link } from "react-router-dom";
 import './MainNav.css'
@@ -32,7 +32,9 @@ class MainNav extends Component {
   render(){
     return (
         <Navbar className="bg-light" light expand="lg">
-          <Link to="/" className="navbar-brand">AutoTrainer</Link>
+          <NavbarBrand tag={Link} to="/">
+            <img src="/logos/learn_at_ap.png" alt="learn@ap" height="30"/>
+          </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>
             <Nav className="ml-auto" navbar>
@@ -51,6 +53,9 @@ class MainNav extends Component {
                   <DropdownItem tag={Link} to={'/courses/toc'}><strike>TOC</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/quiz'}>Quiz</DropdownItem>
+                  <DropdownItem divider />
+                  <DropdownItem tag={Link} to={'/legal'}><strike>Legal</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/contact'}>Contact</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
               {

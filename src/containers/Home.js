@@ -62,7 +62,7 @@ export default class Home extends Component {
                 })
               }</CardDeck>
               <div className="col-12 d-flex">
-                <Button color="primary" className="mx-auto" href="/login" tag="Link">Register Now</Button>
+                <Button color="primary" className="mx-auto" to="/login" tag={Link}>Register Now</Button>
               </div>
             </Row>
           </Container>

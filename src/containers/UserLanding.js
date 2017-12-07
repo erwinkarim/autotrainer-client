@@ -3,7 +3,7 @@ import { Container, Row, Breadcrumb, BreadcrumbItem , Progress} from 'reactstrap
 import {CardDeck, Card, CardImg, CardTitle, CardBody, CardFooter, CardText, Button} from 'reactstrap';
 import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
-import { Link } from 'react-router-dom';
+import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
 import { invokeApig } from "../libs/awsLibs";
 
@@ -15,8 +15,8 @@ export default class UserLanding extends Component {
   componentDidMount = async() => {
     var handle = this;
     try {
+      console.log('fetching user related courses ...');
       var results = await this.getCourses();
-      console.log('results', results);
       handle.setState({courses:results});
     } catch(e){
       console.log(e);
@@ -27,6 +27,27 @@ export default class UserLanding extends Component {
     return invokeApig({
       path:'/courses/user'
     })
+  }
+  deleteCourse = (id) => {
+    return invokeApig({
+      path:`/courses/${id}`,
+      method:'DELETE'
+    })
+  }
+  handleDelete = async(e) => {
+    var handle = this;
+
+    if( window.confirm('Really delete?') ){
+      console.log('now should relaly delete them;');
+      try {
+        await this.deleteCourse(e.target.id);
+        var results = await this.getCourses();
+        handle.setState({courses:results});
+      }catch(err){
+        console.log('Error trying to delete');
+        console.log(err);
+      }
+    }
   }
   render(){
     var courseCount = randomInt(20);
@@ -50,8 +71,15 @@ export default class UserLanding extends Component {
           <div className="col-12">
             <p className="lead">Welcome, {handle.props.currentUser.name}</p>
           </div>
+          <div className="col-12 col-md-8 mb-3">
+            <ul>
+              <li><Link to="#highlights">Course Highlights</Link></li>
+              <li><Link to="#enrolled">Enrolled Courses</Link></li>
+              <li><Link to="#managed">Course Managed by You</Link></li>
+            </ul>
+          </div>
           <div className="col-12 mb-3">
-            <h4 className="display-5">Course Highlights</h4>
+            <h4 className="display-5" id="highlights">Course Highlights</h4>
             <CardDeck>{ Array.from( Array(3).keys() ).map( (e,i) => {
               return (<Card key={i}>
                 <CardImg top src= 'https://placehold.it/128x128'/>
@@ -67,7 +95,7 @@ export default class UserLanding extends Component {
             }) }</CardDeck>
           </div>
           <div className="col-12">
-            <h4 className="display-5">Courses you attended</h4>
+            <h4 className="display-5" id="enrolled">Courses you attended</h4>
             <p>Some gamification of the courses you bought</p>
             { 0 === courseCount ? (
               <div>
@@ -92,7 +120,7 @@ export default class UserLanding extends Component {
             </Row>)}
           </div>
           <div className="col-12">
-            <h4 className="display-4">Courses you manage</h4>
+            <h4 className="display-4" id="managed">Courses you manage</h4>
             <p>Applicable if you have admin access</p>
           </div>
           <div className="col-12 col-md-8">
@@ -107,11 +135,10 @@ export default class UserLanding extends Component {
                     <h4>Stats</h4>
                     <p>Chapters: (x), Quiz questions: (y)</p>
                     <p>Price: RM{e.price}</p>
-                    <p>
                       <Button className="mr-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
                       <Button className="mr-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
-                      <Button color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Edit</Button>
-                    </p>
+                      <Button className="mr-2" color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Edit</Button>
+                      <Button color="danger" id={e.courseId} onClick={this.handleDelete}>Delete</Button>
                   </CardBody>
                 </Card>);
               })

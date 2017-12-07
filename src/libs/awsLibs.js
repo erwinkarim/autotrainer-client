@@ -124,6 +124,7 @@ export async function getAwsCredentials(userToken) {
   return AWS.config.credentials.getPromise();
 }
 
+// TODO: invoke w/o authenticated credentials for certain functions (eg. get courses info)
 export async function invokeApig({ path, method = "GET", headers = {}, queryParams = {}, body }) {
 
   //should handle this, ensure user is authenticated before proceeding
@@ -131,6 +132,7 @@ export async function invokeApig({ path, method = "GET", headers = {}, queryPara
     throw new Error("User is not logged in");
   }
 
+  console.log('AWS.config.credentials', AWS.config.credentials);
   //console.log('invokeApig: new signedRequest');
   const signedRequest = sigV4Client
     .newClient({
