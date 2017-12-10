@@ -23,6 +23,7 @@ export default class CoursePromo extends Component {
         handle.setState({course:result});
       }
     } catch(e){
+      //throw new Error(e);
       console.log(e);
     };
   }
@@ -39,30 +40,31 @@ export default class CoursePromo extends Component {
         <Jumbotron fluid>
           <Container>
             <h1 className="display-3 text-center">{this.state.course.name}</h1>
-            <p className="lead">{loremIpsum()}</p>
+            { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
           </Container>
         </Jumbotron>
         <Container>
+          {
+            (this.state.course.key_points === undefined || this.state.course.key_points === null) ? null : (
+              <Row>
+                <div className="col-12 mb-2">
+                  <CardDeck>{
+                    this.state.course.key_points.map( (e,i) => {
+                      return (
+                        <Card key={i}>
+                          <CardBody>
+                            <CardTitle className="text-center">{e.title}</CardTitle>
+                            <CardText>{e.subtext}</CardText>
+                          </CardBody>
+                        </Card>
+                      )
+                    })
+                  }</CardDeck>
+                </div>
+              </Row>
+            )
+          }
           <Row>
-            <div className="col-12 mb-2">
-              <h2 className="display-4 text-center">Short Key Points</h2>
-              <CardDeck>{
-                [1,2,3].map( (e,i) => {
-                  return (
-                    <Card key={i}>
-                      <CardBody>
-                        <CardTitle className="text-center">Key Point {i}</CardTitle>
-                        <CardText>{loremIpsum()}</CardText>
-                      </CardBody>
-                      <CardFooter className="d-flex">
-                        <Button color="primary" className="mx-auto">Learn More</Button>
-                      </CardFooter>
-                    </Card>
-                  )
-                })
-
-              }</CardDeck>
-            </div>
             <div className="col-12 mb-2">
               <h2 className="display-4 text-center">Recent Customers</h2>
             </div>
@@ -107,8 +109,8 @@ export default class CoursePromo extends Component {
           <Row>
             <div className="col-12">
               <h3 className="display-4">Final Thoughts</h3>
-              { [1,2,3].map( (e,i) => {
-                return (<p className="lead" key={i}>{loremIpsum()}</p>)
+              { this.state.course.description.split('\n').map( (e,i) => {
+                return (<p className="lead text-left" key={i}>{e}</p>)
               })}
               <p>
               { [1,2,3].map( (e,i) => {

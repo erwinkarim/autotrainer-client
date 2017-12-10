@@ -62,8 +62,8 @@ export default class NewCourse extends Component {
         <div className="col-12 col-md-8">
           <Form onSubmit={this.handleSubmit}>
             <FormGroup>
-              <Input id="title" type="text" placeholder="Course Title"
-                value={this.state.title} onChange={this.handleChange} />
+              <Input id="title" type="text" placeholder="Course Title. Should be less than 140 characters"
+                maxLength="140" value={this.state.title} onChange={this.handleChange} />
             </FormGroup>
             <FormGroup>
               <Input id="description" type="textarea" rows="20" placeholder="Description about the course..."

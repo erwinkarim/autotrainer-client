@@ -8,6 +8,7 @@ import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
+import toTitleCase from 'titlecase';
 import { invokeApig } from "../libs/awsLibs";
 import './CourseBuilder.css';
 
@@ -67,7 +68,7 @@ export default class CourseBuilder extends Component {
     console.log('should send updates on new course settings');
     try{
       await this.updateCourse();
-      this.props.history.push(`/courses/toc/${this.state.course.courseId}`);
+      this.props.history.push(`/courses/promo/${this.state.course.courseId}`);
     }catch(e){
       console.log(e);
     }
@@ -82,8 +83,48 @@ export default class CourseBuilder extends Component {
   }
   handleChange = event => {
     var newCourse = this.state.course;
-    newCourse[event.target.id] = event.target.value;
+    event.target.id === "key_points" ? (
+      newCourse[event.target.id][parseInt(event.target.dataset.position)][event.target.dataset.key] =
+        event.target.dataset.key === "title" ? toTitleCase(event.target.value) :
+        event.target.value
+    ) : (
+      newCourse[event.target.id] =
+        event.target.id === "name" ? toTitleCase(event.target.value) :
+        event.target.value
+    );
     this.setState({ course:newCourse});
+  }
+  validateGeneralForm = () => {
+    //validate the general form
+    var titleNotEmpty = this.state.course.name.length > 0;
+    var descriptionNotEmpty = this.state.course.description.length > 0;
+    var priceNotEmpty = this.state.course.price !== "";
+    var keyPointsNotEmpty = (this.state.course.key_points === undefined || this.state.course.key_points === null ) ? true : (
+      this.state.course.key_points.reduce( (v,e) => {
+        return v && (e.title.length > 0 && e.subtext.length > 0)
+      }, true)
+    )
+
+    return titleNotEmpty && descriptionNotEmpty && priceNotEmpty && keyPointsNotEmpty;
+  }
+  newKeyPoint = (e) => {
+    var newCourse = this.state.course;
+    var keyPoint = {title:'', subtext:''};
+    newCourse.key_points === undefined ?
+      newCourse.key_points = [keyPoint] :
+      newCourse.key_points.push(keyPoint);
+    this.setState({course:newCourse});
+  }
+  deleteKeyPoint = (e) => {
+    var newCourse = this.state.course;
+    newCourse.key_points.splice(parseInt(e.target.dataset.position),1);
+    this.setState(newCourse);
+  }
+  enableAddKeyPoint = () => {
+    if(this.state.course.key_points === undefined){
+      return true;
+    }
+    return this.state.course.key_points.length < 3;
   }
   render(){
     var note = (msg) => {
@@ -136,7 +177,13 @@ export default class CourseBuilder extends Component {
               <TabPane tabId='general'>
                 <FormGroup>
                   <Label>Name</Label>
-                  <Input type="text" placeholder="Course Name" id="name" value={this.state.course.name} onChange={this.handleChange} />
+                  <Input type="text" placeholder="Course Name. Should be less than 140 characters"
+                    maxLength="140" id="name" value={this.state.course.name} onChange={this.handleChange} />
+                </FormGroup>
+                <FormGroup>
+                  <Label>Tagline</Label>
+                  <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
+                    maxLength="140" value={this.state.course.tagline} onChange={this.handleChange} />
                 </FormGroup>
                 <FormGroup>
                   <Label>Description</Label>
@@ -146,17 +193,52 @@ export default class CourseBuilder extends Component {
                   <Label>Price</Label>
                   <Input type="number" id="price" onChange={this.handleChange} value={this.state.course.price} />
                 </FormGroup>
-                <Button color="primary" onClick={this.handleUpdateCourse}>Update Course Setting</Button>
+                <FormGroup>
+                  <h6>Key Points</h6>
+                </FormGroup>
+                {
+                  (this.state.course.key_points === undefined || this.state.course.key_points.length === 0) ?
+                  (<p>No key points configured.</p>) :
+                  this.state.course.key_points.map( (e,i) => {
+                    return (<FormGroup key={i}>
+                      <Input type="text" placeholder={`Title for Point ${i+1}. Should be less than 70 characters`}
+                        maxLength="70" className="mb-2"
+                        id={`key_points`} data-position={i} data-key="title"
+                        value={e.title} onChange={this.handleChange}
+                      />
+                      <Input type="text" placeholder={`Subtext for Point ${i+1}. Should be less than 140 characters`}
+                        maxLength="140" className="mb-2"
+                        id={`key_points`} data-position={i} data-key="subtext"
+                        value={e.subtext} onChange={this.handleChange}
+                      />
+                      <Button type="button" color="danger" data-position={i} onClick={this.deleteKeyPoint}>Delete</Button>
+                    </FormGroup>)
+                  })
+                }
+                <FormGroup>
+                  <Button type="button" color="primary" onClick={this.newKeyPoint} disabled={!this.enableAddKeyPoint()}>New Key Points</Button>
+                </FormGroup>
+                <Button color="primary" onClick={this.handleUpdateCourse} disabled={!this.validateGeneralForm()}>Update Course Setting</Button>
               </TabPane>
-              <TabPane tabId='stats'>
-                <h4 className="display-4">User Stats</h4>
+              <TabPane tabId='stats' className="mb-2">
+                <p>Warning: Not yet configured</p>
                 <ul>
                   <li>Distributed: {randomInt(40,540)} users </li>
                   <li>Started: {randomInt(40,540)} users </li>
                   <li>Finished: {randomInt(40,540)} users </li>
                 </ul>
+                {
+                  /*
+                    To configure banner background picture
+                    <FormGroup>
+                      <Label>Banner Picture</Label>
+                      <p>upload banner picture here ...</p>
+                    </FormGroup>
+                  */
+                }
               </TabPane>
               <TabPane tabId='users'>
+                <p>Warning: Not yet configured</p>
                 <Table className="mt-2">
                   <thead>
                     <tr>

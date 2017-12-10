@@ -41,6 +41,7 @@ export default class UserLanding extends Component {
       console.log('now should relaly delete them;');
       try {
         await this.deleteCourse(e.target.id);
+        // TODO: remove from state instead of polling again from server
         var results = await this.getCourses();
         handle.setState({courses:results});
       }catch(err){
@@ -80,6 +81,7 @@ export default class UserLanding extends Component {
           </div>
           <div className="col-12 mb-3">
             <h4 className="display-5" id="highlights">Course Highlights</h4>
+            <p>This one not yet implemented</p>
             <CardDeck>{ Array.from( Array(3).keys() ).map( (e,i) => {
               return (<Card key={i}>
                 <CardImg top src= 'https://placehold.it/128x128'/>
@@ -97,6 +99,7 @@ export default class UserLanding extends Component {
           <div className="col-12">
             <h4 className="display-5" id="enrolled">Courses you attended</h4>
             <p>Some gamification of the courses you bought</p>
+            <p>This one not yet implemented</p>
             { 0 === courseCount ? (
               <div>
                 <p>No courses yet ... </p>
@@ -135,15 +138,14 @@ export default class UserLanding extends Component {
                     <h4>Stats</h4>
                     <p>Chapters: (x), Quiz questions: (y)</p>
                     <p>Price: RM{e.price}</p>
-                      <Button className="mr-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
-                      <Button className="mr-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
-                      <Button className="mr-2" color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Edit</Button>
-                      <Button color="danger" id={e.courseId} onClick={this.handleDelete}>Delete</Button>
+                      <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
+                      <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
+                      <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Edit</Button>
+                      <Button className="mr-2 mb-2" color="danger" id={e.courseId} onClick={this.handleDelete}>Delete</Button>
                   </CardBody>
                 </Card>);
               })
             )}
-            <p>...Load from DynamoDB here...</p>
           </div>
           <div className="col-12">
             <Link className="btn btn-primary" to="/courses/new">New Course</Link>

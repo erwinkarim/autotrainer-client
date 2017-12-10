@@ -19,14 +19,13 @@ export async function authUser() {
   //const currentUser = getCurrentUser();
 
   if (currentUser === null) {
-    //console.log('authUser: user is null');
+    console.log('authUser: user is null');
     return false;
   }
 
   //const userToken = await getUserToken(currentUser);
   //console.log('authUser: getUserToken');
   const userToken = await getUserToken(auth);
-
 
   //console.log('authUser: getAwsCredentials');
   await getAwsCredentials(userToken);
@@ -44,6 +43,18 @@ function getCurrentUser() {
     ClientId: config.cognito.APP_CLIENT_ID
   });
   return userPool.getCurrentUser();
+}
+*/
+
+/*
+Get Unauthenticated Credeitnails from the ID Pool
+The ID pool need to enabled Unauthenticated access
+async function getUnauthCredentials(){
+  AWS.config.region = 'ap-southeast-1'; // Region
+  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'ap-southeast-1:d305ce7d-b107-480b-93cd-a4c0c9881a42'
+  });
+  await AWS.config.credentials.getPromise();
 }
 */
 
