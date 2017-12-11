@@ -23,13 +23,15 @@ export default class Contact extends Component {
       this.state.captchaPassed);
   }
   captcha = (e) => {
-    console.log('captcha clicked');
-    this.setState({captchaPassed:true})
+    //should change to check captcha state
+    console.log('captcha changed state');
+    this.setState({captchaPassed:!this.state.captchaPassed});
   }
   render(){
-    return (<Container>
+    return (<Container className="mt-2">
       <Row>
-        <div className="col-12 col-md-8">
+        <div className="col-12 col-md-8 text-left">
+          <p>Warning: not yet implemented</p>
           <Form onSubmit={this.handleSubmit} className="text-left">
             <FormGroup>
               <Label>Email:</Label>

@@ -14,7 +14,6 @@ class MainNav extends Component {
   signInUser = () => {
     if(this.props.auth != null){
       this.props.auth.getSession();
-
     } else {
       console.log('auth is null');
     }

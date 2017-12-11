@@ -41,6 +41,9 @@ export default class CoursePromo extends Component {
           <Container>
             <h1 className="display-3 text-center">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
+            <p>
+              <Button type="button" outline color="primary">Enroll</Button> for RM{this.state.course.price}
+            </p>
           </Container>
         </Jumbotron>
         <Container>
@@ -68,8 +71,8 @@ export default class CoursePromo extends Component {
             <div className="col-12 mb-2">
               <h2 className="display-4 text-center">Recent Customers</h2>
             </div>
-            { ['bnm.png', 'hsbc_amanah.gif', 'takaful_ikhlas.png', 'etiqa.png', 'liberty_insurance.png',
-             'rhb.png'].map( (e,i) => {
+           { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
+              '256x256 TMIG-rd.png', '256x256 WBG-rd.png' ].map( (e,i) => {
                return (
                 <div className="col-3 col-md-2 mb-2" key={i}>
                  <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
@@ -78,15 +81,6 @@ export default class CoursePromo extends Component {
              })}
           </Row>
         </Container>
-        <Jumbotron fluid>
-          <Container>
-            <h1 className="display-3">Pricing</h1>
-            <p className="lead">Just RM{this.state.course.price}</p>
-            <div className="d-flex">
-              <Button color="primary" className="mx-auto">Get Started!</Button>
-            </div>
-          </Container>
-        </Jumbotron>
         <Container>
           <Row>
             <div className="col-12">
@@ -120,6 +114,15 @@ export default class CoursePromo extends Component {
             </div>
           </Row>
         </Container>
+        <Jumbotron fluid>
+          <Container>
+            <h1 className="display-3">Pricing</h1>
+            <p className="lead">Just RM{this.state.course.price}</p>
+            <div className="d-flex">
+              <Button color="primary" className="mx-auto">Get Started!</Button>
+            </div>
+          </Container>
+        </Jumbotron>
       </div>
     )
 

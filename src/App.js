@@ -59,7 +59,7 @@ class App extends Component {
         console.log("Sign in success");
         handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
         handle.userHasAuthenticated(true);
-        getAwsCredentials(result.idToken.jwtToken);
+        //getAwsCredentials(result.idToken.jwtToken);
         return true;
       },
       onFailure: function(err) {

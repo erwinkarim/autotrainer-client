@@ -14,10 +14,13 @@ export default class UserLanding extends Component {
   }
   componentDidMount = async() => {
     var handle = this;
+    //this.props.auth.parseCognitoWebResponse(curUrl);
     try {
       console.log('fetching user related courses ...');
       var results = await this.getCourses();
       handle.setState({courses:results});
+
+      //parse
     } catch(e){
       console.log(e);
     }
@@ -76,11 +79,12 @@ export default class UserLanding extends Component {
             <ul>
               <li><Link to="#highlights">Course Highlights</Link></li>
               <li><Link to="#enrolled">Enrolled Courses</Link></li>
-              <li><Link to="#managed">Course Managed by You</Link></li>
+              <li><Link to="#managed">Managed Courses</Link></li>
             </ul>
           </div>
           <div className="col-12 mb-3">
-            <h4 className="display-5" id="highlights">Course Highlights</h4>
+            <h3 id="highlights">Course Highlights</h3>
+            <hr />
             <p>This one not yet implemented</p>
             <CardDeck>{ Array.from( Array(3).keys() ).map( (e,i) => {
               return (<Card key={i}>
@@ -97,7 +101,8 @@ export default class UserLanding extends Component {
             }) }</CardDeck>
           </div>
           <div className="col-12">
-            <h4 className="display-5" id="enrolled">Courses you attended</h4>
+            <h3 id="enrolled">Enrolled Courses</h3>
+            <hr />
             <p>Some gamification of the courses you bought</p>
             <p>This one not yet implemented</p>
             { 0 === courseCount ? (
@@ -123,7 +128,8 @@ export default class UserLanding extends Component {
             </Row>)}
           </div>
           <div className="col-12">
-            <h4 className="display-4" id="managed">Courses you manage</h4>
+            <h3 id="managed">Your Managed Courses</h3>
+            <hr />
             <p>Applicable if you have admin access</p>
           </div>
           <div className="col-12 col-md-8">
@@ -140,7 +146,7 @@ export default class UserLanding extends Component {
                     <p>Price: RM{e.price}</p>
                       <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
                       <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
-                      <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Edit</Button>
+                      <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Manage</Button>
                       <Button className="mr-2 mb-2" color="danger" id={e.courseId} onClick={this.handleDelete}>Delete</Button>
                   </CardBody>
                 </Card>);

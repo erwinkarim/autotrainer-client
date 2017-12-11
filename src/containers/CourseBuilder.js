@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
-import { FormGroup, Label, Input, Button, Table }from 'reactstrap';
+import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, Table }from 'reactstrap';
 import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText} from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -9,7 +9,9 @@ import classnames from 'classnames';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 import toTitleCase from 'titlecase';
+import FontAwesome from 'react-fontawesome';
 import { invokeApig } from "../libs/awsLibs";
+import Notice from '../components/Notice';
 import './CourseBuilder.css';
 
 class CourseUser extends Component {
@@ -35,6 +37,77 @@ class CourseUser extends Component {
     );
   }
 
+}
+
+class CourseForm extends Component {
+  render(){
+    if(this.props.course === undefined){
+      return (<div>Course not loaded yet ... </div>)
+    }
+
+    return (<div>
+      <FormGroup>
+        <Label>Name</Label>
+        <InputGroup>
+          <Input type="text" placeholder="Course Name. Should be less than 140 characters"
+            maxLength="140" id="name" value={this.props.course.name} onChange={this.props.handleChange} />
+          <InputGroupAddon className="text-muted">{ 140 - this.props.course.name.length}</InputGroupAddon>
+        </InputGroup>
+      </FormGroup>
+      <FormGroup>
+        <Label>Tagline</Label>
+        <InputGroup>
+          <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
+            maxLength="140" value={this.props.course.tagline} onChange={this.props.handleChange} />
+          <InputGroupAddon className="text-muted">{ 140 - this.props.course.tagline.length }</InputGroupAddon>
+        </InputGroup>
+      </FormGroup>
+      <FormGroup>
+        <Label>Description</Label>
+        <Input type="textarea" rows="20" id="description" value={this.props.course.description} onChange={this.props.handleChange} />
+      </FormGroup>
+      <FormGroup>
+        <Label>Price</Label>
+        <InputGroup>
+          <InputGroupAddon>RM</InputGroupAddon>
+          <Input type="number" id="price" onChange={this.props.handleChange} value={this.props.course.price} />
+        </InputGroup>
+      </FormGroup>
+      <FormGroup>
+        <Label>Key Points</Label>
+        <Card>
+          <CardBody>
+            {
+              (this.props.course.key_points === undefined || this.props.course.key_points.length === 0) ?
+              (<p>No key points configured.</p>) :
+              this.props.course.key_points.map( (e,i) => {
+                return (<FormGroup key={i}>
+                  <InputGroup className="mb-2">
+                    <Input type="text" placeholder={`Title for Point ${i+1}. Should be less than 70 characters`}
+                      maxLength="70" id={`key_points`} data-position={i} data-key="title"
+                      value={e.title} onChange={this.props.handleChange}
+                    />
+                    <InputGroupAddon className="text-muted">{ 70 - e.title.length }</InputGroupAddon>
+                  </InputGroup>
+                  <InputGroup className="mb-2">
+                    <Input type="text" placeholder={`Subtext for Point ${i+1}. Should be less than 140 characters`}
+                      maxLength="140" id={`key_points`} data-position={i} data-key="subtext"
+                      value={e.subtext} onChange={this.props.handleChange}
+                    />
+                    <InputGroupAddon className="text-muted">{ 140 - e.subtext.length }</InputGroupAddon>
+                  </InputGroup>
+                  <Button type="button" color="danger" data-position={i} onClick={this.deleteKeyPoint}><FontAwesome name="minus" /></Button>
+                </FormGroup>)
+              })
+            }
+            <Button type="button" color="primary" onClick={this.props.newKeyPoint} disabled={!this.props.enableAddKeyPoint()}>New Key Points</Button>
+          </CardBody>
+        </Card>
+      </FormGroup>
+      <Button color="primary" onClick={this.props.handleUpdateCourse} disabled={!this.props.validateGeneralForm()}>Update Course Setting</Button>
+    </div>);
+
+  }
 }
 
 export default class CourseBuilder extends Component {
@@ -141,7 +214,8 @@ export default class CourseBuilder extends Component {
 
     //course has been loaded
     if(this.state.course === null){
-      return note('Course is note loaded yet ...')
+      //return note('Course is note loaded yet ...')
+      return (<Notice />);
     }
 
     //TODO: check course belongs to the current user
@@ -159,7 +233,8 @@ export default class CourseBuilder extends Component {
         </Row>
         <Row>
           <div className="col-12">
-            <h3 className="display-4">Settings</h3>
+            <h3>Settings</h3>
+            <hr/>
           </div>
           <div className="col-12 col-md-8">
             <Nav tabs>
@@ -175,50 +250,10 @@ export default class CourseBuilder extends Component {
             </Nav>
             <TabContent activeTab={this.state.settingActiveTab}>
               <TabPane tabId='general'>
-                <FormGroup>
-                  <Label>Name</Label>
-                  <Input type="text" placeholder="Course Name. Should be less than 140 characters"
-                    maxLength="140" id="name" value={this.state.course.name} onChange={this.handleChange} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Tagline</Label>
-                  <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
-                    maxLength="140" value={this.state.course.tagline} onChange={this.handleChange} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Description</Label>
-                  <Input type="textarea" rows="20" id="description" value={this.state.course.description} onChange={this.handleChange} />
-                </FormGroup>
-                <FormGroup>
-                  <Label>Price</Label>
-                  <Input type="number" id="price" onChange={this.handleChange} value={this.state.course.price} />
-                </FormGroup>
-                <FormGroup>
-                  <h6>Key Points</h6>
-                </FormGroup>
-                {
-                  (this.state.course.key_points === undefined || this.state.course.key_points.length === 0) ?
-                  (<p>No key points configured.</p>) :
-                  this.state.course.key_points.map( (e,i) => {
-                    return (<FormGroup key={i}>
-                      <Input type="text" placeholder={`Title for Point ${i+1}. Should be less than 70 characters`}
-                        maxLength="70" className="mb-2"
-                        id={`key_points`} data-position={i} data-key="title"
-                        value={e.title} onChange={this.handleChange}
-                      />
-                      <Input type="text" placeholder={`Subtext for Point ${i+1}. Should be less than 140 characters`}
-                        maxLength="140" className="mb-2"
-                        id={`key_points`} data-position={i} data-key="subtext"
-                        value={e.subtext} onChange={this.handleChange}
-                      />
-                      <Button type="button" color="danger" data-position={i} onClick={this.deleteKeyPoint}>Delete</Button>
-                    </FormGroup>)
-                  })
-                }
-                <FormGroup>
-                  <Button type="button" color="primary" onClick={this.newKeyPoint} disabled={!this.enableAddKeyPoint()}>New Key Points</Button>
-                </FormGroup>
-                <Button color="primary" onClick={this.handleUpdateCourse} disabled={!this.validateGeneralForm()}>Update Course Setting</Button>
+                <CourseForm {...this.state}
+                  handleChange={this.handleChange} enableAddKeyPoint={this.enableAddKeyPoint} newKeyPoint={this.newKeyPoint}
+                  handleUpdateCourse={this.handleUpdateCourse} deleteKeyPoint={this.deleteKeyPoint} validateGeneralForm={this.validateGeneralForm}
+                />
               </TabPane>
               <TabPane tabId='stats' className="mb-2">
                 <p>Warning: Not yet configured</p>
@@ -263,9 +298,11 @@ export default class CourseBuilder extends Component {
             </TabContent>
           </div>
         </Row>
-        <Row>
+        <Row className="mt-3">
           <div className="col-12">
-            <h3 className="display-4">Module Manager</h3>
+            <h3>Module Manager</h3>
+            <hr/>
+            <p>Warning: not yet implemented</p>
           </div>
           <div className="col-12 col-md-8">{ Array.from( Array(randomInt(3,8)).keys() ).map( (e,i) => {
             var result = 8 < randomInt(10) ? (
