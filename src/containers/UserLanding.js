@@ -3,6 +3,7 @@ import { Container, Row, Breadcrumb, BreadcrumbItem , Progress} from 'reactstrap
 import {CardDeck, Card, CardImg, CardTitle, CardBody, CardFooter, CardText, Button} from 'reactstrap';
 import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
+import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
 import { invokeApig } from "../libs/awsLibs";
@@ -133,7 +134,7 @@ export default class UserLanding extends Component {
             <p>Applicable if you have admin access</p>
           </div>
           <div className="col-12 col-md-8">
-            { this.state.courses.length === 0 ? (<div>No courses yet ...</div>) : (
+            { this.state.courses.length === 0 ? (<Notice content="Loading courses ..."/>) : (
               this.state.courses.map( (e,i) => {
                 return (<Card key={i} className="mb-3">
                   <CardBody>

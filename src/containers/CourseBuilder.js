@@ -209,16 +209,25 @@ export default class CourseBuilder extends Component {
     }
     //user is authenticated
     if(!this.props.isAuthenticated){
-      return note('User is not authenticated yet ...')
+      return (<Notice content='User is not authenticated.' />);
     };
 
     //course has been loaded
     if(this.state.course === null){
       //return note('Course is note loaded yet ...')
-      return (<Notice />);
+      return (<Notice content='Course is not loaded yet ...' />);
     }
 
-    //TODO: check course belongs to the current user
+    /*
+      userId in dynamoDb is identity pool id *which links to user pool id*, but
+      what we only got is user pool id
+    console.log("currentUser", this.props.currentUser);
+    console.log("course.userId", this.state.course.userId);
+    console.log("cognito:username", this.props.currentUser["cognito:username"]);
+    if(this.state.course.userId !== this.props.currentUser["cognito:username"]){
+      return (<Notice title="Unauthorized" content="You can't access this resource" />);
+    }
+    */
 
     return (
       <Container className="mt-2 text-left">
@@ -338,6 +347,9 @@ export default class CourseBuilder extends Component {
             return result;
 
           })}</div>
+          <div className="col-12">
+            <Button type="button" color="primary">New Article</Button>
+          </div>
         </Row>
       </Container>
     )
