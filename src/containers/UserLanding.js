@@ -11,15 +11,16 @@ import { invokeApig } from "../libs/awsLibs";
 export default class UserLanding extends Component {
   constructor(props){
     super(props);
-    this.state = {courses:[]};
+    this.state = {courses:[], isLoading:false};
   }
   componentDidMount = async() => {
     var handle = this;
     //this.props.auth.parseCognitoWebResponse(curUrl);
     try {
       console.log('fetching user related courses ...');
+      handle.setState({isLoading:true});
       var results = await this.getCourses();
-      handle.setState({courses:results});
+      handle.setState({courses:results, isLoading:false});
 
       //parse
     } catch(e){
@@ -134,7 +135,7 @@ export default class UserLanding extends Component {
             <p>Applicable if you have admin access</p>
           </div>
           <div className="col-12 col-md-8">
-            { this.state.courses.length === 0 ? (<Notice content="Loading courses ..."/>) : (
+            { this.state.courses.length === 0 ? (<Notice className="mb-2" content={this.state.isLoading ? 'Loading courses ...' : 'No courses found.'}/>) : (
               this.state.courses.map( (e,i) => {
                 return (<Card key={i} className="mb-3">
                   <CardBody>

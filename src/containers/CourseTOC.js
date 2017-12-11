@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 import { invokeApig } from "../libs/awsLibs";
+import Helmet from 'react-helmet';
 
 export default class CourseTOC extends Component {
   constructor(props){
@@ -41,6 +42,9 @@ export default class CourseTOC extends Component {
     }
     return (
       <div>
+        <Helmet>
+          <title>{this.state.course.name}/TOC - AutoTrainer</title>
+        </Helmet>
         <Container className="mt-2">
           <Row>
           </Row>

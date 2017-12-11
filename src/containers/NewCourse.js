@@ -4,7 +4,8 @@ import { Link } from "react-router-dom";
 import './NewCourse.css'
 import { invokeApig } from "../libs/awsLibs";
 import toTitleCase from 'titlecase';
-import Notice from '../components/Notice'
+import Notice from '../components/Notice';
+import Helmet from 'react-helmet';
 
 export default class NewCourse extends Component {
   constructor(props){
@@ -26,6 +27,7 @@ export default class NewCourse extends Component {
         description: this.state.description
       });
       console.log(result);
+      //TODO: should push to the course manager
       this.props.history.push("/");
     } catch (e) {
       console.log(e);
@@ -49,6 +51,9 @@ export default class NewCourse extends Component {
     }
 
     return (<Container className="mt-2">
+      <Helmet>
+        <title>New course - AutoTrainer</title>
+      </Helmet>
       <Breadcrumb>
         <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
         <BreadcrumbItem tag={Link} to="/user/landing">{this.props.currentUser.name}</BreadcrumbItem>

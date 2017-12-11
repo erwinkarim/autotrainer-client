@@ -5,6 +5,7 @@ import {CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardFooter, 
 import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
 import { invokeApig } from "../libs/awsLibs";
+import Helmet from 'react-helmet';
 
 export default class CoursePromo extends Component {
   constructor(props){
@@ -37,6 +38,9 @@ export default class CoursePromo extends Component {
     }
     return (
       <div>
+        <Helmet>
+          <title>{this.state.course.name} - AutoTrainer</title>
+        </Helmet>
         <Jumbotron fluid>
           <Container>
             <h1 className="display-3 text-center">{this.state.course.name}</h1>

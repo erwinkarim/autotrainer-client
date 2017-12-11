@@ -12,6 +12,7 @@ import toTitleCase from 'titlecase';
 import FontAwesome from 'react-fontawesome';
 import { invokeApig } from "../libs/awsLibs";
 import Notice from '../components/Notice';
+import Helmet from 'react-helmet';
 import './CourseBuilder.css';
 
 class CourseUser extends Component {
@@ -126,6 +127,7 @@ export default class CourseBuilder extends Component {
     try {
       var result = await this.getCourse();
       console.log('results', result);
+      result.tagline = result.tagline === undefined ? '' : result.tagline;
       if(result != null){
         handle.setState({course:result});
       }
@@ -231,6 +233,9 @@ export default class CourseBuilder extends Component {
 
     return (
       <Container className="mt-2 text-left">
+        <Helmet>
+          <title>Course Builder for {this.state.course.courseId} - AutoTrainer</title>
+        </Helmet>
         <Row>
           <div className="col-12">
             <Breadcrumb>

@@ -6,7 +6,7 @@ export default class Notice extends Component {
     title:'', content: 'No content'
   }
   render(){
-    return (<Container className="mt-3">
+    return (<Container className="mt-3 mb-2">
       <Row>
         <Col>
           <Card>
