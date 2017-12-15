@@ -143,7 +143,7 @@ export async function invokeApig({ path, endpoint = config.apiGateway.URL , meth
     throw new Error("User is not logged in");
   }
 
-  console.log('AWS.config.credentials', AWS.config.credentials);
+  //console.log('AWS.config.credentials', AWS.config.credentials);
   //console.log('invokeApig: new signedRequest');
   const signedRequest = sigV4Client
     .newClient({

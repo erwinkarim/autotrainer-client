@@ -6,6 +6,10 @@ import { Container } from 'reactstrap';
 //import RouteNavItem from './components/RouteNavItem';
 import MainNav from './containers/MainNav';
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
+import { NotificationStack } from 'react-notification';
+import { OrderedSet} from 'immutable';
+import FontAwesome from 'react-fontawesome';
+import randomInt from 'random-int';
 import './App.css';
 
 class App extends Component {
@@ -16,8 +20,10 @@ class App extends Component {
       announceIsVisible: true,
       isAuthenticated:false,
       currentUser:null,
-      auth:null
+      auth:null,
+      notifications: OrderedSet()
     };
+
   }
   dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
   componentDidMount = () => {
@@ -71,9 +77,29 @@ class App extends Component {
     // auth.useCodeGrantFlow();
     return auth;
   }
+  addNotification = (message = 'Default message', type='success') => {
+    //const newCount = count + 1;
+    const id = randomInt(1000);
+    return this.setState({
+      notifications: this.state.notifications.add({
+        message: `${message}`,
+        key: id,
+        action: <FontAwesome name="times" />,
+        actionStyle: {color:'white'},
+        dismissAfter: 3412,
+        className: `bg-${type}`,
+        onClick: (notification, deactivate) => { deactivate(); this.removeNotification(id); },
+      })
+    });
+  }
+  removeNotification (id) {
+    this.setState({
+      notifications: this.state.notifications.filter(n => n.key !== id)
+    })
+  }
   render() {
     const childProps = {
-      ...this.state
+      ...this.state, ...{addNotification:this.addNotification, removeNotification:this.removeNotification}
     };
 
     return (
@@ -83,7 +109,11 @@ class App extends Component {
           <Button outline color="primary" className="ml-2">Register Now</Button>
         </Alert>
         <MainNav {...this.state} />
-        <Routes childProps={childProps} />
+        <Routes childProps={childProps} addNotification={this.addNotification} />
+        <NotificationStack
+          notifications={this.state.notifications.toArray()}
+          onDismiss={notification => this.setState({ notifications: this.state.notifications.delete(notification) })}
+        />
         <footer className="footer text-muted">
           <Container>
             <p>

@@ -266,6 +266,7 @@ export default class CourseBuilder extends Component {
     try{
       await this.updateCourse();
       this.props.history.push(`/courses/promo/${this.state.course.courseId}`);
+      this.props.addNotification('Course updated ...');
     }catch(e){
       console.log(e);
     }

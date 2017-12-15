@@ -51,6 +51,7 @@ export default class ArticleBuilder extends Component {
     try{
       await this.updateArticle();
       //TODO: add snackbar for this
+      this.props.addNotification('Article updated ...');
       console.log('Sucessfully update article.');
     } catch(e){
       console.log('error in updating the article');

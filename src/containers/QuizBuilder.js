@@ -99,6 +99,7 @@ export default class QuizBuilder extends Component {
     try{
       await this.updateQuiz();
       console.log('quiz updated. should show up as notification');
+      this.props.addNotification('Quiz updated ...')
     } catch(e){
       console.log('error updating quiz');
       console.log(e);
