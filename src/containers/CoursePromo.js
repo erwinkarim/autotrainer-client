@@ -1,10 +1,10 @@
 import './CoursePromo.css';
 import React, { Component } from "react";
 import {Container, Jumbotron, Row} from 'reactstrap';
-import {CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardFooter, Button, Badge} from 'reactstrap';
-import randomInt from 'random-int';
+import {CardDeck, Card, CardBody, CardTitle, CardText,  Button, Badge} from 'reactstrap';
 import loremIpsum from 'lorem-ipsum';
 import { invokeApig } from "../libs/awsLibs";
+import CTOC from '../components/CTOC';
 import Helmet from 'react-helmet';
 
 export default class CoursePromo extends Component {
@@ -74,6 +74,7 @@ export default class CoursePromo extends Component {
           <Row>
             <div className="col-12 mb-2">
               <h2 className="display-4 text-center">Recent Customers</h2>
+              <p>Have to figure out how to do this</p>
             </div>
            { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
               '256x256 TMIG-rd.png', '256x256 WBG-rd.png' ].map( (e,i) => {
@@ -90,19 +91,7 @@ export default class CoursePromo extends Component {
             <div className="col-12">
               <h4 className="display-4">Table of Contents</h4>
             </div>
-            <div className="col-12">
-              <CardColumns>{ Array.from( Array(12).keys() ).map( (e,i) => {
-                return (<Card key={i} className="text-left">
-                  <CardBody>
-                    <CardTitle>{loremIpsum({count:randomInt(3,5), units:'words'})}</CardTitle>
-                    <CardText>{loremIpsum({count:randomInt(2,3) })}</CardText>
-                  </CardBody>
-                </Card>);
-              })}</CardColumns>
-            </div>
-            <div  className="col-12">
-              <Button color="primary">Get Started!!!</Button>
-            </div>
+            <CTOC course={this.state.course} options={ {showLink:false} }/>
           </Row>
           <Row>
             <div className="col-12">
@@ -110,6 +99,7 @@ export default class CoursePromo extends Component {
               { this.state.course.description.split('\n').map( (e,i) => {
                 return (<p className="lead text-left" key={i}>{e}</p>)
               })}
+              <Button color="primary">Get Started!!!</Button>
               <p>
               { [1,2,3].map( (e,i) => {
                 return (<Badge key={i} href="#" color="secondary" className="mr-2">{loremIpsum({count:2, units:'words'})}</Badge>)

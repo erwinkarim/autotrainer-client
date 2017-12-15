@@ -136,7 +136,7 @@ export async function getAwsCredentials(userToken) {
 }
 
 // TODO: invoke w/o authenticated credentials for certain functions (eg. get courses info)
-export async function invokeApig({ path, method = "GET", headers = {}, queryParams = {}, body }) {
+export async function invokeApig({ path, endpoint = config.apiGateway.URL , method = "GET", headers = {}, queryParams = {}, body }) {
 
   //should handle this, ensure user is authenticated before proceeding
   if (!await authUser()) {
@@ -151,7 +151,8 @@ export async function invokeApig({ path, method = "GET", headers = {}, queryPara
       secretKey: AWS.config.credentials.secretAccessKey,
       sessionToken: AWS.config.credentials.sessionToken,
       region: config.apiGateway.REGION,
-      endpoint: config.apiGateway.URL
+      endpoint: endpoint
+      //endpoint: config.apiGateway.URL
     })
     .signRequest({
       method,

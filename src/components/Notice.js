@@ -2,9 +2,6 @@ import React, { Component } from "react";
 import {Container, Row, Col, Card, CardBody, CardTitle, CardText} from 'reactstrap';
 
 export default class Notice extends Component {
-  defaultProps = {
-    title:'', content: 'No content'
-  }
   render(){
     return (<Container className="mt-3 mb-2">
       <Row>
@@ -19,4 +16,8 @@ export default class Notice extends Component {
       </Row>
     </Container>);
   }
+}
+
+Notice.defaultProps = {
+    title:'', content: 'No content'
 }

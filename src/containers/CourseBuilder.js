@@ -1,12 +1,12 @@
 import React, { Component } from "react";
 import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
+import { Navbar } from 'reactstrap';
 import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, Table }from 'reactstrap';
-import { Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
+import { UncontrolledDropdown, Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import { Card, CardBody, CardTitle, CardText} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
-import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 import toTitleCase from 'titlecase';
 import FontAwesome from 'react-fontawesome';
@@ -14,6 +14,7 @@ import { invokeApig } from "../libs/awsLibs";
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import './CourseBuilder.css';
+import config from '../config.js'
 
 class CourseUser extends Component {
   constructor(props){
@@ -111,6 +112,128 @@ class CourseForm extends Component {
   }
 }
 
+class CourseModules extends Component {
+  constructor(props){
+    super(props)
+    this.state = { modules:[]}
+  }
+  componentDidMount = async () => {
+    try {
+      var results = await this.getModules();
+      this.setState({modules:results});
+
+    } catch(e){
+      console.log('error getting modules');
+      console.log(e);
+    }
+
+  }
+  handleCreateModule = async (e) => {
+    //creat the module based on type then go to the appropite module builder
+    var handle = this;
+    var moduleType = e.target.dataset.type;
+    var courseId = this.props.course.courseId;
+    console.log(`create new ${moduleType} for course ${courseId}`);
+    try {
+      var result = await this.createModule(moduleType, courseId);
+      console.log(result);
+      handle.props.history.push(`/user/${moduleType}_builder/${result.courseId}/${result.moduleId}`);
+    } catch(e){
+      console.log('error creating a new module');
+      console.log(e);
+    }
+  }
+  createModule = (type, courseId) => {
+    //api call to generate article / quiz
+    return invokeApig({
+      endpoint:config.apiGateway.MODULE_URL,
+      path:'/modules',
+      method:'POST',
+      body: {courseId:courseId, title:`New ${type}`, description:`Content for new ${type}`, moduleType:type}
+    });
+  }
+  handleDeleteModule = async (e) => {
+    if(!window.confirm('Really delete?')){
+      return;
+    }
+
+    var handle = this;
+    var moduleIndex = e.target.dataset.index;
+    var module = this.state.modules[moduleIndex]
+    try {
+      await this.deleteModule(module.courseId,module.moduleId);
+      var newModules = this.state.modules;
+      newModules.splice(moduleIndex, 1);
+      handle.setState({modules:newModules});
+    } catch(e){
+      console.log('error in deleting module');
+      console.log(e);
+    };
+  }
+  deleteModule = (courseId, moduleId) => {
+    return invokeApig({
+      endpoint: config.apiGateway.MODULE_URL,
+      method: 'DELETE',
+      path:`/modules/${moduleId}`,
+      queryParams: {courseId:courseId}
+    });
+  }
+  getModules = () => {
+    return invokeApig({
+      endpoint:config.apiGateway.MODULE_URL,
+      path:'/modules',
+      queryParams: {courseId:this.props.course.courseId}
+    })
+
+  }
+  render(){
+    return (
+      <Row className="mt-3">
+        <div className="col-12">
+          <h3>Module Manager</h3>
+          <Navbar color="light" light>
+            <Nav>
+              <UncontrolledDropdown tag="li" className="nav-item">
+                <DropdownToggle caret nav>New</DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem data-type="article" onClick={this.handleCreateModule}>Article</DropdownItem>
+                  <DropdownItem data-type="quiz" onClick={this.handleCreateModule}>Quiz</DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
+            </Nav>
+          </Navbar>
+          <hr/>
+          <p>Warning: not yet implemented</p>
+        </div>
+        <div className="col-12 col-md-8">
+          {
+            this.state.modules.length === 0 ? (
+              <div>No modules.</div>
+
+            ) : (
+              this.state.modules.map( (e,i) => {
+                var titleCaseType = toTitleCase(e.moduleType);
+                return (
+                  <Card key={i} className="mb-2">
+                    <CardBody>
+                      <CardTitle>Module {i+1}: {e.title}</CardTitle>
+                      <CardText>{e.description}</CardText>
+                      <Button className="mr-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
+                      <Button className="mr-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
+                      <Button type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
+                    </CardBody>
+                  </Card>
+                );
+              })
+            )
+          }
+        </div>
+      </Row>
+    )
+  }
+
+}
+
 export default class CourseBuilder extends Component {
   constructor(props){
     super(props);
@@ -126,7 +249,6 @@ export default class CourseBuilder extends Component {
     var handle = this;
     try {
       var result = await this.getCourse();
-      console.log('results', result);
       result.tagline = result.tagline === undefined ? '' : result.tagline;
       if(result != null){
         handle.setState({course:result});
@@ -156,10 +278,15 @@ export default class CourseBuilder extends Component {
       body:this.state.course
     })
   }
+  handleNewModule = async (e) => {
+    //generate new module based on inputs
+  }
+  newModule = () => {
+  }
   handleChange = event => {
     var newCourse = this.state.course;
     event.target.id === "key_points" ? (
-      newCourse[event.target.id][parseInt(event.target.dataset.position)][event.target.dataset.key] =
+      newCourse[event.target.id][parseInt(event.target.dataset.position, 10)][event.target.dataset.key] =
         event.target.dataset.key === "title" ? toTitleCase(event.target.value) :
         event.target.value
     ) : (
@@ -192,7 +319,7 @@ export default class CourseBuilder extends Component {
   }
   deleteKeyPoint = (e) => {
     var newCourse = this.state.course;
-    newCourse.key_points.splice(parseInt(e.target.dataset.position),1);
+    newCourse.key_points.splice(parseInt(e.target.dataset.position, 10),1);
     this.setState(newCourse);
   }
   enableAddKeyPoint = () => {
@@ -202,13 +329,6 @@ export default class CourseBuilder extends Component {
     return this.state.course.key_points.length < 3;
   }
   render(){
-    var note = (msg) => {
-      return (<Container><Row>
-          <div className="col-12 col-md-8">
-            <p>{msg}</p>
-          </div>
-      </Row></Container>);
-    }
     //user is authenticated
     if(!this.props.isAuthenticated){
       return (<Notice content='User is not authenticated.' />);
@@ -241,7 +361,7 @@ export default class CourseBuilder extends Component {
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
-              <BreadcrumbItem active>Course Builder for {this.state.course.courseId}</BreadcrumbItem>
+              <BreadcrumbItem active>Course Builder: {this.state.course.name}</BreadcrumbItem>
             </Breadcrumb>
           </div>
         </Row>
@@ -312,50 +432,7 @@ export default class CourseBuilder extends Component {
             </TabContent>
           </div>
         </Row>
-        <Row className="mt-3">
-          <div className="col-12">
-            <h3>Module Manager</h3>
-            <hr/>
-            <p>Warning: not yet implemented</p>
-          </div>
-          <div className="col-12 col-md-8">{ Array.from( Array(randomInt(3,8)).keys() ).map( (e,i) => {
-            var result = 8 < randomInt(10) ? (
-              <Card className="mb-2" key={i}>
-                <CardBody>
-                  <CardTitle tag="h3">Module {i+1}: {loremIpsum()}</CardTitle>
-                  <ul>
-                    <li> Questions: {randomInt(5,25)}</li>
-                    <li> Style: {['Inline', 'Carousel'][randomInt(1)]}</li>
-                  </ul>
-                  <Link className="btn btn-primary mr-2" to="/courses/quiz">View Quiz</Link>
-                  <Link className="btn btn-info" to="/user/quiz_builder">Edit Quiz</Link>
-                </CardBody>
-              </Card> ) : ( <Card key={i} className="mb-2">
-                <CardBody>
-                  <CardTitle tag="h3">Module {i+1}: {loremIpsum()}</CardTitle>
-                  <CardTitle tag="h4">Stats</CardTitle>
-                  <ul>
-                    <li>Paragraphs: #{randomInt(2, 10) + 2}</li>
-                    <li>Word Count: #{randomInt(200,20000)}</li>
-                    <li>Pictures: #{randomInt(10)}</li>
-                    <li>Videos: #{randomInt(10)}</li>
-                    <li>Tables: #{randomInt(5)}</li>
-                    <li>Estimate read time: #{randomInt(2, 7)} minutes</li>
-                  </ul>
-                  <CardTitle tag="h4">Preview</CardTitle>
-                  <CardText className="lead">{loremIpsum()}</CardText>
-                  <CardText >...</CardText>
-                  <Link className="btn btn-primary mr-2" to="/courses/article">View Article</Link>
-                  <Link className="btn btn-info" to="/user/article_builder">Edit Article</Link>
-                </CardBody>
-              </Card>);
-            return result;
-
-          })}</div>
-          <div className="col-12">
-            <Button type="button" color="primary">New Article</Button>
-          </div>
-        </Row>
+        <CourseModules {...this.state} {...this.props}/>
       </Container>
     )
   }

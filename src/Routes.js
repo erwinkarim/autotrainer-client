@@ -32,15 +32,15 @@ export default ({childProps}) =>
     <AppliedRoute path="/courses/promo/:id" exact component={CoursePromo} props={childProps} />
     {/* course pages that is valid for people who enrolled */}
     <AppliedRoute path="/courses/toc/:id" exact component={CourseTOC} props={childProps} />
-    <Route path="/courses/article" exact component={Article} />
-    <Route path="/courses/quiz" exact component={Quiz} />
+    <AppliedRoute path="/courses/article/:courseId/:articleId" exact component={Article} props={childProps} />
+    <AppliedRoute path="/courses/quiz/:courseId/:moduleId" exact component={Quiz} props={childProps} />
 
     {/* user pages */}
     <AppliedRoute path="/courses/new" exact component={NewCourse} props={childProps} />
     <AppliedRoute path="/user/landing" exact component={UserLanding} props={childProps} />
     <AppliedRoute path="/user/course_builder/:id" exact component={CourseBuilder} props={childProps} />
-    <Route path="/user/article_builder" exact component={ArticleBuilder} />
-    <Route path="/user/quiz_builder" exact component={QuizBuilder} />
+    <AppliedRoute path="/user/article_builder/:courseId/:moduleId" exact component={ArticleBuilder} props={childProps} />
+    <AppliedRoute path="/user/quiz_builder/:courseId/:moduleId" exact component={QuizBuilder} props={childProps} />
 
     {/* misc pages */}
     <Route path="/legal" exact component={Legal} />

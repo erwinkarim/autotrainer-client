@@ -14,7 +14,7 @@ export default class NewCourse extends Component {
   }
   handleChange = event => {
     this.setState({
-      [event.target.id]: event.target.id == "title" ? toTitleCase(event.target.value) : event.target.value
+      [event.target.id]: event.target.id === "title" ? toTitleCase(event.target.value) : event.target.value
     });
   }
   handleSubmit = async(e) => {

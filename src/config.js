@@ -1,6 +1,7 @@
 export default {
   apiGateway: {
     URL: "https://iuwoyhr5oi.execute-api.ap-southeast-1.amazonaws.com/prod",
+    MODULE_URL: "https://ltqs221b5i.execute-api.ap-southeast-1.amazonaws.com/prod",
     REGION: "ap-southeast-1"
   },
   cognito: {

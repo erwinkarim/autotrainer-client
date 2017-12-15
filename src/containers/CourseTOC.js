@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Jumbotron, Container, Row, Breadcrumb, BreadcrumbItem} from 'reactstrap';
-import { CardColumns, Card, CardBody, CardTitle, CardText} from 'reactstrap';
+import CTOC from '../components/CTOC';
 import './CourseTOC.css';
 import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
@@ -14,6 +14,11 @@ export default class CourseTOC extends Component {
     this.state = { course:null }
   }
   componentDidMount = async () => {
+    /*
+      additional checks:
+      1. see if you are enrolled in the course
+    */
+
     //load the course here
     var handle = this;
     try {
@@ -50,14 +55,14 @@ export default class CourseTOC extends Component {
           </Row>
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/courses/tag">Course Tag</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
             <BreadcrumbItem active>{this.state.course.name}</BreadcrumbItem>
           </Breadcrumb>
         </Container>
         <Jumbotron fluid>
           <Container>
             <h1 className="display-3">Welcome to {this.state.course.name}!!!</h1>
-            <p className="lead">Something about subject here</p>
+            <p className="lead">{this.state.course.tagline}</p>
           </Container>
         </Jumbotron>
         <Container>
@@ -65,31 +70,17 @@ export default class CourseTOC extends Component {
             <div className="col-12">
               <h3 className="display-4">Executive Summary</h3>
               { this.state.course.description.split('\n').map( (para,i) => {
-                return (<p key={i} className="lead">{para}</p>);
+                return (<p key={i} className="lead text-left">{para}</p>);
               })}
             </div>
             <div className="col-12">
               <h3 className="display-4">Table of Contents</h3>
-              <CardColumns>
-                {
-                  Array.from(Array(randomInt(5,10)).keys()).map( (e,i) => {
-                  var isPopQuiz = 0.7 < Math.random();
-                  return (<Card key={i}>
-                    <CardBody>
-                      <CardTitle>
-                        <Link to={`${isPopQuiz ? "/courses/quiz" : "/courses/article"}`}>
-                          {`${e}: ${isPopQuiz ? "(Quiz):" : ""}${loremIpsum()}`}
-                        </Link>
-                      </CardTitle>
-                      <CardText>{loremIpsum()}</CardText>
-                    </CardBody>
-                  </Card>);
-                }) }
-              </CardColumns>
+              <CTOC {...this.state} {...this.props} />
             </div>
             <div className="col-12">
               <h2 className="display-4">Additional Resources</h2>
               <ul className="text-left">
+                <li>Should show list of tables/images/etc</li>
               { Array.from(Array(randomInt(3,8)).keys()).map( (e,i) => {
                 return (<li key={i}>{ loremIpsum()}</li>);
               })}

@@ -5,14 +5,49 @@ import './Article.css';
 import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
-
+import { invokeApig } from '../libs/awsLibs';
+import Notice from '../components/Notice';
+import config from '../config';
 
 export default class Article extends Component {
+  constructor(props){
+    super(props);
+    this.state = {article:null}
+  }
+  componentDidMount = async() => {
+    var handle = this;
+    try {
+      var result = await this.loadArticle();
+      handle.setState({article:result});
+    } catch(e){
+      console.log('error fetching article');
+      console.log(e);
+    }
+
+  }
+  loadArticle = () => {
+    return invokeApig({
+      endpoint:config.apiGateway.MODULE_URL,
+      path:`/modules/${this.props.match.params.articleId}`,
+      queryParams: {courseId:this.props.match.params.courseId}
+    });
+
+
+  }
   render(){
+    if(this.props.currentUser === null){
+      return (<Notice title="Unauthorized" content="You have not logged in yet ..."/>);
+    }
+
+    if(this.state.article === null){
+      return (<Notice content="Loading article ..." />);
+    }
+
     /*
       TODO: make sure the accordion works
     */
     var table_cols = randomInt(3,6);
+    var article = this.state.article;
     return (
       <div className="text-left">
         <Container className="mt-2">
@@ -20,18 +55,26 @@ export default class Article extends Component {
           </Row>
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/courses/tag">Course Tag</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/courses/toc">Course Name</Link></BreadcrumbItem>
-            <BreadcrumbItem active>Module X: Blah, Blah, Blah</BreadcrumbItem>
+            <BreadcrumbItem><Link to="/user/landing">{ this.props.currentUser.name}</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to={`/courses/toc/${article.courseId}`}>{article.courseMeta.name}</Link></BreadcrumbItem>
+            <BreadcrumbItem active>Module X: {article.title}</BreadcrumbItem>
           </Breadcrumb>
         </Container>
         <Jumbotron fluid>
           <Container>
-            <h2 className="display-3">Chapter X: something to say</h2>
-            <p className="lead">Something to say about chapter X</p>
+            <h4 className="display-4">Chapter X: {article.title}</h4>
+            <p className="lead">{article.description}</p>
           </Container>
         </Jumbotron>
         <Container>
+          { /* actual */}
+          <Row><div className="col-12 col-md-8">{
+            article.body.split('\n').map( (p,i) => {
+              return (<p key={i} className={`${i === 0 ? 'lead' : ''}`}>{p}</p>)
+            })
+          }</div></Row>
+          { /* demonstration */}
+          <hr />
           <Row>
             <div className="col-12">
               <p className="lead">

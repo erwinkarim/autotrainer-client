@@ -7,7 +7,6 @@ import { Container } from 'reactstrap';
 import MainNav from './containers/MainNav';
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 import './App.css';
-import {getAwsCredentials } from './libs/awsLibs'
 
 class App extends Component {
   constructor(props) {

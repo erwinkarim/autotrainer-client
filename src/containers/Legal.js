@@ -128,13 +128,13 @@ export default class Legal extends Component {
            </NavItem>
           </Nav>
           <TabContent activeTab={this.state.activeTab} className="mt-3">
-            <TabPane tabId="TermsOfUse" className="text-left">
+            <TabPane tabId="TermsOfUse" className="text-justify">
               <h4>Terms of Use</h4>
               { TOC.split('\n').map( (para, i) => {
                 return (<p key={i}>{para}</p>)
               }) }
             </TabPane>
-            <TabPane tabId="PrivacyPolicy" className="text-left">
+            <TabPane tabId="PrivacyPolicy" className="text-justify">
               <h4>Privacy Policy</h4>
               { privacy_policy.split('\n').map( (para, i) => {
                 return (<p key={i}>{para}</p>)
