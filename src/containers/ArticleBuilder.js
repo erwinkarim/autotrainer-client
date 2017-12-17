@@ -6,10 +6,33 @@ import './ArticleBuilder.css';
 import config from '../config.js';
 import Notice from '../components/Notice';
 import toTitleCase from 'titlecase';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
+import Helmet from 'react-helmet';
 import { invokeApig } from "../libs/awsLibs";
 
-
 export default class ArticleBuilder extends Component {
+  /*
+    TODO:
+      * custom image handler to wrap image in responsive card
+      * video support (link / embed and wrap in responsive card)
+      * table support
+  */
+  modules =  {
+    toolbar: [
+      [{ 'header': [1, 2, false] }],
+      ['bold', 'italic', 'underline','strike', 'blockquote', 'code'],
+      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
+      ['link'],
+      ['clean']
+    ],
+  }
+  formats =  [
+    'header',
+    'bold', 'italic', 'underline', 'strike', 'blockquote', 'code',
+    'list', 'bullet', 'indent',
+    'link'
+  ]
   constructor(props){
     super(props);
     this.state = {article:null};
@@ -70,7 +93,12 @@ export default class ArticleBuilder extends Component {
   validateForm = () => {
     return this.state.article.title.length > 0 &&
       this.state.article.description.length > 0 &&
-      this.state.article.body.length > 0;
+      this.state.article.body !== '<p><br></p>';
+  }
+  updateBody = (v) => {
+    var newArticle = this.state.article;
+    newArticle.body = v;
+    this.setState({article:newArticle});
   }
   render(){
     //user is authenticated
@@ -86,6 +114,9 @@ export default class ArticleBuilder extends Component {
 
     return (
       <Container className="mt-2 text-left">
+        <Helmet>
+          <title>{`Building ${this.state.article.title} - AutoTrainer`}</title>
+        </Helmet>
         <Row>
           <div className="col-12">
             <Breadcrumb>
@@ -113,9 +144,17 @@ export default class ArticleBuilder extends Component {
             </FormGroup>
             <FormGroup>
               <Label>Article Body</Label>
-              { /* change to react draft or other WYSIWYG canidates*/}
-              <Input type="textarea" rows="25" placeholder="The article body. Say your piece here"
-                id="body" value={this.state.article.body} onChange={this.handleChange}
+              <p>Issues:</p>
+              <ul>
+                <li>getting picture element & wrapped in card</li>
+                <li>getting video element & wrapped in card</li>
+                <li>quote to work properly</li>
+                <li>tables</li>
+                <li>Other header options</li>
+              </ul>
+              <ReactQuill className="bodyBuilder" theme="snow" onChange={this.updateBody} value={this.state.article.body} id="body"
+                modules={this.modules} formats={this.formats}
+                placeholder="Start writting ... (Copy-paste picture to insert pictures)"
               />
             </FormGroup>
             <FormGroup>

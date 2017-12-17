@@ -6,7 +6,9 @@ import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 import { invokeApig } from '../libs/awsLibs';
+import Interweave from 'interweave';
 import Notice from '../components/Notice';
+import Helmet from 'react-helmet';
 import config from '../config';
 
 export default class Article extends Component {
@@ -50,9 +52,10 @@ export default class Article extends Component {
     var article = this.state.article;
     return (
       <div className="text-left">
+        <Helmet>
+          <title>{ this.state.article.title } - AutoTrainer</title>
+        </Helmet>
         <Container className="mt-2">
-          <Row>
-          </Row>
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to="/user/landing">{ this.props.currentUser.name}</Link></BreadcrumbItem>
@@ -68,11 +71,11 @@ export default class Article extends Component {
         </Jumbotron>
         <Container>
           { /* actual */}
-          <Row><div className="col-12 col-md-8">{
-            article.body.split('\n').map( (p,i) => {
-              return (<p key={i} className={`${i === 0 ? 'lead' : ''}`}>{p}</p>)
-            })
-          }</div></Row>
+          <Row>
+            <div className="col-12 col-md-8 text-justify">
+              <Interweave tagName="div" content={article.body} disableLineBreaks={true} />
+            </div>
+          </Row>
           { /* demonstration */}
           <hr />
           <Row>
@@ -169,3 +172,11 @@ export default class Article extends Component {
     )
   }
 }
+
+/*
+          <Row><div className="col-12 col-md-8">{
+            article.body.split('\n').map( (p,i) => {
+              return (<p key={i} className={`${i === 0 ? 'lead' : ''}`}>{p}</p>)
+            })
+          }</div></Row>
+          */

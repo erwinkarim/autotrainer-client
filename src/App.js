@@ -92,7 +92,7 @@ class App extends Component {
       })
     });
   }
-  removeNotification (id) {
+  removeNotification = (id) => {
     this.setState({
       notifications: this.state.notifications.filter(n => n.key !== id)
     })
@@ -109,7 +109,7 @@ class App extends Component {
           <Button outline color="primary" className="ml-2">Register Now</Button>
         </Alert>
         <MainNav {...this.state} />
-        <Routes childProps={childProps} addNotification={this.addNotification} />
+        <Routes childProps={childProps} />
         <NotificationStack
           notifications={this.state.notifications.toArray()}
           onDismiss={notification => this.setState({ notifications: this.state.notifications.delete(notification) })}
