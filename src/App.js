@@ -10,6 +10,7 @@ import { NotificationStack } from 'react-notification';
 import { OrderedSet} from 'immutable';
 import FontAwesome from 'react-fontawesome';
 import randomInt from 'random-int';
+import { getAwsCredentials } from './libs/awsLibs';
 import './App.css';
 
 class App extends Component {
@@ -64,7 +65,7 @@ class App extends Component {
         console.log("Sign in success");
         handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
         handle.userHasAuthenticated(true);
-        //getAwsCredentials(result.idToken.jwtToken);
+        getAwsCredentials(result.idToken.jwtToken);
         return true;
       },
       onFailure: function(err) {

@@ -1,13 +1,87 @@
 import React, { Component } from "react";
 import { Container, Row, Breadcrumb, BreadcrumbItem , Progress} from 'reactstrap'
-import {CardDeck, Card, CardImg, CardTitle, CardBody, CardFooter, CardText, Button} from 'reactstrap';
+import {CardColumns, CardDeck, Card, CardImg, CardTitle, CardBody, CardFooter, CardText, Button} from 'reactstrap';
 import randomInt from 'random-int';
 import loremIpsum from 'lorem-ipsum';
 import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
+import config from '../config';
 import { invokeApig } from "../libs/awsLibs";
+import Helmet from 'react-helmet';
 
+class EnrolledCourses extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      courses:[]
+    }
+  }
+  componentDidMount = async() => {
+    try{
+      var results = await this.loadEnrolledCourses();
+      this.setState({courses:results});
+    }catch(e){
+      console.log('error getting enrolled courses');
+      console.log(e);
+    }
+  }
+  loadEnrolledCourses = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: '/enrolment'
+    })
+
+  }
+  render(){
+    var enrolledCourses = this.state.courses.length === 0 ? (
+      <div>You haven't enrolled in any courses yet.</div>
+    ) : (
+      <CardColumns>{ this.state.courses.map( (c,i) => {
+        return (<Card key={i}>
+          <CardBody>
+            <CardTitle><Link to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
+            <CardText><strong>Progress</strong></CardText>
+            <CardText>{c.progress.length} modules attended</CardText>
+          </CardBody>
+        </Card>)
+      })}</CardColumns>
+    );
+
+    return (
+      <div className="col-12">
+        <h3>Enrolled Courses</h3>
+        <hr />
+        { enrolledCourses }
+      </div>
+    )
+  }
+}
+
+class CourseHighLights extends Component {
+  render(){
+    return (
+      <div className="col-12 mb-3">
+        <h3 id="highlights">Course Highlights</h3>
+        <hr />
+        <p>This one not yet implemented</p>
+        <CardDeck>{ Array.from( Array(3).keys() ).map( (e,i) => {
+          return (<Card key={i}>
+            <CardImg top src= 'https://placehold.it/128x128'/>
+            <CardBody>
+              <h4 className="display-5 text-center">{loremIpsum()}</h4>
+              <CardText>{loremIpsum({count:randomInt(3,5), unit:'paragraphs'})}</CardText>
+              <CardText>RM 34.99</CardText>
+            </CardBody>
+            <CardFooter className="text-center">
+              <Button color="primary">Learn More</Button>
+            </CardFooter>
+          </Card>);
+        }) }</CardDeck>
+      </div>
+    );
+  }
+}
 export default class UserLanding extends Component {
   constructor(props){
     super(props);
@@ -24,6 +98,7 @@ export default class UserLanding extends Component {
 
       //parse
     } catch(e){
+      console.log('error fetching user related courses');
       console.log(e);
     }
 
@@ -65,6 +140,9 @@ export default class UserLanding extends Component {
 
     return (
       <Container className="text-left mt-2">
+        <Helmet>
+          <title>{`Welcome, ${handle.props.currentUser.name}`} - AutoTrainer</title>
+        </Helmet>
         <Row>
           <div className="col-12">
             <Breadcrumb>
@@ -79,55 +157,17 @@ export default class UserLanding extends Component {
           </div>
           <div className="col-12 col-md-8 mb-3">
             <ul>
-              <li><Link to="#highlights">Course Highlights</Link></li>
               <li><Link to="#enrolled">Enrolled Courses</Link></li>
               <li><Link to="#managed">Managed Courses</Link></li>
             </ul>
           </div>
-          <div className="col-12 mb-3">
-            <h3 id="highlights">Course Highlights</h3>
-            <hr />
-            <p>This one not yet implemented</p>
-            <CardDeck>{ Array.from( Array(3).keys() ).map( (e,i) => {
-              return (<Card key={i}>
-                <CardImg top src= 'https://placehold.it/128x128'/>
-                <CardBody>
-                  <h4 className="display-5 text-center">{loremIpsum()}</h4>
-                  <CardText>{loremIpsum({count:randomInt(3,5), unit:'paragraphs'})}</CardText>
-                  <CardText>RM 34.99</CardText>
-                </CardBody>
-                <CardFooter className="text-center">
-                  <Button color="primary">Learn More</Button>
-                </CardFooter>
-              </Card>);
-            }) }</CardDeck>
-          </div>
+          { /*
+            -- to be implemented then you have more than 30 courses
+            <CourseHighLights />
+          */}
+          <EnrolledCourses />
           <div className="col-12">
-            <h3 id="enrolled">Enrolled Courses</h3>
-            <hr />
-            <p>Some gamification of the courses you bought</p>
-            <p>This one not yet implemented</p>
-            { 0 === courseCount ? (
-              <div>
-                <p>No courses yet ... </p>
-                <p><Button color="primary" tag="a" href="#">View Courses</Button></p>
-              </div>
-            ) : (<Row>{ Array.from( Array(courseCount).keys() ).map( (e,i) => {
-              return (<div key={i} className="col-12 col-md-3">
-                <Card key={i} className="mb-2">
-                  <CardBody>
-                    <CardTitle tag="h4">
-                      <a href="/courses/toc">{loremIpsum()}</a>
-                    </CardTitle>
-                    <CardText>Page</CardText>
-                    <Progress color="info" value={randomInt(1,100)} />
-                    <CardText>Quiz</CardText>
-                    <Progress color="success" value={randomInt(1,100)} />
-                  </CardBody>
-                </Card>
-              </div>);
-            })}
-            </Row>)}
+            <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
           </div>
           <div className="col-12">
             <h3 id="managed">Your Managed Courses</h3>

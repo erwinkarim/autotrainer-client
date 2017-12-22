@@ -3,7 +3,8 @@ import { Route, Switch } from "react-router-dom";
 import AppliedRoute from "./components/AppliedRoute";
 import Home from "./containers/Home";
 import Login from "./containers/Login";
-import NewCourse from './containers/NewCourse'
+import NewCourse from './containers/NewCourse';
+import Courses from './containers/Courses';
 import CoursePromo from "./containers/CoursePromo";
 import CourseTOC from "./containers/CourseTOC";
 import Article from "./containers/Article";
@@ -29,6 +30,7 @@ export default ({childProps}) =>
     <Route path="/logout" exact component={Logout} />
 
     {/* public course page */}
+    <AppliedRoute path="/courses" exact component={Courses} props={childProps} />
     <AppliedRoute path="/courses/promo/:id" exact component={CoursePromo} props={childProps} />
     {/* course pages that is valid for people who enrolled */}
     <AppliedRoute path="/courses/toc/:id" exact component={CourseTOC} props={childProps} />

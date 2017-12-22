@@ -75,7 +75,7 @@ export default class CourseTOC extends Component {
             </div>
             <div className="col-12">
               <h3 className="display-4">Table of Contents</h3>
-              <CTOC {...this.state} {...this.props} />
+              <CTOC {...this.state} {...this.props} showLink={true}/>
             </div>
             <div className="col-12">
               <h2 className="display-4">Additional Resources</h2>

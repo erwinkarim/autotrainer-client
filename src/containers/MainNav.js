@@ -48,6 +48,7 @@ class MainNav extends Component {
                   <DropdownItem tag={Link} to={'/user/quiz_builder'}><strike>Quiz Builder</strike> - Basic</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/courses/new'}><strike>New Course</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses'}>Courses Gallery</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/promo'}><strike>Promo</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/toc'}><strike>TOC</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>

@@ -136,7 +136,7 @@ class CourseModules extends Component {
     console.log(`create new ${moduleType} for course ${courseId}`);
     try {
       var result = await this.createModule(moduleType, courseId);
-      console.log(result);
+      console.log('create result', result);
       handle.props.history.push(`/user/${moduleType}_builder/${result.courseId}/${result.moduleId}`);
     } catch(e){
       console.log('error creating a new module');
@@ -203,7 +203,6 @@ class CourseModules extends Component {
             </Nav>
           </Navbar>
           <hr/>
-          <p>Warning: not yet implemented</p>
         </div>
         <div className="col-12 col-md-8">
           {
@@ -355,7 +354,7 @@ export default class CourseBuilder extends Component {
     return (
       <Container className="mt-2 text-left">
         <Helmet>
-          <title>Course Builder for {this.state.course.courseId} - AutoTrainer</title>
+          <title>Course Builder for {this.state.course.name} - AutoTrainer</title>
         </Helmet>
         <Row>
           <div className="col-12">

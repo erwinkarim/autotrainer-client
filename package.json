@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "amazon-cognito-auth-js": "^1.0.0",
+    "amazon-cognito-auth-js": "^1.1.0",
     "amazon-cognito-identity-js": "^1.26.0",
     "aws-sdk": "^2.154.0",
     "bootstrap": "^4.0.0-beta.2",
@@ -31,6 +31,7 @@
     "react-router-hash-link": "^1.1.1",
     "react-scripts": "^1.0.17",
     "react-sticky-el": "^1.0.13",
+    "react-waypoint": "^7.3.4",
     "reactstrap": "^5.0.0-alpha.3",
     "titlecase": "^1.1.2"
   },

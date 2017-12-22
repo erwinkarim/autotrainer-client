@@ -10,6 +10,7 @@ import Interweave from 'interweave';
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import config from '../config';
+import Waypoint from 'react-waypoint';
 
 export default class Article extends Component {
   constructor(props){
@@ -35,6 +36,13 @@ export default class Article extends Component {
     });
 
 
+  }
+  handleEnterViewport = () => {
+    console.log('should trigger class attended');
+    /*
+      1. check if progress has already been made
+      2. send progress updates if necessary
+    */
   }
   render(){
     if(this.props.currentUser === null){
@@ -168,6 +176,7 @@ export default class Article extends Component {
           </Row>
         </Container>
 
+        <Waypoint onEnter={this.handleEnterViewport} />
       </div>
     )
   }

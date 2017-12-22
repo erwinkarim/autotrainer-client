@@ -1,35 +1,90 @@
 import './CoursePromo.css';
 import React, { Component } from "react";
 import {Container, Jumbotron, Row} from 'reactstrap';
+import { Link } from 'react-router-dom';
 import {CardDeck, Card, CardBody, CardTitle, CardText,  Button, Badge} from 'reactstrap';
 import loremIpsum from 'lorem-ipsum';
 import { invokeApig } from "../libs/awsLibs";
+import config from '../config';
 import CTOC from '../components/CTOC';
 import Helmet from 'react-helmet';
+
+/* button to enrol or show TOC */
+class EnrolButton extends Component {
+  render(){
+    const { handleEnrolCourse, enrolText, enrolledText, ...rest} = this.props;
+
+    //check enrolment status
+    return this.props.enrolment === null ?
+        ( <Button {...rest} type="button" color="primary" onClick={handleEnrolCourse} data-course={this.props.course.courseId}>{enrolText}</Button> ) :
+        ( <Button {...rest} tag={Link} to={`/courses/toc/${this.props.course.courseId}`}>{enrolledText}</Button>)
+        ;
+
+  }
+}
+
+EnrolButton.defaultProps = {
+  enrolText:'Enrol',
+  enrolledText: 'Table of Contents'
+}
 
 export default class CoursePromo extends Component {
   constructor(props){
     super(props);
     this.state = {
-      course:null
+      course:null, enrolment:null
     }
   }
   componentDidMount = async() => {
-    //load the course
+    //load the course and enrolment status
     var handle = this;
     try {
       var result = await this.getCourse();
-      console.log('results', result);
       if(result != null){
-        handle.setState({course:result});
+        handle.setState({course:result });
       }
     } catch(e){
       //throw new Error(e);
       console.log(e);
     };
+
+    try{
+      var enrolmentStatus = await this.getEnrolmentStatus();
+      this.setState({enrolment:this.enrolmentStatus});
+    } catch(e){
+      console.log(e);
+      if(e.error === "Item not found"){
+        console.log('item not found');
+      }
+    }
   }
   getCourse = () => {
     return invokeApig({path:`/courses/${this.props.match.params.id}`})
+  }
+  getEnrolmentStatus = () => {
+    return invokeApig({
+      endpoint:config.apiGateway.ENROLMENT_URL,
+      path:`/enrolment/${this.props.match.params.id}`
+    });
+  }
+  handleEnrolCourse = async(e) => {
+    console.log('should enrol for course');
+    try {
+      var result = await this.enrolCourse(e.target.dataset.course);
+      this.setState({enrolment: result});
+      this.props.addNotification('Course enrolled');
+    } catch(e){
+      console.log('problems trying to enrol course');
+      console.log(e);
+    }
+  }
+  enrolCourse = (courseId) => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: '/enrolment',
+      body: { courseId: courseId}
+    });
   }
   render(){
     //check if course is loaded
@@ -45,9 +100,7 @@ export default class CoursePromo extends Component {
           <Container>
             <h1 className="display-3 text-center">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
-            <p>
-              <Button type="button" outline color="primary">Enroll</Button> for RM{this.state.course.price}
-            </p>
+            <p><EnrolButton outline {...this.state} { ...{enrolText:`Enrol for RM${this.state.course.price}`, handleEnrolCourse:this.handleEnrolCourse} } /></p>
           </Container>
         </Jumbotron>
         <Container>
@@ -99,7 +152,7 @@ export default class CoursePromo extends Component {
               { this.state.course.description.split('\n').map( (e,i) => {
                 return (<p className="lead text-left" key={i}>{e}</p>)
               })}
-              <Button color="primary">Get Started!!!</Button>
+              <EnrolButton {...this.state} handleEnrolCourse={this.handleEnrolCourse} />
               <p>
               { [1,2,3].map( (e,i) => {
                 return (<Badge key={i} href="#" color="secondary" className="mr-2">{loremIpsum({count:2, units:'words'})}</Badge>)
@@ -113,7 +166,7 @@ export default class CoursePromo extends Component {
             <h1 className="display-3">Pricing</h1>
             <p className="lead">Just RM{this.state.course.price}</p>
             <div className="d-flex">
-              <Button color="primary" className="mx-auto">Get Started!</Button>
+            <EnrolButton {...this.state} handleEnrolCourse={this.handleEnrolCourse} className="mx-auto"/>
             </div>
           </Container>
         </Jumbotron>
