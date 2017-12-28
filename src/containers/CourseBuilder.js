@@ -198,6 +198,7 @@ class CourseModules extends Component {
                 <DropdownMenu>
                   <DropdownItem data-type="article" onClick={this.handleCreateModule}>Article</DropdownItem>
                   <DropdownItem data-type="quiz" onClick={this.handleCreateModule}>Quiz</DropdownItem>
+                  <DropdownItem data-type="doc" onClick={this.handleCreateModule}>Document</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>

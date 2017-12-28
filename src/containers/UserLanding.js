@@ -1,8 +1,6 @@
 import React, { Component } from "react";
-import { Container, Row, Breadcrumb, BreadcrumbItem , Progress} from 'reactstrap'
-import {CardColumns, CardDeck, Card, CardImg, CardTitle, CardBody, CardFooter, CardText, Button} from 'reactstrap';
-import randomInt from 'random-int';
-import loremIpsum from 'lorem-ipsum';
+import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
+import {CardColumns, Card, CardTitle, CardBody, CardText, Button} from 'reactstrap';
 import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
@@ -58,6 +56,7 @@ class EnrolledCourses extends Component {
   }
 }
 
+/*
 class CourseHighLights extends Component {
   render(){
     return (
@@ -82,6 +81,8 @@ class CourseHighLights extends Component {
     );
   }
 }
+*/
+
 export default class UserLanding extends Component {
   constructor(props){
     super(props);
@@ -131,7 +132,6 @@ export default class UserLanding extends Component {
     }
   }
   render(){
-    var courseCount = randomInt(20);
     var handle = this;
 
     if(!this.props.isAuthenticated){

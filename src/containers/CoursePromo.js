@@ -50,7 +50,7 @@ export default class CoursePromo extends Component {
 
     try{
       var enrolmentStatus = await this.getEnrolmentStatus();
-      this.setState({enrolment:this.enrolmentStatus});
+      this.setState({enrolment:enrolmentStatus});
     } catch(e){
       console.log(e);
       if(e.error === "Item not found"){

@@ -46,6 +46,7 @@ class MainNav extends Component {
                   <DropdownItem tag={Link} to={'/user/course_builder'}><strike>Course Builder</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/article_builder'}><strike>Article Builder</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/user/quiz_builder'}><strike>Quiz Builder</strike> - Basic</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/doc_builder'}>Doc Builder</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/courses/new'}><strike>New Course</strike></DropdownItem>
                   <DropdownItem tag={Link} to={'/courses'}>Courses Gallery</DropdownItem>
@@ -53,6 +54,7 @@ class MainNav extends Component {
                   <DropdownItem tag={Link} to={'/courses/toc'}><strike>TOC</strike> - Basic</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/quiz'}><strike>Quiz</strike> - Basic</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/docs'}>Docs</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/legal'}><strike>Legal</strike></DropdownItem>
                   <DropdownItem tag={Link} to={'/contact'}>Contact</DropdownItem>

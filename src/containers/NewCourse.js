@@ -26,9 +26,7 @@ export default class NewCourse extends Component {
         name: this.state.title,
         description: this.state.description
       });
-      console.log(result);
-      //TODO: should push to the course manager
-      this.props.history.push("/");
+      this.props.history.push(`/user/course_builder/${result.courseId}`);
     } catch (e) {
       console.log(e);
     };

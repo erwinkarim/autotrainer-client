@@ -1,4 +1,5 @@
 export default {
+  MAX_ATTACHMENT_SIZE: 5000000 ,
   apiGateway: {
     URL: "https://iuwoyhr5oi.execute-api.ap-southeast-1.amazonaws.com/prod",
     MODULE_URL: "https://ltqs221b5i.execute-api.ap-southeast-1.amazonaws.com/prod",

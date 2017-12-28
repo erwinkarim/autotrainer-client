@@ -4,7 +4,7 @@ import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { CardColumns, Card, CardBody, CardTitle, CardText, CardFooter, Button} from 'reactstrap';
 import {Link} from 'react-router-dom';
 import './Courses.css'
-import { invokeApig, getAwsCredentials } from "../libs/awsLibs";
+import { invokeApig } from "../libs/awsLibs";
 import Notice from '../components/Notice';
 import config from '../config';
 import Helmet from 'react-helmet';
@@ -40,7 +40,6 @@ export default class Courses extends Component {
     this.state = {courses:[], enrolments:[]};
   }
   componentDidMount = async() => {
-    console.log('should load courses');
     try{
       var results = await this.getCourses();
       var enrolmentResults = await this.getEnrolment();
