@@ -149,7 +149,8 @@ class CourseModules extends Component {
       endpoint:config.apiGateway.MODULE_URL,
       path:'/modules',
       method:'POST',
-      body: {courseId:courseId, title:`New ${type}`, description:`Content for new ${type}`, moduleType:type}
+      body: {courseId:courseId, title:`New ${type}`, description:`Content for new ${type}`,
+        moduleType:type, order:this.state.modules.length+1}
     });
   }
   handleDeleteModule = async (e) => {
@@ -212,6 +213,7 @@ class CourseModules extends Component {
                   <DropdownItem data-type="article" onClick={this.handleCreateModule}>Article</DropdownItem>
                   <DropdownItem data-type="quiz" onClick={this.handleCreateModule}>Quiz</DropdownItem>
                   <DropdownItem data-type="doc" onClick={this.handleCreateModule}>Document</DropdownItem>
+                  <DropdownItem data-type="video" onClick={this.handleCreateModule}>Video</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
             </Nav>

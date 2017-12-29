@@ -7,9 +7,12 @@ import NewCourse from './containers/NewCourse';
 import Courses from './containers/Courses';
 import CoursePromo from "./containers/CoursePromo";
 import CourseTOC from "./containers/CourseTOC";
+
 import Article from "./containers/Article";
 import Quiz from "./containers/Quiz";
 import DocViewer from './modules/DocViewer';
+import Video from './modules/Video';
+
 import UserLanding from './containers/UserLanding';
 import Legal from './containers/Legal';
 import Contact from './containers/Contact';
@@ -21,6 +24,7 @@ import CourseBuilder from './containers/CourseBuilder';
 import ArticleBuilder from './containers/ArticleBuilder';
 import QuizBuilder from './containers/QuizBuilder';
 import DocBuilder from './modules/DocBuilder';
+import VideoBuilder from './modules/VideoBuilder';
 
 
 export default ({childProps}) =>
@@ -39,7 +43,7 @@ export default ({childProps}) =>
     <AppliedRoute path="/courses/article/:courseId/:articleId" exact component={Article} props={childProps} />
     <AppliedRoute path="/courses/quiz/:courseId/:moduleId" exact component={Quiz} props={childProps} />
     <AppliedRoute path="/courses/doc/:courseId/:moduleId" exact component={DocViewer} props={childProps} />
-
+    <AppliedRoute path="/courses/video/:courseId/:moduleId" exact component={Video} props={childProps} />
 
     {/* user pages */}
     <AppliedRoute path="/courses/new" exact component={NewCourse} props={childProps} />
@@ -48,6 +52,7 @@ export default ({childProps}) =>
     <AppliedRoute path="/user/article_builder/:courseId/:moduleId" exact component={ArticleBuilder} props={childProps} />
     <AppliedRoute path="/user/quiz_builder/:courseId/:moduleId" exact component={QuizBuilder} props={childProps} />
     <AppliedRoute path="/user/doc_builder/:courseId/:moduleId" exact component={DocBuilder} props={childProps} />
+    <AppliedRoute path="/user/video_builder/:courseId/:moduleId" exact component={VideoBuilder} props={childProps} />
 
     {/* misc pages */}
     <Route path="/legal" exact component={Legal} />
