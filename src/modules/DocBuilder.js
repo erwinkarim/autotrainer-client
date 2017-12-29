@@ -1,7 +1,8 @@
 import React, { Component } from "react";
-import { Container, Row, Col, FormText, FormGroup, Label, Input, InputGroup, InputGroupAddon } from 'reactstrap';
+import { Container, Row, Col, FormText, FormGroup, Label, Input } from 'reactstrap';
 import { Breadcrumb, BreadcrumbItem, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import ModuleRootEditor from '../components/ModuleRootEditor';
 import DocPreview from '../components/DocPreview';
 import config from '../config.js';
 import Notice from '../components/Notice';
@@ -140,21 +141,8 @@ export default class DocBuilder extends Component {
               <BreadcrumbItem active>Document Builder: {this.state.doc.title}</BreadcrumbItem>
             </Breadcrumb>
           </Col>
+          <ModuleRootEditor module={this.state.doc} handleChange={this.handleChange} />
           <Col md="8" className="text-left">
-            <FormGroup>
-              <Label>Title</Label>
-              <InputGroup>
-                <Input type="text" placeholder="Title for the document. Should be less than 140 characters" maxLength="140"
-                  id="title" value={this.state.doc.title} onChange={this.handleChange}/>
-                <InputGroupAddon>{ 140 - this.state.doc.title.length }</InputGroupAddon>
-              </InputGroup>
-            </FormGroup>
-            <FormGroup>
-              <Label>Description</Label>
-              <Input type="textarea" rows="20" placeholder="A description about this document"
-                id="description" value={this.state.doc.description} onChange={this.handleChange}
-              />
-            </FormGroup>
             <FormGroup>
               <Label>File Location</Label>
               <Input type="text" disabled={true} value={fileName} />

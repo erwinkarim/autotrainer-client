@@ -1,7 +1,8 @@
 import React, { Component } from "react";
 import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardText } from 'reactstrap';
-import { FormGroup, Input, InputGroup, InputGroupAddon, Label, Button } from 'reactstrap';
+import { FormGroup, Input, Button } from 'reactstrap';
+import ModuleRootEditor from '../components/ModuleRootEditor';
 import {Link} from 'react-router-dom';
 import randomInt from 'random-int';
 import config from '../config.js';
@@ -203,21 +204,8 @@ export default class QuizBuilder extends Component {
               <BreadcrumbItem active>Quiz Builder: {this.state.quiz.title}</BreadcrumbItem>
             </Breadcrumb>
           </div>
+          <ModuleRootEditor module={this.state.quiz} handleChange={this.handleChange} />
           <div className="col-12 col-md-8">
-            <h2>Quiz Editor</h2>
-            <FormGroup>
-              <Label>Title</Label>
-              <InputGroup>
-                <Input type="text" maxLength="140" placeholder="Title for the article. Should be less than 140 characters"
-                  id="title" value={this.state.quiz.title} onChange={this.handleChange}/>
-                <InputGroupAddon>{ 140 - this.state.quiz.title.length}</InputGroupAddon>
-              </InputGroup>
-            </FormGroup>
-            <FormGroup>
-              <Label>Description</Label>
-              <Input type="textarea" rows="5" id="description"
-                value={this.state.quiz.description} onChange={this.handleChange} placeholder="Short summary about this quiz."/>
-            </FormGroup>
             <hr />
             <h6>Questions</h6>
             {

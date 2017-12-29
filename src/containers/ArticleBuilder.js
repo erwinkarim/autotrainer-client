@@ -1,8 +1,9 @@
 import React, { Component } from "react";
 import { Container, Row } from 'reactstrap'
-import {Breadcrumb, BreadcrumbItem, FormGroup, Input, InputGroup, InputGroupAddon, Button, Label} from 'reactstrap';
+import {Breadcrumb, BreadcrumbItem, FormGroup, Button, Label} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import './ArticleBuilder.css';
+import ModuleRootEditor from '../components/ModuleRootEditor';
 import config from '../config.js';
 import Notice from '../components/Notice';
 import toTitleCase from 'titlecase';
@@ -126,22 +127,8 @@ export default class ArticleBuilder extends Component {
               <BreadcrumbItem active>Article Builder: {this.state.article.title}</BreadcrumbItem>
             </Breadcrumb>
           </div>
+          <ModuleRootEditor module={this.state.article} handleChange={this.handleChange} />
           <div className="col-12 col-md-8">
-            <h3>Article Builder</h3>
-            <p>Put react draft here</p>
-            <FormGroup>
-              <Label>Title</Label>
-              <InputGroup>
-                <Input type="text" maxLength="140" placeholder="Title for the article. Should be less than 140 characters"
-                  id="title" value={this.state.article.title} onChange={this.handleChange}/>
-                <InputGroupAddon>{ 140 - this.state.article.title.length}</InputGroupAddon>
-              </InputGroup>
-            </FormGroup>
-            <FormGroup>
-              <Label>Description</Label>
-              <Input type="textarea" rows="5" id="description"
-                value={this.state.article.description} onChange={this.handleChange} placeholder="Short summary about this article"/>
-            </FormGroup>
             <FormGroup>
               <Label>Article Body</Label>
               <p>Issues:</p>

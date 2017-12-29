@@ -1,6 +1,8 @@
 import React, { Component } from "react";
 import { Container, Col,  Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Link } from 'react-router-dom';
+import toTitleCase from 'titlecase';
+import ModuleRootEditor from '../components/ModuleRootEditor';
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import config from '../config.js';
@@ -27,6 +29,20 @@ export default class VideoBuilder extends Component {
       queryParams: {courseId:this.props.match.params.courseId}
     });
   }
+  handleChange = (event) => {
+    var newVideo= this.state.video;
+    if(event.target.id === "body") {
+      //update the preview, but notify changes hasn't be saved yet
+    } else {
+      //title + desciprtion
+      newVideo[event.target.id] =
+        event.target.id === "title" ? toTitleCase(event.target.value) :
+        event.target.value;
+    };
+
+    this.setState({ video:newVideo});
+
+  }
   render(){
     if(this.props.currentUser === null){
       return (<Notice content="user Unauthorized" />);
@@ -50,6 +66,7 @@ export default class VideoBuilder extends Component {
               <BreadcrumbItem active>Video Builder: {this.state.video.title}</BreadcrumbItem>
             </Breadcrumb>
           </Col>
+          <ModuleRootEditor module={this.state.video} handleChange={this.handleChange}/>
           <Col md="8" className="text-left">
             <p>Configure video here</p>
           </Col>
