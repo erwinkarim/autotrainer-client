@@ -11,6 +11,7 @@ import { OrderedSet} from 'immutable';
 import FontAwesome from 'react-fontawesome';
 import randomInt from 'random-int';
 import { getAwsCredentials } from './libs/awsLibs';
+import config from './config';
 import './App.css';
 
 class App extends Component {
@@ -106,8 +107,8 @@ class App extends Component {
     return (
       <div className="App">
         <Alert color="primary" className="mb-0 text-left" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}>
-          Announcement Here !!!
-          <Button outline color="primary" className="ml-2">Register Now</Button>
+          { config.banner.text }
+          <Button outline color="primary" className="ml-2" tag={Link} to={config.banner.buttonLink}>{config.banner.buttonText}</Button>
         </Alert>
         <MainNav {...this.state} />
         <Routes childProps={childProps} />

@@ -17,11 +17,15 @@ export default class DocBuilder extends Component {
   componentDidMount = async () => {
     try{
       var result = await this.loadDoc();
-      this.setState({doc:result, file:result.body});
+      var fileLoc = result.body === null || result.body === undefined ?
+        null :
+        result.body.location;
+      this.setState({doc:result, file:fileLoc});
     } catch (e){
       console.log('error trying to get document');
       console.log(e);
     };
+
   }
   loadDoc = () => {
     return invokeApig({
@@ -73,27 +77,18 @@ export default class DocBuilder extends Component {
 
     //if file is different than current one in s3, upload first then update the doc object
     try{
-      //upload if the files is different
-      if(handle.state.doc.body !== handle.state.file){
-        /*
-          TODO: handle delete old versions of the file
-        var oldFileLocation = handle.state.doc.body;
-        */
+      //upload if the file state becomes a file object
+      if(handle.state.file instanceof Object){
         var newDoc = handle.state.doc;
-        var fileLocation = (await s3Upload(handle.state.file)).Location;
-        newDoc.body = fileLocation;
-        console.log(`update the state w/ location ${fileLocation}`);
-        handle.setState({doc:newDoc});
+        var oldKey = handle.state.doc.body === undefined ? null : handle.state.doc.body.key;
+        var newFile = await s3Upload(handle.state.file);
+        newDoc.body = {location: newFile.Location, key:newFile.key};
+        handle.setState({doc:newDoc, file:newFile.Location});
 
         //should delete the old file
-        /*
-        if(oldFileLocation !== null || oldFileLocation !== undefined){
-          var urlObj = new URL(oldFileLocation);
-          var fileKey = `${urlObj.pathname.split('/')[2]}/${urlObj.pathname.split('/')[3]}`
-          await s3Delete(fileKey);
+        if(oldKey !==  newFile.key){
+          await s3Delete(oldKey);
         }
-        */
-
       }
 
       //update the title & description
@@ -129,6 +124,8 @@ export default class DocBuilder extends Component {
       return (<Notice content="Document is not loaded yet ..."/>);
     };
 
+    var fileName =
+      this.state.doc.body === null ? '' : this.state.doc.body.location;
     return (
       <Container className="mt-3">
         <Helmet>
@@ -160,7 +157,7 @@ export default class DocBuilder extends Component {
             </FormGroup>
             <FormGroup>
               <Label>File Location</Label>
-              <Input type="text" disabled={true} value={this.state.doc.body} />
+              <Input type="text" disabled={true} value={fileName} />
             </FormGroup>
             <FormGroup>
               <Label>File</Label>

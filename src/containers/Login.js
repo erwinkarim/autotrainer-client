@@ -52,7 +52,7 @@ export default class Login extends Component {
       AppWebDomain : process.env.REACT_APP_APP_WEB_DOMAIN,
       TokenScopesArray : ['email', 'openid','profile'],
       RedirectUriSignIn : `${window.location.protocol}${process.env.REACT_APP_LOCALADDR}/login`,
-      RedirectUriSignOut : `${window.location.protocol}${process.env.REACT_APP_LOCALADDR}/logoff`
+      RedirectUriSignOut : `${window.location.protocol}${process.env.REACT_APP_LOCALADDR}/logout`
 
     };
     var auth = new CognitoAuth(authData);
@@ -63,7 +63,6 @@ export default class Login extends Component {
       */
       onSuccess: function(result) {
         console.log("Sign in success");
-        console.log('result', result);
         handle.showSignedIn(result);
       },
       onFailure: function(err) {
@@ -155,7 +154,7 @@ export default class Login extends Component {
           	<div className="tabsWell">
           		<div id="startButtons">
           			<div className="button">
-          				<a className="nav-tabs" id="signInButton" href="javascript:void(0)" title="Sign in" onClick={this.userButton}>Sign In</a>
+          				<a className="nav-tabs" id="signInButton" title="Sign in" onClick={this.userButton}>Sign In</a>
           			</div>
           		</div>
           		<div className="tab-content">

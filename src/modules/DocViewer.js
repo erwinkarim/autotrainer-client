@@ -18,7 +18,10 @@ export default class DocViewer extends Component {
   componentDidMount = async () => {
     try {
       var result = await this.loadDoc();
-      this.setState({doc:result});
+      var fileLoc = result.body === null || result.body === undefined ?
+        null :
+        result.body.location || result.body;
+      this.setState({doc:result, file:fileLoc});
     } catch(e){
       console.log('error in loading document');
       console.log(e);
@@ -42,7 +45,7 @@ export default class DocViewer extends Component {
 
     var doc = this.state.doc;
     return (
-      <div className="text-left">
+      <div>
         <Helmet>
           <title>{ this.state.doc.title } - AutoTrainer</title>
         </Helmet>
@@ -64,7 +67,7 @@ export default class DocViewer extends Component {
           {
             doc.body === null ?
             <p>Document not configured. Contact author if you expecting a documment.</p> :
-            <DocPreview file={doc.body} />
+            <DocPreview file={this.state.file} />
           }
         </Container>
       </div>

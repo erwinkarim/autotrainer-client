@@ -10,7 +10,7 @@ import classnames from 'classnames';
 import randomInt from 'random-int';
 import toTitleCase from 'titlecase';
 import FontAwesome from 'react-fontawesome';
-import { invokeApig } from "../libs/awsLibs";
+import { invokeApig, s3Delete } from "../libs/awsLibs";
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import './CourseBuilder.css';
@@ -161,6 +161,12 @@ class CourseModules extends Component {
     var moduleIndex = e.target.dataset.index;
     var module = this.state.modules[moduleIndex]
     try {
+      /* if the module is a file, also delete the file */
+      if(module.moduleType === 'doc'){
+        var result = await this.getModuleDetail(module.courseId, module.moduleId);
+        console.log(`attempt to delete ${result.body.key}`)
+        await s3Delete(result.body.key);
+      }
       await this.deleteModule(module.courseId,module.moduleId);
       var newModules = this.state.modules;
       newModules.splice(moduleIndex, 1);
@@ -185,6 +191,13 @@ class CourseModules extends Component {
       queryParams: {courseId:this.props.course.courseId}
     })
 
+  }
+  getModuleDetail = (courseId, moduleId) => {
+    return invokeApig({
+      endpoint: config.apiGateway.MODULE_URL,
+      path: `/modules/${moduleId}`,
+      queryParams: {courseId:courseId}
+    })
   }
   render(){
     return (
