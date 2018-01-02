@@ -18,9 +18,10 @@ export default class DocBuilder extends Component {
   componentDidMount = async () => {
     try{
       var result = await this.loadDoc();
-      var fileLoc = result.body === null || result.body === undefined ?
-        null :
-        result.body.location;
+      console.log('result', result);
+      result.body = result.body === null || result.body === undefined ?
+        {location:null, key:null } : result.body;
+      var fileLoc = result.body.location;
       this.setState({doc:result, file:fileLoc});
     } catch (e){
       console.log('error trying to get document');
@@ -81,13 +82,13 @@ export default class DocBuilder extends Component {
       //upload if the file state becomes a file object
       if(handle.state.file instanceof Object){
         var newDoc = handle.state.doc;
-        var oldKey = handle.state.doc.body === undefined ? null : handle.state.doc.body.key;
+        var oldKey = handle.state.doc.body.key;
         var newFile = await s3Upload(handle.state.file);
         newDoc.body = {location: newFile.Location, key:newFile.key};
         handle.setState({doc:newDoc, file:newFile.Location});
 
-        //should delete the old file
-        if(oldKey !==  newFile.key){
+        //should delete the old file unless the old key is null
+        if(oldKey !== null && oldKey !==  newFile.key){
           await s3Delete(oldKey);
         }
       }

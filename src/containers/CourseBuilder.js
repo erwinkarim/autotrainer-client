@@ -226,13 +226,14 @@ class CourseModules extends Component {
               <div>No modules.</div>
 
             ) : (
-              this.state.modules.map( (e,i) => {
+              this.state.modules.sort( (a,b) => parseInt(a.order,10) > parseInt(b.order,10) ).map( (e,i) => {
                 var titleCaseType = toTitleCase(e.moduleType);
                 return (
                   <Card key={i} className="mb-2">
                     <CardBody>
                       <CardTitle>Module {i+1}: {e.title}</CardTitle>
                       <CardText>{e.description}</CardText>
+                      <CardText>Order: {e.order}</CardText>
                       <Button className="mr-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
                       <Button className="mr-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
                       <Button type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
