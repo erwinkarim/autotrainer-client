@@ -43,18 +43,20 @@ class MainNav extends Component {
                   <DropdownItem tag={Link} to={'/login'}>Login</DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/user/landing'}><strike>Landing</strike></DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/course_builder'}><strike>Course Builder</strike> - Basic</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/course_builder'}><strike>Course Builder</strike></DropdownItem>
                   <DropdownItem tag={Link} to={'/user/article_builder'}><strike>Article Builder</strike> - Basic</DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/quiz_builder'}><strike>Quiz Builder</strike> - Basic</DropdownItem>
-                  <DropdownItem tag={Link} to={'/user/doc_builder'}>Doc Builder</DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/quiz_builder'}><strike>Quiz Builder</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/doc_builder'}><strike>Doc Builder</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/user/video_builder'}><strike>Video Builder</strike></DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/courses/new'}><strike>New Course</strike></DropdownItem>
                   <DropdownItem tag={Link} to={'/courses'}>Courses Gallery</DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/promo'}><strike>Promo</strike> - Basic</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/toc'}><strike>TOC</strike> - Basic</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/toc'}><strike>TOC</strike></DropdownItem>
                   <DropdownItem tag={Link} to={'/courses/article'}>Article</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/quiz'}><strike>Quiz</strike> - Basic</DropdownItem>
-                  <DropdownItem tag={Link} to={'/courses/docs'}>Docs</DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/quiz'}><strike>Quiz</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/docs'}><strike>Docs</strike></DropdownItem>
+                  <DropdownItem tag={Link} to={'/courses/video'}><strike>Video</strike></DropdownItem>
                   <DropdownItem divider />
                   <DropdownItem tag={Link} to={'/legal'}><strike>Legal</strike></DropdownItem>
                   <DropdownItem tag={Link} to={'/contact'}>Contact</DropdownItem>
@@ -63,7 +65,7 @@ class MainNav extends Component {
               {
                 this.props.isAuthenticated ? (
                   <UncontrolledDropdown className="nav-item" tag="li">
-                    <DropdownToggle nav className="py-0" >
+                    <DropdownToggle caret nav className="py-0" >
                       <img alt={this.props.currentUser.name} height="42" className="circle" src={this.props.currentUser.picture} />
                     </DropdownToggle>
                     <DropdownMenu right className="" style={ {'width':`${this.props.currentUser.email.length*0.9}em`, maxWidth:'100vw'}} >
@@ -78,6 +80,8 @@ class MainNav extends Component {
                           </div>
                         </Row>
                       </DropdownItem>
+                      <DropdownItem tag={Link} to="/courses">Courses</DropdownItem>
+                      <DropdownItem tag={Link} to="/user/landing">Landing Page</DropdownItem>
                       <DropdownItem divider />
                       <Button color="link" className="dropdown-item" onClick={this.signOutUser}>Logout</Button>
                     </DropdownMenu>

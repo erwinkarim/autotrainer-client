@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
+import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import { Navbar } from 'reactstrap';
-import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, Table }from 'reactstrap';
-import { UncontrolledDropdown, Dropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
-import { Card, CardBody, CardTitle, CardText} from 'reactstrap';
+import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button}from 'reactstrap';
+import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
+import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, Collapse} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import randomInt from 'random-int';
@@ -16,29 +16,182 @@ import Helmet from 'react-helmet';
 import './CourseBuilder.css';
 import config from '../config.js'
 
+/*
+  describe the course user, it's progress
+*/
 class CourseUser extends Component {
   constructor(props){
     super(props);
-    this.state = {userDropdownOpen:false};
+    this.state = {collapse:false}
 
   }
-  toggleUserDropdown = () => {
-    this.setState({userDropdownOpen:!this.state.userDropdownOpen})
-
+  toggleMenu = (e) => {
+    this.setState({collapse: !this.state.collapse});
   }
   render(){
     return (
-      <Dropdown isOpen={this.state.userDropdownOpen} toggle={this.toggleUserDropdown}>
-        <DropdownToggle caret>
-        </DropdownToggle>
-        <DropdownMenu>
-          <DropdownItem>Resend Mail</DropdownItem>
-          <DropdownItem>Review Quiz</DropdownItem>
-        </DropdownMenu>
-      </Dropdown>
+      <Row>
+        <Col xs="12" md="1">{this.props.index+1}</Col>
+        <Col xs="12" md="8"><Button className="p-0" color="link" onClick={this.toggleMenu}>{this.props.student.userId}</Button></Col>
+        <Col xs="12" md="3">{this.props.student.progress.length} modules</Col>
+        <Collapse isOpen={this.state.collapse}>
+          <Col xs="12">Talk about actions</Col>
+        </Collapse>
+        <Col xs="12"><hr /></Col>
+      </Row>
     );
   }
 
+}
+
+/*
+  manage the students, handle send invites and see their progress through then
+  course
+*/
+class CourseUsers extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      students:[]
+    }
+  }
+  componentDidMount = async () => {
+    //load enrolled users
+    try{
+      var results = await this.loadStudents()
+      this.setState({students:results});
+    } catch(e){
+      console.log('error getting students');
+      console.log(e);
+    }
+  }
+  loadStudents = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: `/enrolment/${this.props.course.courseId}/students`
+    });
+  }
+  render(){
+    if(this.state.students.length === 0){
+      return <div>Nobody is enrolled in the course</div>
+    };
+
+    return (
+      <Container className="mt-2">
+        <Row>
+          <Col xs="12" md="1"><strong>No</strong></Col>
+          <Col xs="12" md="8"><strong>Name</strong></Col>
+          <Col xs="12" md="3"><strong>Progress</strong></Col>
+          <Col xs="12"><hr /></Col>
+        </Row>
+        {
+          this.state.students.map( (student,i) => {
+            return <CourseUser key={i} index={i} student={student} />
+          })
+        }
+        <InviteBox />
+      </Container>
+    );
+  }
+}
+
+/*
+  handle send invitation to potential students, also check if students exists or not
+*/
+class InviteBox extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      showInviteForm:false,
+      inviteList:[],
+      inviteMessage:'please join our initative.'
+    }
+  }
+  componentDidMount = () => {
+    this.addInvite();
+  }
+  handleChange = (e) => {
+    if(e.target.id === "inviteMessage"){
+      this.setState({inviteMessage:e.target.value});
+      return;
+    }
+
+    var newInviteList = this.state.inviteList;
+    newInviteList[e.target.dataset.index][e.target.dataset.attr] = e.target.value;
+    this.setState({inviteList:newInviteList});
+
+  }
+  toggleMenu = (e) => {
+    this.setState({showInviteForm: !this.state.showInviteForm});
+  }
+  sendInvite = (e) => {
+    console.log('process the email list and send invites ...')
+    this.setState({showInviteForm:false});
+  }
+  addInvite = (e) => {
+    const defaultInvite = {
+      email:'', name:''
+    };
+    var newInviteList = this.state.inviteList;
+    newInviteList.push(defaultInvite);
+    this.setState({inviteList:newInviteList});
+  }
+  removeInvite = (e) => {
+    var newInviteList = this.state.inviteList;
+    newInviteList.splice(e.target.dataset.index, 1);
+    this.setState({inviteList:newInviteList});
+  }
+  validateForm = () => {
+    var validateListLength = this.state.inviteList.length > 0;
+    var validateList = this.state.inviteList.reduce( (a,v) => {
+      return a && v.email.length > 0 && v.name.length > 0;
+    }, true);
+    var validateMessage = this.state.inviteMessage.length > 0;
+
+    return validateListLength && validateList && validateMessage;
+  }
+  render(){
+    return (
+      <Row>
+        <Collapse isOpen={!this.state.showInviteForm}>
+          <Col>
+            <Button onClick={this.toggleMenu}>Invite ...</Button>
+          </Col>
+        </Collapse>
+        <Collapse isOpen={this.state.showInviteForm} className="w-100">
+          { this.state.inviteList.map( (invitee, i) => {
+            return (
+              <FormGroup className="row" key={i}>
+                <Col xs="12" md="5" className="mb-2">
+                  <Input type="text" placeholder="email" onChange={this.handleChange}
+                    data-index={i} data-attr="email" id="invite" value={invitee.email} />
+                </Col>
+                <Col xs="12" md="5" className="mb-2">
+                  <Input type="text" placeholder="name" onChange={this.handleChange}
+                    data-index={i} data-attr="name" id="invite" value={invitee.name} />
+                </Col>
+                <Col xs="12" md="2" className="mb-2">
+                  <Button color="danger" onClick={this.removeInvite} data-index={i}
+                    disabled={this.state.inviteList.length <= 1} >
+                    <FontAwesome name="minus" />
+                  </Button>
+                </Col>
+              </FormGroup>
+            )
+          })}
+          <Col xs="12" className="px-0"><Button color="primary" onClick={this.addInvite}><FontAwesome name="plus" /></Button></Col>
+          <FormGroup>
+            <Label>Message</Label>
+            <Input id="inviteMessage" type="textarea" rows="6" value={this.state.inviteMessage} onChange={this.handleChange} />
+          </FormGroup>
+          <Col xs="12" className="px-0">
+            <Button className="mb-2 mr-2" color="primary" onClick={this.sendInvite} disabled={!this.validateForm()}>Send Invite</Button>
+            <Button className="mb-2 mr-2" color="danger" onClick={this.toggleMenu}>Cancel</Button>
+          </Col>
+        </Collapse>
+      </Row>
+    );
+  }
 }
 
 class CourseForm extends Component {
@@ -50,26 +203,30 @@ class CourseForm extends Component {
     return (<div>
       <FormGroup>
         <Label>Name</Label>
-        <InputGroup>
-          <Input type="text" placeholder="Course Name. Should be less than 140 characters"
-            maxLength="140" id="name" value={this.props.course.name} onChange={this.props.handleChange} />
-          <InputGroupAddon className="text-muted">{ 140 - this.props.course.name.length}</InputGroupAddon>
-        </InputGroup>
+        <h1 className="text-center">
+          <InputGroup>
+            <Input type="text" placeholder="Course Name. Should be less than 140 characters"
+              className="display-3 text-center" style={ {fontSize:'inherit'}}
+              maxLength="140" id="name" value={this.props.course.name} onChange={this.props.handleChange} />
+            <InputGroupAddon className="text-muted">{ 140 - this.props.course.name.length}</InputGroupAddon>
+          </InputGroup>
+        </h1>
       </FormGroup>
       <FormGroup>
         <Label>Tagline</Label>
-        <InputGroup>
-          <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
-            maxLength="140" value={this.props.course.tagline} onChange={this.props.handleChange} />
-          <InputGroupAddon className="text-muted">{ 140 - this.props.course.tagline.length }</InputGroupAddon>
-        </InputGroup>
+          <InputGroup>
+            <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
+              className="lead text-center"
+              maxLength="140" value={this.props.course.tagline} onChange={this.props.handleChange} />
+            <InputGroupAddon className="text-muted">{ 140 - this.props.course.tagline.length }</InputGroupAddon>
+          </InputGroup>
       </FormGroup>
       <FormGroup>
-        <Label>Description</Label>
-        <Input type="textarea" rows="20" id="description" value={this.props.course.description} onChange={this.props.handleChange} />
+        <Label>Description / Final Thoughts</Label>
+        <Input className="lead" type="textarea" rows="20" id="description" value={this.props.course.description} onChange={this.props.handleChange} />
       </FormGroup>
       <FormGroup>
-        <Label>Price</Label>
+        <Label>Pricing</Label>
         <InputGroup>
           <InputGroupAddon>RM</InputGroupAddon>
           <Input type="number" id="price" onChange={this.props.handleChange} value={this.props.course.price} />
@@ -77,34 +234,46 @@ class CourseForm extends Component {
       </FormGroup>
       <FormGroup>
         <Label>Key Points</Label>
-        <Card>
-          <CardBody>
-            {
-              (this.props.course.key_points === undefined || this.props.course.key_points.length === 0) ?
-              (<p>No key points configured.</p>) :
-              this.props.course.key_points.map( (e,i) => {
-                return (<FormGroup key={i}>
-                  <InputGroup className="mb-2">
-                    <Input type="text" placeholder={`Title for Point ${i+1}. Should be less than 70 characters`}
-                      maxLength="70" id={`key_points`} data-position={i} data-key="title"
-                      value={e.title} onChange={this.props.handleChange}
-                    />
-                    <InputGroupAddon className="text-muted">{ 70 - e.title.length }</InputGroupAddon>
-                  </InputGroup>
-                  <InputGroup className="mb-2">
-                    <Input type="text" placeholder={`Subtext for Point ${i+1}. Should be less than 140 characters`}
-                      maxLength="140" id={`key_points`} data-position={i} data-key="subtext"
-                      value={e.subtext} onChange={this.props.handleChange}
-                    />
-                    <InputGroupAddon className="text-muted">{ 140 - e.subtext.length }</InputGroupAddon>
-                  </InputGroup>
-                  <Button type="button" color="danger" data-position={i} onClick={this.deleteKeyPoint}><FontAwesome name="minus" /></Button>
-                </FormGroup>)
-              })
-            }
-            <Button type="button" color="primary" onClick={this.props.newKeyPoint} disabled={!this.props.enableAddKeyPoint()}>New Key Points</Button>
-          </CardBody>
-        </Card>
+        <CardDeck>
+          {
+            (this.props.course.key_points === undefined || this.props.course.key_points.length === 0) ?
+            (<p>No key points configured.</p>) :
+            this.props.course.key_points.map( (e,i) => {
+              return (
+                <Card key={i}>
+                  <CardBody>
+                    <FormGroup>
+                      <h4>
+                        <InputGroup className="mb-2">
+                          <Input type="text" placeholder={`Title for Point ${i+1}. Should be less than 70 characters`}
+                            style={ {fontSize:'inherit'}} className="card-title text-center"
+                            maxLength="70" id={`key_points`} data-position={i} data-key="title"
+                            value={e.title} onChange={this.props.handleChange}
+                          />
+                          <InputGroupAddon className="text-muted">{ 70 - e.title.length }</InputGroupAddon>
+                        </InputGroup>
+                      </h4>
+                      <InputGroup className="mb-2">
+                        <Input type="textarea" placeholder={`Subtext for Point ${i+1}. Should be less than 140 characters`}
+                          rows="4"
+                          maxLength="140" id={`key_points`} data-position={i} data-key="subtext"
+                          value={e.subtext} onChange={this.props.handleChange}
+                        />
+                        <InputGroupAddon className="text-muted">{ 140 - e.subtext.length }</InputGroupAddon>
+                      </InputGroup>
+                      <Button type="button" color="danger" data-position={i} onClick={this.props.deleteKeyPoint}><FontAwesome name="minus" /></Button>
+                    </FormGroup>
+                  </CardBody>
+                </Card>
+              )
+            })
+          }
+          {
+            this.props.enableAddKeyPoint() ?
+              <Button type="button" color="primary" onClick={this.props.newKeyPoint} disabled={!this.props.enableAddKeyPoint()}>New Key Points</Button> :
+              null
+          }
+        </CardDeck>
       </FormGroup>
       <Button color="primary" onClick={this.props.handleUpdateCourse} disabled={!this.props.validateGeneralForm()}>Update Course Setting</Button>
     </div>);
@@ -220,7 +389,8 @@ class CourseModules extends Component {
           </Navbar>
           <hr/>
         </div>
-        <div className="col-12 col-md-8">
+        { /* <div className="col-12 col-md-8"> */}
+        <CardColumns>
           {
             this.state.modules.length === 0 ? (
               <div>No modules.</div>
@@ -234,16 +404,16 @@ class CourseModules extends Component {
                       <CardTitle>Module {i+1}: {e.title}</CardTitle>
                       <CardText>{e.description}</CardText>
                       <CardText>Order: {e.order}</CardText>
-                      <Button className="mr-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
-                      <Button className="mr-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
-                      <Button type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
+                      <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
+                      <Button className="mr-2 mb-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
+                      <Button className="mr-2 mb-2" type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
                     </CardBody>
                   </Card>
                 );
               })
             )
           }
-        </div>
+        </CardColumns>
       </Row>
     )
   }
@@ -374,21 +544,21 @@ export default class CourseBuilder extends Component {
           <title>Course Builder for {this.state.course.name} - AutoTrainer</title>
         </Helmet>
         <Row>
-          <div className="col-12">
+          <Col>
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem active>Course Builder: {this.state.course.name}</BreadcrumbItem>
             </Breadcrumb>
-          </div>
+          </Col>
         </Row>
         <Row>
-          <div className="col-12">
+          <Col xs="12">
             <h3>Settings</h3>
             <hr/>
-          </div>
-          <div className="col-12 col-md-8">
-            <Nav tabs>
+          </Col>
+          <Col xs="12">
+            <Nav tabs className="d-flex justify-content-center">
               <NavItem>
                 <NavLink className={ classnames({active:this.state.settingActiveTab==='general'})} onClick={() => {this.toggle('general');}}>General</NavLink>
               </NavItem>
@@ -424,30 +594,10 @@ export default class CourseBuilder extends Component {
                 }
               </TabPane>
               <TabPane tabId='users'>
-                <p>Warning: Not yet configured</p>
-                <Table className="mt-2">
-                  <thead>
-                    <tr>
-                      <th>No</th>
-                      <th>User</th>
-                      <th>Status</th>
-                      <th>Action</th>
-                    </tr>
-                  </thead>
-                  <tbody>{ Array.from( Array( randomInt(5,25)).keys() ).map( (e,i) => {
-                    return (<tr key={i}>
-                        <td>{i+1}</td>
-                        <td>Some User</td>
-                        <td>{['Distributed', 'Signed Up', 'Started', 'Finished & Certified'][randomInt(3)]}</td>
-                        <td><CourseUser /></td>
-                      </tr>)
-
-                  })}</tbody>
-                </Table>
-                <p><Button color="primary">Send Invites</Button></p>
+                <CourseUsers {...this.state } {...this.props}/>
               </TabPane>
             </TabContent>
-          </div>
+          </Col>
         </Row>
         <CourseModules {...this.state} {...this.props}/>
       </Container>
