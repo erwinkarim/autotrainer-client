@@ -15,7 +15,7 @@ import './Quiz.css';
 export default class Quiz extends Component {
   constructor(props){
     super(props);
-    this.state = {quiz:null, answers:[], ansChecked:false};
+    this.state = {quiz:null, answers:[], ansChecked:false, enrolment:null};
   }
   componentDidMount = async(e) => {
     var handle = this;
@@ -28,6 +28,14 @@ export default class Quiz extends Component {
       console.log(e);
     }
 
+    try {
+      result = await this.loadEnrolment();
+      this.setState({enrolment:result});
+    } catch(e){
+      console.log('error getting enrolment');
+      console.log('ignore this if you own this course');
+      console.log(e);
+    }
   }
   loadQuiz = () => {
     return invokeApig({
@@ -37,11 +45,53 @@ export default class Quiz extends Component {
     });
 
   }
+  loadEnrolment = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path:`/enrolment/${this.state.quiz.courseId}`,
+    });
+  }
   recordAnswer = (e) => {
     console.log('should record answer');
     var newAnswer = this.state.answers;
     newAnswer[parseInt(e.target.dataset.qindex,10)] =  parseInt(e.target.dataset.aindex,10);
     this.setState({answers:newAnswer});
+
+    //record attendance when all question are answered
+    if( newAnswer.reduce( (a,v) => v !== undefined ? a+1 : a+0,0) === this.state.quiz.body.length){
+      this.triggerComplete();
+    }
+
+
+
+  }
+  triggerComplete = async () => {
+    console.log('should record attend class');
+    if(this.state.enrolment !== null){
+      try{
+        if(! this.state.enrolment.progress.includes(this.state.quiz.moduleId)){
+          //notify attendance
+          await this.notifyProgress();
+
+          //update enrolment progress
+          var result = await this.loadEnrolment();
+          this.setState({enrolment:result});
+
+          this.props.addNotification('We remark that you have completed this quiz');
+        }
+      } catch(e){
+        console.log('error notifying progress');
+        console.log(e);
+      }
+    }
+  }
+  notifyProgress = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${this.state.quiz.courseId}/attend/${this.state.quiz.moduleId}`,
+      body: {}
+    })
   }
   checkAnswer = (e) => {
     this.setState({checkAnswer:true});
@@ -72,7 +122,7 @@ export default class Quiz extends Component {
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to={`/courses/toc/${this.state.quiz.courseId}`}>{this.state.quiz.courseMeta.name}</Link></BreadcrumbItem>
-              <BreadcrumbItem active>Module X: {this.state.quiz.title}</BreadcrumbItem>
+              <BreadcrumbItem active>Module {this.state.quiz.order}: {this.state.quiz.title}</BreadcrumbItem>
             </Breadcrumb>
           </div>
           <div className="col-12 col-md-8 mb-3">

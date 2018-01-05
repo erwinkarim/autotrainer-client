@@ -46,28 +46,41 @@ export default class CTOC extends Component {
     }
 
     return (
-      <CardColumns>{
-        this.state.modules.map( (m,i) => {
-          return (
-            <Card key={i}>
-              <CardBody>
-                <CardTitle>
-                  { this.state.options.showLink ? (
-                    <Link to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{i+1}: {m.title}</Link>
-                  ) : (
-                    <span>{i+1}: {m.title}</span>
-                  )}
-                </CardTitle>
-                <CardText>{m.description}</CardText>
-              </CardBody>
+      <div>
+        {
+          this.props.enrolment === null ? null :
+          this.props.enrolment.progress.length === this.state.modules.length ? (
+            <Card body className="border border-success mb-2">
+              <CardTitle className="mb-2">All modules attended</CardTitle>
             </Card>
-          );
-        })
-      }</CardColumns>
+          ) : null
+        }
+        <CardColumns>{
+          this.state.modules.map( (m,i) => {
+            var attended = this.props.enrolment === null ? false :
+              this.props.enrolment.progress.includes(m.moduleId)
+            return (
+              <Card key={i} className={`${attended ? 'border border-success' : null}`}>
+                <CardBody>
+                  <CardTitle>
+                    { this.state.options.showLink ? (
+                      <Link to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{i+1}: {m.title}</Link>
+                    ) : (
+                      <span>{i+1}: {m.title}</span>
+                    )}
+                  </CardTitle>
+                  <CardText>{m.description}</CardText>
+                  { attended ? <CardText className="text-success">Module attended</CardText> : null }
+                </CardBody>
+              </Card>
+            );
+          })
+        }</CardColumns>
+      </div>
     )
   }
 }
 
 CTOC.defaultProps = {
-  defaultOptions: { showLink:true }
+  defaultOptions: { showLink:true, enrolment:null }
 }

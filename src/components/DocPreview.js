@@ -10,6 +10,12 @@ export default class DocPreview extends Component {
   }
   onDocumentComplete = (pages) => {
     this.setState({ page: 1, pages });
+
+    //if single page document, trigger complete
+    if(pages === 1){
+      this.props.triggerComplete();
+    }
+
   }
   onPageComplete = (page) => {
     this.setState({ page });
@@ -21,6 +27,9 @@ export default class DocPreview extends Component {
   handleNext = (e) => {
     e.preventDefault()
     this.setState({ page: this.state.page + 1 });
+    if(this.state.page+1 === this.state.pages){
+      this.props.triggerComplete();
+    }
   }
   renderPagination = (page, pages) => {
     var disableLeft = page === 1;
@@ -78,5 +87,6 @@ export default class DocPreview extends Component {
 }
 
 DocPreview.defaultProps = {
-  showPath:false
+  showPath:false,
+  triggerComplete: () => { return 0;}
 }

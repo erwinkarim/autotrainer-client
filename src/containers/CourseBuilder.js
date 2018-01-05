@@ -34,8 +34,17 @@ class CourseUser extends Component {
         <Col xs="12" md="1">{this.props.index+1}</Col>
         <Col xs="12" md="8"><Button className="p-0" color="link" onClick={this.toggleMenu}>{this.props.student.userId}</Button></Col>
         <Col xs="12" md="3">{this.props.student.progress.length} modules</Col>
-        <Collapse isOpen={this.state.collapse}>
-          <Col xs="12">Talk about actions</Col>
+        <Collapse isOpen={this.state.collapse} className="col-12 mt-2">
+          <CardColumns>
+            <Card body>
+              <CardTitle>Progress</CardTitle>
+              <CardText>{this.props.student.progress.length} modules completed</CardText>
+            </Card>
+            <Card body>
+              <CardTitle>Action</CardTitle>
+              <CardText><Button>Resend invite</Button></CardText>
+            </Card>
+          </CardColumns>
         </Collapse>
         <Col xs="12"><hr /></Col>
       </Row>
@@ -86,7 +95,7 @@ class CourseUsers extends Component {
         </Row>
         {
           this.state.students.map( (student,i) => {
-            return <CourseUser key={i} index={i} student={student} />
+            return <CourseUser key={i} index={i} student={student} course={this.props.course} />
           })
         }
         <InviteBox />
@@ -155,7 +164,7 @@ class InviteBox extends Component {
       <Row>
         <Collapse isOpen={!this.state.showInviteForm}>
           <Col>
-            <Button onClick={this.toggleMenu}>Invite ...</Button>
+            <Button onClick={this.toggleMenu}>Invite Participants</Button>
           </Col>
         </Collapse>
         <Collapse isOpen={this.state.showInviteForm} className="w-100">

@@ -10,7 +10,7 @@ export default class Video extends Component {
   constructor(props){
     super(props);
     this.state = {
-      video:null, validVideo:false
+      video:null, validVideo:false, enrolment:null
     };
   }
   componentDidMount = async () => {
@@ -22,8 +22,39 @@ export default class Video extends Component {
       var validVideo = result.body.origUrl.length > 0 && result.body.convertedUrl.length > 0;
       this.setState({video:result, validVideo:validVideo});
 
+
     } catch(e){
       console.log('error loading video');
+      console.log(e);
+    }
+
+    //load enrolment
+    try{
+      var result = await this.loadEnrolment();
+      this.setState({enrolment:result});
+
+    } catch(e){
+      console.log('error is getting enrolment');
+      console.log('ignore if you own this course');
+      console.log(e);
+    }
+
+    //for now, trigger complete on video loaded,
+    // in the future, will load the appropiate player, and trigger on watch complete
+    try{
+      if(this.state.enrolment !== null){
+        if(!this.state.enrolment.progress.includes(this.state.video.moduleId)){
+          await this.triggerComplete();
+          this.props.addNotification('We remark that you have watched this video');
+
+          //update enrolment
+          result = await this.loadEnrolment();
+          this.setState({enrolment:result});
+
+        }
+      }
+    } catch(e){
+      console.log('error updating enrolment');
       console.log(e);
     }
   }
@@ -33,6 +64,20 @@ export default class Video extends Component {
       path: `/modules/${this.props.match.params.moduleId}`,
       queryParams: {courseId:this.props.match.params.courseId}
     });
+  }
+  loadEnrolment = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: `/enrolment/${this.state.video.courseId}`
+    });
+  }
+  triggerComplete = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${this.state.video.courseId}/attend/${this.state.video.moduleId}`
+    })
+
   }
   render(){
     if(this.props.currentUser === null){
@@ -73,7 +118,7 @@ export default class Video extends Component {
             { this.state.validVideo ?
               <div>
                 <div className="embed-responsive embed-responsive-16-by-9" style={ {height:'900px'}}>
-                  <iframe src={video.body.convertedUrl} width="1600"></iframe>
+                  <iframe src={video.body.convertedUrl} title={video.title} width="1600"></iframe>
                 </div>
                 { video.body.description.split('\n').map( (p,i) => <p key={i} className="text-left">{p}</p>)}
               </div>

@@ -25,7 +25,7 @@ class CourseCard extends Component {
           this.props.course.userId === identityId ? (<span>You own this course</span>) :
           this.props.enrolments.find( (e) => { return e.courseId === this.props.course.courseId;}) === undefined ?
             (<Button color="primary" tag={Link} to={`/courses/promo/${this.props.course.courseId}`}>Learn More</Button>) :
-            (<span>Enroled</span>)
+            (<Button color="info" tag={Link} to={`/courses/toc/${this.props.course.courseId}`}>Enroled</Button>)
         }
         </CardFooter>
       </Card>

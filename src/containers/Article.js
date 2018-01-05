@@ -1,4 +1,5 @@
 import React, { Component } from "react";
+//import AWS from 'aws-sdk';
 import { Container, Row, Jumbotron, Breadcrumb, BreadcrumbItem, Collapse } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardImg, CardText } from 'reactstrap';
 import './Article.css';
@@ -15,15 +16,27 @@ import Waypoint from 'react-waypoint';
 export default class Article extends Component {
   constructor(props){
     super(props);
-    this.state = {article:null}
+    this.state = {article:null, enrolment:null}
   }
   componentDidMount = async() => {
     var handle = this;
+
     try {
       var result = await this.loadArticle();
       handle.setState({article:result});
+
     } catch(e){
       console.log('error fetching article');
+      console.log(e);
+    }
+
+    //get enrolment status
+    try {
+      result = await this.getEnrolment();
+      handle.setState({enrolment:result});
+    } catch(e){
+      console.log('error getting enrolment status');
+      console.log('ignore if you own this course');
       console.log(e);
     }
 
@@ -37,12 +50,48 @@ export default class Article extends Component {
 
 
   }
-  handleEnterViewport = () => {
+  getEnrolment = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: `/enrolment/${this.state.article.courseId}`
+    })
+  }
+  handleEnterViewport = async () => {
+    var handle = this;
     console.log('should trigger class attended');
     /*
       1. check if progress has already been made
       2. send progress updates if necessary
     */
+    if(this.state.enrolment !== null){
+      //check if you already attend this article
+      console.log('should check attendance');
+      if( !handle.state.enrolment.progress.includes(handle.state.article.moduleId)){
+        try {
+          //check attendance
+          console.log('notifyProgress');
+          await this.notifyProgress();
+
+          //update the erolment
+          console.log('get updated enrollment status');
+          var result = await this.getEnrolment();
+
+          this.props.addNotification('We remark that you have read this article');
+          handle.setState({enrolment:result});
+        } catch (e){
+          console.log('error getting attendance');
+          console.log(e);
+        }
+      } //if()
+    }
+  }
+  notifyProgress = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${this.state.article.courseId}/attend/${this.state.article.moduleId}`,
+      body: {}
+    })
   }
   render(){
     if(this.props.currentUser === null){
@@ -68,12 +117,12 @@ export default class Article extends Component {
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to="/user/landing">{ this.props.currentUser.name}</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to={`/courses/toc/${article.courseId}`}>{article.courseMeta.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem active>Module X: {article.title}</BreadcrumbItem>
+            <BreadcrumbItem active>Module {article.order}: {article.title}</BreadcrumbItem>
           </Breadcrumb>
         </Container>
         <Jumbotron fluid>
           <Container>
-            <h4 className="display-4">Chapter X: {article.title}</h4>
+            <h4 className="display-4">Chapter {article.order}: {article.title}</h4>
             <p className="lead">{article.description}</p>
           </Container>
         </Jumbotron>
@@ -181,11 +230,3 @@ export default class Article extends Component {
     )
   }
 }
-
-/*
-          <Row><div className="col-12 col-md-8">{
-            article.body.split('\n').map( (p,i) => {
-              return (<p key={i} className={`${i === 0 ? 'lead' : ''}`}>{p}</p>)
-            })
-          }</div></Row>
-          */

@@ -12,12 +12,21 @@ export default class DocViewer extends Component {
     super(props);
 
     this.state = {
-      doc:null
+      doc:null, enrolment:null
     }
   }
   componentDidMount = async () => {
     try {
-      var result = await this.loadDoc();
+      var result = await this.loadEnrolment()
+      this.setState({enrolment:result});
+    } catch(e){
+      console.log('failed to get enrolment');
+      console.log('ignore this is you own this course');
+      console.log(e);
+    }
+
+    try {
+      result = await this.loadDoc();
       var fileLoc = result.body === null || result.body === undefined ?
         null :
         result.body.location || result.body;
@@ -32,6 +41,40 @@ export default class DocViewer extends Component {
       endpoint: config.apiGateway.MODULE_URL,
       path: `/modules/${this.props.match.params.moduleId}`,
       queryParams: {courseId:this.props.match.params.courseId}
+    });
+  }
+  loadEnrolment = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: `/enrolment/${this.props.match.params.courseId}`
+    })
+  }
+  handleComplete = async () =>{
+    console.log('should update module attandance');
+    if(this.state.enrolment !== null){
+      //check if already attend
+      if(! this.state.enrolment.progress.includes( this.state.doc.moduleId)){
+        try{
+          //mark attendance if required
+          await this.notifyProgress();
+
+          //update enrolment state
+          var result = this.loadEnrolment();
+          this.setState({enrolment:result});
+          this.props.addNotification('We remark that you have read this document');
+        } catch(e){
+          console.log('error in updating enrolment status')
+          console.log(e);
+        }
+      }
+    }
+  }
+  notifyProgress = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${this.state.doc.courseId}/attend/${this.state.doc.moduleId}`,
+      body: {}
     });
   }
   render(){
@@ -67,7 +110,7 @@ export default class DocViewer extends Component {
           {
             doc.body === null ?
             <p>Document not configured. Contact author if you expecting a documment.</p> :
-            <DocPreview file={this.state.file} />
+            <DocPreview file={this.state.file} triggerComplete={this.handleComplete} />
           }
         </Container>
       </div>

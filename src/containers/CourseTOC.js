@@ -6,12 +6,13 @@ import { Link } from 'react-router-dom';
 import loremIpsum from 'lorem-ipsum';
 import randomInt from 'random-int';
 import { invokeApig } from "../libs/awsLibs";
+import config from '../config';
 import Helmet from 'react-helmet';
 
 export default class CourseTOC extends Component {
   constructor(props){
     super(props);
-    this.state = { course:null }
+    this.state = { course:null, enrolment:null }
   }
   componentDidMount = async () => {
     /*
@@ -30,9 +31,25 @@ export default class CourseTOC extends Component {
     } catch(e){
       console.log(e);
     };
+
+    try {
+      result = await this.getEnrolment();
+      this.setState({enrolment:result});
+    } catch(e){
+      console.log('enrolment not found');
+      console.log('ignore this if you own this course');
+      console.log(e);
+    }
   }
   getCourse = () => {
     return invokeApig({path:`/courses/${this.props.match.params.id}`})
+  }
+  getEnrolment = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: `/enrolment/${this.props.match.params.id}`
+    });
+
   }
   render(){
     //render nothing is course is null
@@ -45,14 +62,13 @@ export default class CourseTOC extends Component {
         </Row>
       </Container>);
     }
+
     return (
       <div>
         <Helmet>
           <title>{this.state.course.name}/TOC - AutoTrainer</title>
         </Helmet>
         <Container className="mt-2">
-          <Row>
-          </Row>
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
@@ -75,7 +91,7 @@ export default class CourseTOC extends Component {
             </div>
             <div className="col-12">
               <h3 className="display-4">Table of Contents</h3>
-              <CTOC {...this.state} {...this.props} showLink={true}/>
+              <CTOC {...this.state} {...this.props} showLink={true} enrolment={this.state.enrolment}/>
             </div>
             <div className="col-12">
               <h2 className="display-4">Additional Resources</h2>

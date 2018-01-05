@@ -35,9 +35,6 @@ export default class VideoBuilder extends Component {
       queryParams: {courseId:this.props.match.params.courseId}
     });
   }
-  validateVideo = () => {
-    //validate video.body.origUrl and convertedUrl
-  }
   handleUpdateVideo = async (e) => {
     //update video button
     try {
@@ -99,16 +96,33 @@ export default class VideoBuilder extends Component {
         origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
           `https://player.vimeo.com/video${origUrl.pathname}` :
         '';
+      var videoVendor =
+        origUrl.hostname === 'www.youtube.com' || origUrl.hostname === 'youtube.com' ?
+          'YOUTUBE' :
+        origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
+          'VIMEO' :
+        '';
+      var videoID =
+        origUrl.hostname === 'www.youtube.com' || origUrl.hostname === 'youtube.com' ?
+          origUrl.searchParams.get('v') :
+        origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
+          origUrl.pathname :
+        '';
+
       newVideo.body.origUrl = targetValue;
       newVideo.body.convertedUrl = videoUrl;
+      newVideo.body.vendor = videoVendor;
+      newVideo.body.videoID = videoID;
+
       //this.setState({url:origUrl, convertedUrl:videoUrl, validVideo:true});
-      this.setState({video:newVideo, validVideo:true});
+      this.setState({video:newVideo, validVideo:videoUrl !== ''});
     } catch(e){
       console.log('error getting url name');
       newVideo.body.origUrl = targetValue;
       newVideo.body.convertedUrl = '';
       this.setState({video:newVideo, validVideo:false});
     };
+
 
   }
   render(){
@@ -171,6 +185,10 @@ export default class VideoBuilder extends Component {
                 </Card>
               ) : (<p>Video link is invalid</p>)
             }
+          </Col>
+          <Col xs="12">
+            <div id="yt_player">
+            </div>
           </Col>
           <Col md="12" className="mt-3 text-left">
             <Button type="button" color="primary" disabled={!this.validateForm()} onClick={this.handleUpdateVideo}>Update Video</Button>
