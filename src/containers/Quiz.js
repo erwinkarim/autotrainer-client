@@ -28,6 +28,7 @@ export default class Quiz extends Component {
       console.log(e);
     }
 
+    //load enrolment
     try {
       result = await this.loadEnrolment();
       this.setState({enrolment:result});
@@ -35,6 +36,22 @@ export default class Quiz extends Component {
       console.log('error getting enrolment');
       console.log('ignore this if you own this course');
       console.log(e);
+    }
+
+    //update current answers if available
+    if(this.state.enrolment !== null){
+      if(this.state.enrolment.progress_detail === undefined){
+        return;
+      }
+
+      var progress_detail = this.state.enrolment.progress_detail;
+      var current_progress = progress_detail.find(
+        (e) => Object.keys(e)[0] === this.state.quiz.moduleId
+      );
+      if(current_progress){
+        var current_answers = JSON.parse(current_progress[this.state.quiz.moduleId]).current_answers;
+        this.setState({answers:current_answers});
+      }
     }
   }
   loadQuiz = () => {
@@ -51,17 +68,25 @@ export default class Quiz extends Component {
       path:`/enrolment/${this.state.quiz.courseId}`,
     });
   }
-  recordAnswer = (e) => {
+  recordAnswer = async (e) => {
     console.log('should record answer');
     var newAnswer = this.state.answers;
     newAnswer[parseInt(e.target.dataset.qindex,10)] =  parseInt(e.target.dataset.aindex,10);
     this.setState({answers:newAnswer});
-
     //record attendance when all question are answered
     if( newAnswer.reduce( (a,v) => v !== undefined ? a+1 : a+0,0) === this.state.quiz.body.length){
       this.triggerComplete();
     }
 
+    //update answer to the db
+    try {
+      await this.notifyProgressDetail();
+
+    } catch(e){
+      console.log('error updating enrolment progress detail');
+      console.log('ignore this if you own this course');
+      console.log(e);
+    }
 
 
   }
@@ -91,6 +116,16 @@ export default class Quiz extends Component {
       method: 'POST',
       path: `/enrolment/${this.state.quiz.courseId}/attend/${this.state.quiz.moduleId}`,
       body: {}
+    })
+  }
+  notifyProgressDetail = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${this.state.quiz.courseId}/mark_progress/${this.state.quiz.moduleId}`,
+      body: {
+        "current_answers": this.state.answers
+      }
     })
   }
   checkAnswer = (e) => {
@@ -159,6 +194,7 @@ export default class Quiz extends Component {
                           <FormGroup key={i2}>
                             <Label check disabled={this.state.checkAnswer}>
                               <Input type="radio" name={`q${i+1}-answer[]`} data-qindex={i} data-aindex={i2} onClick={this.recordAnswer}
+                                checked={this.state.answers[i] === i2 }
                                 disabled={this.state.checkAnswer} />
                               {a}
                               {
