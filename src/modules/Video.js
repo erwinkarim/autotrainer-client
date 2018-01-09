@@ -30,7 +30,7 @@ export default class Video extends Component {
 
     //load enrolment
     try{
-      var result = await this.loadEnrolment();
+      result = await this.loadEnrolment();
       this.setState({enrolment:result});
 
     } catch(e){

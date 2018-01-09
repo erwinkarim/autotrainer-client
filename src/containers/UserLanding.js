@@ -32,15 +32,18 @@ class EnrolledCourses extends Component {
 
   }
   render(){
+
     var enrolledCourses = this.state.courses.length === 0 ? (
       <div>You haven't enrolled in any courses yet.</div>
     ) : (
       <CardColumns>{ this.state.courses.map( (c,i) => {
-        return (<Card key={i}>
+        var courseComplete = c.progress.length === c.moduleCount;
+        return (<Card key={i} className={`${courseComplete ? 'border border-success' : ''}`}>
           <CardBody>
             <CardTitle><Link to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
             <CardText><strong>Progress</strong></CardText>
-            <CardText>{c.progress.length} modules attended</CardText>
+            <CardText>{c.progress.length} of {c.moduleCount} modules attended</CardText>
+            { courseComplete ? <CardText className="text-success">Course Completed!!!</CardText> : null}
           </CardBody>
         </Card>)
       })}</CardColumns>
