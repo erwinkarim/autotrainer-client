@@ -8,11 +8,12 @@ import randomInt from 'random-int';
 import { invokeApig } from "../libs/awsLibs";
 import config from '../config';
 import Helmet from 'react-helmet';
+import Notice from '../components/Notice'
 
 export default class CourseTOC extends Component {
   constructor(props){
     super(props);
-    this.state = { course:null, enrolment:null }
+    this.state = { course:null, enrolment:null, loading:true }
   }
   componentDidMount = async () => {
     /*
@@ -26,7 +27,7 @@ export default class CourseTOC extends Component {
       var result = await this.getCourse();
       console.log('results', result);
       if(result != null){
-        handle.setState({course:result});
+        handle.setState({course:result, loading: false});
       }
     } catch(e){
       console.log(e);
@@ -52,15 +53,14 @@ export default class CourseTOC extends Component {
 
   }
   render(){
-    //render nothing is course is null
+    //loading screen
+    if(this.state.loading){
+      return <Notice content="Course is loading ..." />
+    };
+
+    //course not found
     if(this.state.course === null){
-      return (<Container>
-        <Row>
-          <div className="col-12 col-md-8">
-            <p>Course not found or loading ...</p>
-          </div>
-        </Row>
-      </Container>);
+      return <Notice content="Course not found ..." />
     }
 
     return (

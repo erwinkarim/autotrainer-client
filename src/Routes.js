@@ -56,7 +56,7 @@ export default ({childProps}) =>
 
     {/* misc pages */}
     <Route path="/legal" exact component={Legal} />
-    <Route path="/contact" exact component={Contact} />
+    <AppliedRoute path="/contact" exact component={Contact} props={childProps} />
 
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />

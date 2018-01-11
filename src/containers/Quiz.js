@@ -49,8 +49,12 @@ export default class Quiz extends Component {
         (e) => Object.keys(e)[0] === this.state.quiz.moduleId
       );
       if(current_progress){
-        var current_answers = JSON.parse(current_progress[this.state.quiz.moduleId]).current_answers;
-        this.setState({answers:current_answers});
+        try {
+          var current_answers = JSON.parse(current_progress[this.state.quiz.moduleId]).current_answers;
+          this.setState({answers:current_answers});
+        } catch(e){
+          console.log('error parsing JSON');
+        }
       }
     }
   }
@@ -80,6 +84,7 @@ export default class Quiz extends Component {
 
     //update answer to the db
     try {
+      console.log('attemp to nofity progress detail');
       await this.notifyProgressDetail();
 
     } catch(e){
@@ -124,7 +129,7 @@ export default class Quiz extends Component {
       method: 'POST',
       path: `/enrolment/${this.state.quiz.courseId}/mark_progress/${this.state.quiz.moduleId}`,
       body: {
-        "current_answers": this.state.answers
+        current_answers: this.state.answers
       }
     })
   }

@@ -32,7 +32,6 @@ class App extends Component {
     var handle = this;
 
     //check for current user, if there is stored in storage, loaded and sign up
-    //var auth = this.initCognitoSDK();
     var auth = this.initCognitoSDK();
     handle.setState({auth:auth});
     var currentUser = auth.getCurrentUser();
