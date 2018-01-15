@@ -1,19 +1,10 @@
 import React, { Component } from "react";
-import {Jumbotron, Button, Container} from 'reactstrap';
-import {Row, CardDeck,Card, CardBody, CardTitle, CardText} from 'reactstrap';
+import {Jumbotron, Container, Row} from 'reactstrap';
 //import { Link } from "react-router-dom";
 import { HashLink as Link } from "react-router-hash-link";
 import "./Home.css";
-import loremIpsum from 'lorem-ipsum';
-import randomInt from 'random-int';
 
 export default class Home extends Component {
-  constructor(props){
-
-    super(props);
-    //console.log( fs.readdir(process.env.PUBLIC_URL));
-    console.log(process.env.PUBLIC_URL);
-  }
   render() {
     return (
       <div className="Home">
@@ -45,6 +36,8 @@ export default class Home extends Component {
              })}
           </Row>
         </Container>
+        {
+          /*
         <Jumbotron className="mb-0">
           <Container>
             <h3 className="display-4 text-center">Another Point is Made</h3>
@@ -67,16 +60,22 @@ export default class Home extends Component {
             </Row>
           </Container>
         </Jumbotron>
+          */
+        }
         <Jumbotron fluid className="mb-0">
           <div id="video" className="embed-responsive embed-responsive-16-by-9" style={{height:'80vh', width:'100vw'}}>
             <video controls poster="/videos/668515766_1200x680.webp">
               <source src={`//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4`} />
             </video>
           </div>
+          {
+            /*
           <Container>
             <h1 className="display-3">Final Points</h1>
             <p className="lead text-left">{loremIpsum({count:randomInt(2,4), unit:'sentances'})}</p>
           </Container>
+            */
+          }
         </Jumbotron>
       </div>
     );

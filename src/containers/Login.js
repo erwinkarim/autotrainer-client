@@ -56,6 +56,7 @@ export default class Login extends Component {
 
     };
     var auth = new CognitoAuth(authData);
+    auth.useCodeGrantFlow();
     auth.userhandler = {
       /*
       onSuccess: (result) => {console.log('logged in!!')},

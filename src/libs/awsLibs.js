@@ -15,6 +15,9 @@ export async function authUser() {
 
   //console.log('authUser: initCognitoSDK and getCurrentUser');
   var auth = initCognitoSDK();
+  var curUrl = window.location.href;
+
+  auth.parseCognitoWebResponse(curUrl);
   const currentUser = auth.getCurrentUser();
   //const currentUser = getCurrentUser();
 
@@ -24,10 +27,10 @@ export async function authUser() {
   }
 
   //const userToken = await getUserToken(currentUser);
-  //console.log('authUser: getUserToken');
+  console.log('authUser: getUserToken');
   const userToken = await getUserToken(auth);
 
-  //console.log('authUser: getAwsCredentials');
+  console.log('authUser: getAwsCredentials');
   await getAwsCredentials(userToken);
 
   return true;
@@ -58,30 +61,20 @@ async function getUnauthCredentials(){
 }
 */
 
+/*
+  TODO: figure out how use the refresh token
+*/
 async function getUserToken(auth) {
   // replace this w/ something from cognito
   try {
-    auth.getSession();
+    //in case have to get from refresh token
+    await auth.getSession();
+
   } catch(e){
     //console.log(e);
     return ('failed to get user session');
   }
   return auth.signInUserSession.idToken.jwtToken;
-  /*
-  return new Promise((resolve, reject) => {
-    console.log('getUserToken: trying to get session');
-    currentUser.getSession(function(err, session) {
-      if (err) {
-        console.log('getUserToken: failed to get user session');
-        reject(err);
-        return;
-      }
-      //resolve(session.getIdToken().getJwtToken());
-      console.log('getUserToken: successfully got user session');
-      resolve(currentUser.signInUserSession.idToken.jwtToken);
-    });
-  });
-  */
 }
 
 
@@ -91,10 +84,11 @@ export function initCognitoSDK(){
     ClientId : process.env.REACT_APP_COGNITO_APP_ID, // Your client id here
     AppWebDomain : process.env.REACT_APP_APP_WEB_DOMAIN,
     TokenScopesArray : ['email', 'openid','profile'],
-    RedirectUriSignIn : `${window.location.protocol}//${window.location.host}/login`,
+    RedirectUriSignIn : `${window.location.protocol}//${window.location.host}/welcome`,
     RedirectUriSignOut : `${window.location.protocol}//${window.location.host}/logout`
   };
   var auth = new CognitoAuth(authData);
+  auth.useCodeGrantFlow();
   auth.userhandler = {
     /*
     onSuccess: (result) => {console.log('logged in!!')},

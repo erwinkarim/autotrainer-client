@@ -71,7 +71,7 @@ export default class CourseTOC extends Component {
         <Container className="mt-2">
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
             <BreadcrumbItem active>{this.state.course.name}</BreadcrumbItem>
           </Breadcrumb>
         </Container>

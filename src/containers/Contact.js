@@ -51,7 +51,7 @@ export default class Contact extends Component {
 
     const emailParams = {
       Destination: {
-        ToAddresses: [ 'enquiry@actuarialpartners.com' ]
+        ToAddresses: [ 'enquiry@actuarialpartners.com', this.props.currentUser.email ]
       },
       Message: {
         Body: {
@@ -65,7 +65,7 @@ export default class Contact extends Component {
           }
         },
         Subject: {
-          Data: 'Enquiry / Comment from learn@AP',
+          Data: `Enquiry / Comment from ${this.props.currentUser.name}`,
           Charset: 'UTF-8'
         }
       },

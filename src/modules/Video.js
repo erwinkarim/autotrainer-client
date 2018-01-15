@@ -10,7 +10,7 @@ export default class Video extends Component {
   constructor(props){
     super(props);
     this.state = {
-      video:null, validVideo:false, enrolment:null
+      video:null, validVideo:false, enrolment:null, loading:true
     };
   }
   componentDidMount = async () => {
@@ -20,7 +20,7 @@ export default class Video extends Component {
         {origUrl:'', convertedUrl:'', description:''} :
         result.body;
       var validVideo = result.body.origUrl.length > 0 && result.body.convertedUrl.length > 0;
-      this.setState({video:result, validVideo:validVideo});
+      this.setState({video:result, validVideo:validVideo, loading:false});
 
 
     } catch(e){
@@ -80,6 +80,11 @@ export default class Video extends Component {
 
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Video is loading ..." />
+
+    }
+
     if(this.props.currentUser === null){
       return (<Notice content="user Unauthorized" />);
     };
@@ -100,7 +105,7 @@ export default class Video extends Component {
             <Col sm="12">
               <Breadcrumb>
                 <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
-                <BreadcrumbItem tag={Link} to="/user/landing">{this.props.currentUser.name}</BreadcrumbItem>
+                <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
                 <BreadcrumbItem><Link to={`/courses/toc/${video.courseId}`}>{video.courseMeta.name}</Link></BreadcrumbItem>
                 <BreadcrumbItem active>Module X: {video.title}</BreadcrumbItem>
               </Breadcrumb>

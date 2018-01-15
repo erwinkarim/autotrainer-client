@@ -8,6 +8,7 @@ import { invokeApig } from "../libs/awsLibs";
 import config from '../config';
 import CTOC from '../components/CTOC';
 import Helmet from 'react-helmet';
+import Notice from '../components/Notice';
 
 /* button to enrol or show TOC */
 class EnrolButton extends Component {
@@ -32,7 +33,7 @@ export default class CoursePromo extends Component {
   constructor(props){
     super(props);
     this.state = {
-      course:null, enrolment:null
+      course:null, enrolment:null, loading:true
     }
   }
   componentDidMount = async() => {
@@ -41,7 +42,7 @@ export default class CoursePromo extends Component {
     try {
       var result = await this.getCourse();
       if(result != null){
-        handle.setState({course:result });
+        handle.setState({course:result, loading:false });
       }
     } catch(e){
       //throw new Error(e);
@@ -87,10 +88,15 @@ export default class CoursePromo extends Component {
     });
   }
   render(){
-    //check if course is loaded
+    if(this.state.loading){
+      return <Notice content="Loading course ..." />
+
+    };
+
     if(this.state.course === null){
-      return (<div>Course not yet loaded ...</div>)
-    }
+      return <Notice content="Course not found..." />;
+    };
+
     return (
       <div>
         <Helmet>

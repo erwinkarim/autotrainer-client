@@ -44,7 +44,7 @@ class MainNav extends Component {
                       <img alt={this.props.currentUser.name} height="42" className="circle" src={this.props.currentUser.picture} />
                     </DropdownToggle>
                     <DropdownMenu right className="" style={ {'width':`${this.props.currentUser.email.length*0.9}em`, maxWidth:'100vw'}} >
-                      <DropdownItem tag={Link} to="/user/landing">
+                      <DropdownItem tag={Link} to="/welcome">
                         <Row className="mx-0">
                           <div className="col-3 pl-0">
                             <img height="45" alt={this.props.currentUser.name} className="circle" src={this.props.currentUser.picture} />

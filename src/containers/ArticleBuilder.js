@@ -36,7 +36,7 @@ export default class ArticleBuilder extends Component {
   ]
   constructor(props){
     super(props);
-    this.state = {article:null};
+    this.state = {article:null, loading:true};
   }
   componentDidMount = async() => {
     var handle = this;
@@ -47,7 +47,7 @@ export default class ArticleBuilder extends Component {
       if(result.body === undefined){
         result.body = '';
       }
-      handle.setState({article:result});
+      handle.setState({article:result, loading:false});
     } catch(e){
       console.log('error getting the article');
       console.log(e);
@@ -102,6 +102,10 @@ export default class ArticleBuilder extends Component {
     this.setState({article:newArticle});
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Article is loading ..."/>;
+    }
+
     //user is authenticated
     if(!this.props.isAuthenticated){
       return (<Notice content='User is not authenticated.' />);
@@ -122,7 +126,7 @@ export default class ArticleBuilder extends Component {
           <div className="col-12">
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to={`/user/course_builder/${courseId}`}>Course Builder: {this.state.article.courseMeta.name}</Link></BreadcrumbItem>
               <BreadcrumbItem active>Article Builder: {this.state.article.title}</BreadcrumbItem>
             </Breadcrumb>

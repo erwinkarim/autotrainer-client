@@ -72,7 +72,7 @@ export default class QuizBuilder extends Component {
   constructor(props){
     super(props);
     this.state = {
-      newQuestionMenu:false, quiz:null
+      newQuestionMenu:false, quiz:null, loading:true
     };
   }
   componentDidMount = async () => {
@@ -81,7 +81,7 @@ export default class QuizBuilder extends Component {
     try {
       var result = await this.getQuiz();
       result.body = result.body === undefined || result.body === null ? [] : result.body;
-      handle.setState({quiz:result});
+      handle.setState({quiz:result, loading:false});
     } catch(e){
       console.log('error getting quiz');
       console.log(e);
@@ -182,6 +182,10 @@ export default class QuizBuilder extends Component {
   }
   toggleNewQuestion = (e)=>{e.preventDefault(); this.setState({newQuestionMenu:!this.state.newQuestionMenu}); }
   render(){
+    if(this.state.loading){
+      return <Notice content="Quiz is loading ..."/>;
+    }
+    
     if(this.props.currentUser === null){
       return (<Notice title="Unauthorized" content="User not logged in"/>);
     };
@@ -199,7 +203,7 @@ export default class QuizBuilder extends Component {
           <div className="col-12">
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to={`/user/course_builder/${this.state.quiz.courseId}`}>Course Builder: {this.state.quiz.courseMeta.name}</Link></BreadcrumbItem>
               <BreadcrumbItem active>Quiz Builder: {this.state.quiz.title}</BreadcrumbItem>
             </Breadcrumb>

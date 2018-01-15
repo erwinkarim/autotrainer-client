@@ -47,7 +47,7 @@ export default ({childProps}) =>
 
     {/* user pages */}
     <AppliedRoute path="/courses/new" exact component={NewCourse} props={childProps} />
-    <AppliedRoute path="/user/landing" exact component={UserLanding} props={childProps} />
+    <AppliedRoute path="/welcome" exact component={UserLanding} props={childProps} />
     <AppliedRoute path="/user/course_builder/:id" exact component={CourseBuilder} props={childProps} />
     <AppliedRoute path="/user/article_builder/:courseId/:moduleId" exact component={ArticleBuilder} props={childProps} />
     <AppliedRoute path="/user/quiz_builder/:courseId/:moduleId" exact component={QuizBuilder} props={childProps} />

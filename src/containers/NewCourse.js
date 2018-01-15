@@ -54,7 +54,7 @@ export default class NewCourse extends Component {
       </Helmet>
       <Breadcrumb>
         <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
-        <BreadcrumbItem tag={Link} to="/user/landing">{this.props.currentUser.name}</BreadcrumbItem>
+        <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
         <BreadcrumbItem active>New Course</BreadcrumbItem>
       </Breadcrumb>
       <Row className="text-left">

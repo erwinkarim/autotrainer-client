@@ -15,14 +15,14 @@ import './Quiz.css';
 export default class Quiz extends Component {
   constructor(props){
     super(props);
-    this.state = {quiz:null, answers:[], ansChecked:false, enrolment:null};
+    this.state = {quiz:null, answers:[], ansChecked:false, enrolment:null, loading:true};
   }
   componentDidMount = async(e) => {
     var handle = this;
     try {
       console.log('attemp to load quiz');
       var result = await this.loadQuiz();
-      handle.setState({quiz:result, answers:Array.from(Array(result.body.length)), checkAnswer:false});
+      handle.setState({quiz:result, answers:Array.from(Array(result.body.length)), checkAnswer:false, loading:false});
     } catch(e){
       console.log('error getting quiz');
       console.log(e);
@@ -140,6 +140,10 @@ export default class Quiz extends Component {
     TODO: stop render new things everytime you cilck something
   */
   render(){
+    if(this.state.loading){
+      return <Notice content="Quiz is loading ..."/>;
+    }
+
     if(this.props.currentUser === null){
       return (<Notice content="Not logged in" />);
     }
@@ -160,7 +164,7 @@ export default class Quiz extends Component {
           <div className="col-12">
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to={`/courses/toc/${this.state.quiz.courseId}`}>{this.state.quiz.courseMeta.name}</Link></BreadcrumbItem>
               <BreadcrumbItem active>Module {this.state.quiz.order}: {this.state.quiz.title}</BreadcrumbItem>
             </Breadcrumb>

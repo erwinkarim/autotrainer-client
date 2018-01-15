@@ -16,14 +16,14 @@ import Waypoint from 'react-waypoint';
 export default class Article extends Component {
   constructor(props){
     super(props);
-    this.state = {article:null, enrolment:null}
+    this.state = {article:null, enrolment:null, loading:true}
   }
   componentDidMount = async() => {
     var handle = this;
 
     try {
       var result = await this.loadArticle();
-      handle.setState({article:result});
+      handle.setState({article:result, loading:false});
 
     } catch(e){
       console.log('error fetching article');
@@ -94,6 +94,10 @@ export default class Article extends Component {
     })
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Article is loading ..."/>;
+    }
+
     if(this.props.currentUser === null){
       return (<Notice title="Unauthorized" content="You have not logged in yet ..."/>);
     }
@@ -115,7 +119,7 @@ export default class Article extends Component {
         <Container className="mt-2">
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/user/landing">{ this.props.currentUser.name}</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/welcome">{ this.props.currentUser.name}</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to={`/courses/toc/${article.courseId}`}>{article.courseMeta.name}</Link></BreadcrumbItem>
             <BreadcrumbItem active>Module {article.order}: {article.title}</BreadcrumbItem>
           </Breadcrumb>

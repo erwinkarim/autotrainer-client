@@ -13,7 +13,8 @@ export default {
     APP_CLIENT_ID: "YOUR_COGNITO_APP_CLIENT_ID"
   },
   banner: {
-    text:'Course Promo Text',
+    text:'IFRS17: From global ideas to local issues and challenges',
+    showButton: false,
     buttonText:'Register Now !',
     buttonLink:'/courses'
   }

@@ -13,7 +13,7 @@ import Helmet from 'react-helmet'
 export default class DocBuilder extends Component {
   constructor(props){
     super(props);
-    this.state = {doc:null, file: '/us_constitution.pdf'}
+    this.state = {doc:null, file: '/us_constitution.pdf', loading:true}
   }
   componentDidMount = async () => {
     try{
@@ -22,7 +22,7 @@ export default class DocBuilder extends Component {
       result.body = result.body === null || result.body === undefined ?
         {location:null, key:null } : result.body;
       var fileLoc = result.body.location;
-      this.setState({doc:result, file:fileLoc});
+      this.setState({doc:result, file:fileLoc, loading:false});
     } catch (e){
       console.log('error trying to get document');
       console.log(e);
@@ -118,6 +118,10 @@ export default class DocBuilder extends Component {
       this.state.doc.description.length > 0;
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Document is loading ..." />
+    }
+    
     if(this.props.currentUser === null){
       return (<Notice content="user Unauthorized" />);
     };
@@ -137,7 +141,7 @@ export default class DocBuilder extends Component {
           <Col sm="12">
             <Breadcrumb>
               <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
-              <BreadcrumbItem tag={Link} to="/user/landing">{this.props.currentUser.name}</BreadcrumbItem>
+              <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
               <BreadcrumbItem tag={Link} to={`/user/course_builder/${this.state.doc.courseId}`}>Course Builder: {this.state.doc.courseMeta.name}</BreadcrumbItem>
               <BreadcrumbItem active>Document Builder: {this.state.doc.title}</BreadcrumbItem>
             </Breadcrumb>

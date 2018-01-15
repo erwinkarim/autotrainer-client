@@ -30,9 +30,11 @@ class App extends Component {
   dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
   componentDidMount = () => {
     var handle = this;
+    var curUrl = window.location.href;
 
     //check for current user, if there is stored in storage, loaded and sign up
     var auth = this.initCognitoSDK();
+    auth.parseCognitoWebResponse(curUrl);
     handle.setState({auth:auth});
     var currentUser = auth.getCurrentUser();
     if(currentUser != null){
@@ -51,10 +53,12 @@ class App extends Component {
       ClientId : process.env.REACT_APP_COGNITO_APP_ID, // Your client id here
       AppWebDomain : process.env.REACT_APP_APP_WEB_DOMAIN,
       TokenScopesArray : ['email', 'openid','profile'],
-      RedirectUriSignIn : `${window.location.protocol}//${window.location.host}/login`,
+      RedirectUriSignIn : `${window.location.protocol}//${window.location.host}/welcome`,
       RedirectUriSignOut : `${window.location.protocol}//${window.location.host}/logout`
     };
     var auth = new CognitoAuth(authData);
+    // got the refresh token for this, but doesn't process fast enough when logging in
+    auth.useCodeGrantFlow();
     auth.userhandler = {
       /*
       onSuccess: (result) => {console.log('logged in!!')},
@@ -103,12 +107,20 @@ class App extends Component {
       ...this.state, ...{addNotification:this.addNotification, removeNotification:this.removeNotification}
     };
 
-    return (
-      <div className="App">
+    const topBanner = (
         <Alert color="primary" className="mb-0 text-left" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}>
           { config.banner.text }
-          <Button outline color="primary" className="ml-2" tag={Link} to={config.banner.buttonLink}>{config.banner.buttonText}</Button>
+          {
+            config.banner.showButton ? (
+              <Button outline color="primary" className="ml-2" tag={Link} to={config.banner.buttonLink}>{config.banner.buttonText}</Button>
+            ) : null
+          }
         </Alert>
+    );
+
+    return (
+      <div className="App">
+        { topBanner }
         <MainNav {...this.state} />
         <Routes childProps={childProps} />
         <NotificationStack

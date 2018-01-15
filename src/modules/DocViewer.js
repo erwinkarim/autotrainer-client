@@ -12,13 +12,13 @@ export default class DocViewer extends Component {
     super(props);
 
     this.state = {
-      doc:null, enrolment:null
+      doc:null, enrolment:null, loading:true
     }
   }
   componentDidMount = async () => {
     try {
       var result = await this.loadEnrolment()
-      this.setState({enrolment:result});
+      this.setState({enrolment:result, loading:false});
     } catch(e){
       console.log('failed to get enrolment');
       console.log('ignore this is you own this course');
@@ -78,6 +78,10 @@ export default class DocViewer extends Component {
     });
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Document is loading ..." />
+    };
+    
     if(this.state.doc === null){
       return (<Notice content="Document not loaded" />);
     }
@@ -95,7 +99,7 @@ export default class DocViewer extends Component {
         <Container className="mt-2">
           <Breadcrumb>
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/user/landing">{ this.props.currentUser.name}</Link></BreadcrumbItem>
+            <BreadcrumbItem><Link to="/welcome">{ this.props.currentUser.name}</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to={`/courses/toc/${doc.courseId}`}>{doc.courseMeta.name}</Link></BreadcrumbItem>
             <BreadcrumbItem active>Module X: {doc.title}</BreadcrumbItem>
           </Breadcrumb>

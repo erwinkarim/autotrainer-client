@@ -7,7 +7,6 @@ import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 
 import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, Collapse} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
-import randomInt from 'random-int';
 import toTitleCase from 'titlecase';
 import FontAwesome from 'react-fontawesome';
 import { invokeApig, s3Delete } from "../libs/awsLibs";
@@ -22,23 +21,24 @@ import config from '../config.js'
 class CourseUser extends Component {
   constructor(props){
     super(props);
-    this.state = {collapse:false}
-
+    this.state = {collapse:false};
   }
   toggleMenu = (e) => {
     this.setState({collapse: !this.state.collapse});
   }
   render(){
+    var modulesAttended = this.props.student.progress === undefined ? 0 :
+      this.props.student.progress.length;
     return (
       <Row>
         <Col xs="12" md="1">{this.props.index+1}</Col>
         <Col xs="12" md="8"><Button className="p-0" color="link" onClick={this.toggleMenu}>{this.props.student.userId}</Button></Col>
-        <Col xs="12" md="3">{this.props.student.progress.length} modules</Col>
+        <Col xs="12" md="3">{modulesAttended} modules</Col>
         <Collapse isOpen={this.state.collapse} className="col-12 mt-2">
           <CardColumns>
             <Card body>
               <CardTitle>Progress</CardTitle>
-              <CardText>{this.props.student.progress.length} modules completed</CardText>
+              <CardText>{modulesAttended} modules completed</CardText>
             </Card>
             <Card body>
               <CardTitle>Action</CardTitle>
@@ -432,7 +432,7 @@ class CourseModules extends Component {
 export default class CourseBuilder extends Component {
   constructor(props){
     super(props);
-    this.state = {settingActiveTab:'general', userDropdownOpen:false, course:null };
+    this.state = {settingActiveTab:'general', userDropdownOpen:false, course:null, loading:true };
   }
   toggle = (tab) => {
     if(this.state.settingActiveTab !== tab){
@@ -444,9 +444,11 @@ export default class CourseBuilder extends Component {
     var handle = this;
     try {
       var result = await this.getCourse();
-      result.tagline = result.tagline === undefined ? '' : result.tagline;
+      result.tagline = result.tagline === undefined || result.tagline === null ? '' : result.tagline;
+      result.key_points = result.key_points === undefined || result.key_points === null ? [] : result.key_points;
+
       if(result != null){
-        handle.setState({course:result});
+        handle.setState({course:result, loading:false});
       }
     } catch(e){
       console.log(e);
@@ -525,6 +527,10 @@ export default class CourseBuilder extends Component {
     return this.state.course.key_points.length < 3;
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Loading course ..." />;
+    }
+
     //user is authenticated
     if(!this.props.isAuthenticated){
       return (<Notice content='User is not authenticated.' />);
@@ -556,7 +562,7 @@ export default class CourseBuilder extends Component {
           <Col>
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to="/user/landing">{this.props.currentUser.name}</Link></BreadcrumbItem>
+              <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem active>Course Builder: {this.state.course.name}</BreadcrumbItem>
             </Breadcrumb>
           </Col>
@@ -571,9 +577,11 @@ export default class CourseBuilder extends Component {
               <NavItem>
                 <NavLink className={ classnames({active:this.state.settingActiveTab==='general'})} onClick={() => {this.toggle('general');}}>General</NavLink>
               </NavItem>
-              <NavItem>
-                <NavLink className={ classnames({active:this.state.settingActiveTab==='stats'})} onClick={() => {this.toggle('stats');}}>Stats</NavLink>
-              </NavItem>
+              { /*
+                  <NavItem>
+                    <NavLink className={ classnames({active:this.state.settingActiveTab==='stats'})} onClick={() => {this.toggle('stats');}}>Stats</NavLink>
+                  </NavItem>
+                */ }
               <NavItem>
                 <NavLink className={ classnames({active:this.state.settingActiveTab==='users'})} onClick={() => {this.toggle('users');}}>Users</NavLink>
               </NavItem>
@@ -585,23 +593,17 @@ export default class CourseBuilder extends Component {
                   handleUpdateCourse={this.handleUpdateCourse} deleteKeyPoint={this.deleteKeyPoint} validateGeneralForm={this.validateGeneralForm}
                 />
               </TabPane>
-              <TabPane tabId='stats' className="mb-2">
-                <p>Warning: Not yet configured</p>
-                <ul>
-                  <li>Distributed: {randomInt(40,540)} users </li>
-                  <li>Started: {randomInt(40,540)} users </li>
-                  <li>Finished: {randomInt(40,540)} users </li>
-                </ul>
-                {
-                  /*
-                    To configure banner background picture
-                    <FormGroup>
-                      <Label>Banner Picture</Label>
-                      <p>upload banner picture here ...</p>
-                    </FormGroup>
-                  */
-                }
-              </TabPane>
+              { /*
+                <TabPane tabId='stats' className="mb-2">
+                  <p>Warning: Not yet configured</p>
+                  <ul>
+                    <li>Distributed: {randomInt(40,540)} users </li>
+                    <li>Started: {randomInt(40,540)} users </li>
+                    <li>Finished: {randomInt(40,540)} users </li>
+                  </ul>
+                </TabPane>
+              */
+              }
               <TabPane tabId='users'>
                 <CourseUsers {...this.state } {...this.props}/>
               </TabPane>

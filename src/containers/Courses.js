@@ -37,13 +37,13 @@ export default class Courses extends Component {
   constructor(props){
     super(props);
 
-    this.state = {courses:[], enrolments:[]};
+    this.state = {courses:[], enrolments:[], loading:true};
   }
   componentDidMount = async() => {
     try{
       var results = await this.getCourses();
       var enrolmentResults = await this.getEnrolment();
-      this.setState({courses:results, enrolments: enrolmentResults});
+      this.setState({courses:results, enrolments: enrolmentResults, loading: false});
     }catch(e){
       console.log('error getting courses');
       console.log(e);
@@ -62,6 +62,10 @@ export default class Courses extends Component {
     });
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Loading ..." />;
+    };
+
     if(!this.props.isAuthenticated){
       return (<div>User is not authenticated</div>);
     };

@@ -13,7 +13,7 @@ import { invokeApig } from "../libs/awsLibs";
 export default class VideoBuilder extends Component {
   constructor(props){
     super(props);
-    this.state = { video:null, url:'', convertedUrl:'', validVideo:false };
+    this.state = { video:null, url:'', convertedUrl:'', validVideo:false, loading:true };
   }
   componentDidMount = async () => {
     try{
@@ -22,7 +22,7 @@ export default class VideoBuilder extends Component {
         {origUrl:'', convertedUrl:'', description:''} :
         result.body;
       var validVideo = result.body.origUrl.length > 0 && result.body.convertedUrl.length > 0;
-      this.setState({video:result, validVideo:validVideo});
+      this.setState({video:result, validVideo:validVideo, loading:false});
     } catch(e){
       console.log('error loading module');
       console.log(e);
@@ -126,6 +126,10 @@ export default class VideoBuilder extends Component {
 
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Video is loading ..." />
+    }
+
     if(this.props.currentUser === null){
       return (<Notice content="user Unauthorized" />);
     };
@@ -143,7 +147,7 @@ export default class VideoBuilder extends Component {
           <Col sm="12">
             <Breadcrumb>
               <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
-              <BreadcrumbItem tag={Link} to="/user/landing">{this.props.currentUser.name}</BreadcrumbItem>
+              <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
               <BreadcrumbItem tag={Link} to={`/user/course_builder/${this.state.video.courseId}`}>Course Builder: {this.state.video.courseMeta.name}</BreadcrumbItem>
               <BreadcrumbItem active>Video Builder: {this.state.video.title}</BreadcrumbItem>
             </Breadcrumb>
