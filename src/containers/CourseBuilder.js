@@ -29,10 +29,17 @@ class CourseUser extends Component {
   render(){
     var modulesAttended = this.props.student.progress === undefined ? 0 :
       this.props.student.progress.length;
+
+    var studentName = this.props.student.userMeta ?
+      this.props.student.userMeta.UserAttributes.find( e => e.Name === 'name').Value :
+      this.props.student.userId;
+
     return (
       <Row>
         <Col xs="12" md="1">{this.props.index+1}</Col>
-        <Col xs="12" md="8"><Button className="p-0" color="link" onClick={this.toggleMenu}>{this.props.student.userId}</Button></Col>
+        <Col xs="12" md="8">
+          <Button className="p-0" color="link" onClick={this.toggleMenu}>{studentName}</Button>
+        </Col>
         <Col xs="12" md="3">{modulesAttended} modules</Col>
         <Collapse isOpen={this.state.collapse} className="col-12 mt-2">
           <CardColumns>
@@ -50,7 +57,6 @@ class CourseUser extends Component {
       </Row>
     );
   }
-
 }
 
 /*
@@ -462,7 +468,8 @@ export default class CourseBuilder extends Component {
     console.log('should send updates on new course settings');
     try{
       await this.updateCourse();
-      this.props.history.push(`/courses/promo/${this.state.course.courseId}`);
+      // so annoying when doing multple updates ...
+      //this.props.history.push(`/courses/promo/${this.state.course.courseId}`);
       this.props.addNotification('Course updated ...');
     }catch(e){
       console.log(e);
@@ -577,6 +584,9 @@ export default class CourseBuilder extends Component {
               <NavItem>
                 <NavLink className={ classnames({active:this.state.settingActiveTab==='general'})} onClick={() => {this.toggle('general');}}>General</NavLink>
               </NavItem>
+              <NavItem>
+                <NavLink className={ classnames({active:this.state.settingActiveTab==='pub_status'})} onClick={() => {this.toggle('pub_status');}}>Publication</NavLink>
+              </NavItem>
               { /*
                   <NavItem>
                     <NavLink className={ classnames({active:this.state.settingActiveTab==='stats'})} onClick={() => {this.toggle('stats');}}>Stats</NavLink>
@@ -592,6 +602,16 @@ export default class CourseBuilder extends Component {
                   handleChange={this.handleChange} enableAddKeyPoint={this.enableAddKeyPoint} newKeyPoint={this.newKeyPoint}
                   handleUpdateCourse={this.handleUpdateCourse} deleteKeyPoint={this.deleteKeyPoint} validateGeneralForm={this.validateGeneralForm}
                 />
+              </TabPane>
+              <TabPane tabId='pub_status'>
+                <FormGroup>
+                  <Label>Publication Status</Label>
+                  <Input type="select" id='status' value={this.state.course.status} onChange={this.handleChange}>
+                    <option value='unpublished'>Not Published</option>
+                    <option value='published'>Published</option>
+                  </Input>
+                </FormGroup>
+                <Button color="primary" onClick={this.handleUpdateCourse}>Update publication status</Button>
               </TabPane>
               { /*
                 <TabPane tabId='stats' className="mb-2">

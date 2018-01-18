@@ -9,11 +9,13 @@ export async function authUser() {
     AWS.config.credentials &&
     Date.now() < AWS.config.credentials.expireTime - 60000
   ) {
-    //console.log('authUser: credentials is valid');
+    console.log('authUser: credentials is valid');
     return true;
   }
 
+
   //console.log('authUser: initCognitoSDK and getCurrentUser');
+  console.log('attempt to rebuild session');
   var auth = initCognitoSDK();
   var curUrl = window.location.href;
 
@@ -36,47 +38,26 @@ export async function authUser() {
   return true;
 }
 
-/*
-function getCurrentUser() {
-  //replace this w/ something about cognito-auth-js
-  // setup CognitoAuth and get current user and session??
-  /*
-  const userPool = new CognitoUserPool({
-    UserPoolId: config.cognito.USER_POOL_ID,
-    ClientId: config.cognito.APP_CLIENT_ID
-  });
-  return userPool.getCurrentUser();
-}
-*/
-
-/*
-Get Unauthenticated Credeitnails from the ID Pool
-The ID pool need to enabled Unauthenticated access
-async function getUnauthCredentials(){
-  AWS.config.region = 'ap-southeast-1'; // Region
-  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
-      IdentityPoolId: 'ap-southeast-1:d305ce7d-b107-480b-93cd-a4c0c9881a42'
-  });
-  await AWS.config.credentials.getPromise();
-}
-*/
-
-/*
-  TODO: figure out how use the refresh token
-*/
 async function getUserToken(auth) {
   // replace this w/ something from cognito
   try {
-    //in case have to get from refresh token
     await auth.getSession();
-
+    if(Date.now() > AWS.config.credentials.expireTime - 6000){
+      console.log('session expired, force refresh');
+      try{
+        await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
+      } catch(e){
+        console.log('error refreshing token inside getUserToken');
+        console.log(e);
+      }
+    }
   } catch(e){
     //console.log(e);
     return ('failed to get user session');
-  }
+  };
+
   return auth.signInUserSession.idToken.jwtToken;
 }
-
 
 export function initCognitoSDK(){
   var authData = {
@@ -213,3 +194,32 @@ export async function invokeApig({ path, endpoint = config.apiGateway.URL , meth
 
   return results.json();
 }
+
+/*
+function getCurrentUser() {
+  //replace this w/ something about cognito-auth-js
+  // setup CognitoAuth and get current user and session??
+  /*
+  const userPool = new CognitoUserPool({
+    UserPoolId: config.cognito.USER_POOL_ID,
+    ClientId: config.cognito.APP_CLIENT_ID
+  });
+  return userPool.getCurrentUser();
+}
+*/
+
+/*
+Get Unauthenticated Credeitnails from the ID Pool
+The ID pool need to enabled Unauthenticated access
+async function getUnauthCredentials(){
+  AWS.config.region = 'ap-southeast-1'; // Region
+  AWS.config.credentials = new AWS.CognitoIdentityCredentials({
+      IdentityPoolId: 'ap-southeast-1:d305ce7d-b107-480b-93cd-a4c0c9881a42'
+  });
+  await AWS.config.credentials.getPromise();
+}
+*/
+
+/*
+  TODO: figure out how use the refresh token
+*/

@@ -48,7 +48,7 @@ export default class CTOC extends Component {
     return (
       <div>
         {
-          this.props.enrolment === null ? null :
+          this.props.enrolment === null || this.props.enrolment === undefined ? null :
           this.props.enrolment.progress.length === this.state.modules.length ? (
             <Card body className="border border-success mb-2">
               <CardTitle className="mb-2">All modules attended</CardTitle>
@@ -57,7 +57,7 @@ export default class CTOC extends Component {
         }
         <CardColumns>{
           this.state.modules.map( (m,i) => {
-            var attended = this.props.enrolment === null ? false :
+            var attended = this.props.enrolment === null || this.props.enrolment === undefined ? false :
               this.props.enrolment.progress.includes(m.moduleId)
             return (
               <Card key={i} className={`${attended ? 'border border-success' : null}`}>

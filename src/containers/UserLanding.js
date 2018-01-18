@@ -106,6 +106,14 @@ export default class UserLanding extends Component {
       console.log(e);
     }
 
+    //attempt to check username
+    try {
+      await this.checkIdent();
+    } catch(e){
+      console.log('error checking username');
+      console.log(e);
+    }
+
   }
   getCourses = () => {
     return invokeApig({
@@ -133,6 +141,14 @@ export default class UserLanding extends Component {
         console.log(err);
       }
     }
+  }
+  checkIdent = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.IDENT_URL,
+      method: 'POST',
+      path: '/check',
+      queryParams: { username: this.props.currentUser['cognito:username']}
+    });
   }
   render(){
     var handle = this;

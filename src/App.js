@@ -28,7 +28,7 @@ class App extends Component {
 
   }
   dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
-  componentDidMount = () => {
+  componentDidMount = async () => {
     var handle = this;
     var curUrl = window.location.href;
 
@@ -41,7 +41,6 @@ class App extends Component {
       //TODO: use AWS credentials to refresh token??
       auth.getSession()
     }
-
   }
   userHasAuthenticated = authenticated => {
     this.setState({ isAuthenticated: authenticated });
@@ -67,9 +66,10 @@ class App extends Component {
       */
       onSuccess: async function(result) {
         console.log("Sign in success");
-        handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
+        var user = JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) ;
+        await handle.setState({currentUser:user });
         handle.userHasAuthenticated(true);
-        getAwsCredentials(result.idToken.jwtToken);
+        await getAwsCredentials(result.idToken.jwtToken);
         return true;
       },
       onFailure: function(err) {

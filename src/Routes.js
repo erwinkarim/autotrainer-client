@@ -18,6 +18,7 @@ import Legal from './containers/Legal';
 import Contact from './containers/Contact';
 import Logout from './containers/Logout';
 import NotFound from "./containers/NotFound";
+import TestFn from './containers/TestFn';
 
 
 import CourseBuilder from './containers/CourseBuilder';
@@ -57,6 +58,7 @@ export default ({childProps}) =>
     {/* misc pages */}
     <Route path="/legal" exact component={Legal} />
     <AppliedRoute path="/contact" exact component={Contact} props={childProps} />
+    <AppliedRoute path="/test" exact component={TestFn} props={childProps} />
 
     { /* Finally, catch all unmatched routes */ }
     <Route component={NotFound} />
