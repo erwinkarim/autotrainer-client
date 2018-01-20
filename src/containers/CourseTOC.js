@@ -3,8 +3,6 @@ import { Jumbotron, Container, Row, Breadcrumb, BreadcrumbItem} from 'reactstrap
 import CTOC from '../components/CTOC';
 import './CourseTOC.css';
 import { Link } from 'react-router-dom';
-import loremIpsum from 'lorem-ipsum';
-import randomInt from 'random-int';
 import { invokeApig } from "../libs/awsLibs";
 import config from '../config';
 import Helmet from 'react-helmet';
@@ -63,6 +61,9 @@ export default class CourseTOC extends Component {
       return <Notice content="Course not found ..." />
     }
 
+    var bg_styling = this.state.course.bg_pic ?
+      {backgroundImage:`url(${this.state.course.bg_pic})`, backgroundRepeat:'no-repeat', backgroundSize:'cover'} : 
+      null;
     return (
       <div>
         <Helmet>
@@ -75,9 +76,9 @@ export default class CourseTOC extends Component {
             <BreadcrumbItem active>{this.state.course.name}</BreadcrumbItem>
           </Breadcrumb>
         </Container>
-        <Jumbotron fluid>
+        <Jumbotron fluid style={ bg_styling }>
           <Container>
-            <h1 className="display-3">Welcome to {this.state.course.name}!!!</h1>
+            <h1 className="display-3">Welcome to {this.state.course.name}</h1>
             <p className="lead">{this.state.course.tagline}</p>
           </Container>
         </Jumbotron>
@@ -93,15 +94,17 @@ export default class CourseTOC extends Component {
               <h3 className="display-4">Table of Contents</h3>
               <CTOC {...this.state} {...this.props} showLink={true} enrolment={this.state.enrolment}/>
             </div>
-            <div className="col-12">
-              <h2 className="display-4">Additional Resources</h2>
-              <ul className="text-left">
-                <li>Should show list of tables/images/etc</li>
-              { Array.from(Array(randomInt(3,8)).keys()).map( (e,i) => {
-                return (<li key={i}>{ loremIpsum()}</li>);
-              })}
-              </ul>
-            </div>
+            { /*
+              <div className="col-12">
+                <h2 className="display-4">Additional Resources</h2>
+                <ul className="text-left">
+                  <li>Should show list of tables/images/etc</li>
+                { Array.from(Array(randomInt(3,8)).keys()).map( (e,i) => {
+                  return (<li key={i}>{ loremIpsum()}</li>);
+                })}
+                </ul>
+              </div>
+            */ }
           </Row>
         </Container>
       </div>

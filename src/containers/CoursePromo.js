@@ -2,8 +2,7 @@ import './CoursePromo.css';
 import React, { Component } from "react";
 import {Container, Jumbotron, Row} from 'reactstrap';
 import { Link } from 'react-router-dom';
-import {CardDeck, Card, CardBody, CardTitle, CardText,  Button, Badge} from 'reactstrap';
-import loremIpsum from 'lorem-ipsum';
+import {CardDeck, Card, CardBody, CardTitle, CardText,  Button } from 'reactstrap';
 import { invokeApig } from "../libs/awsLibs";
 import config from '../config';
 import CTOC from '../components/CTOC';
@@ -13,14 +12,13 @@ import Notice from '../components/Notice';
 /* button to enrol or show TOC */
 class EnrolButton extends Component {
   render(){
-    const { handleEnrolCourse, enrolText, enrolledText, ...rest} = this.props;
+    const { handleEnrolCourse, enrolText, enrolledText, loading, ...rest} = this.props;
 
     //check enrolment status
     return this.props.enrolment === null ?
         ( <Button {...rest} type="button" color="primary" onClick={handleEnrolCourse} data-course={this.props.course.courseId}>{enrolText}</Button> ) :
         ( <Button {...rest} tag={Link} to={`/courses/toc/${this.props.course.courseId}`}>{enrolledText}</Button>)
         ;
-
   }
 }
 
@@ -97,12 +95,16 @@ export default class CoursePromo extends Component {
       return <Notice content="Course not found..." />;
     };
 
+    var bg_styling = this.state.course.bg_pic ?
+      {backgroundImage:`url(${this.state.course.bg_pic})`, backgroundRepeat:'no-repeat', backgroundSize:'cover'} :
+      null;
+
     return (
       <div>
         <Helmet>
           <title>{this.state.course.name} - AutoTrainer</title>
         </Helmet>
-        <Jumbotron fluid>
+        <Jumbotron fluid style={bg_styling}>
           <Container>
             <h1 className="display-3 text-center">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
@@ -130,10 +132,35 @@ export default class CoursePromo extends Component {
               </Row>
             )
           }
+        </Container>
+        <Container>
+          <Row>
+            <div className="col-12 text-center">
+              { this.state.course.description.split('\n').map( (e,i) => {
+                return (<p className="lead" key={i}>{e}</p>)
+              })}
+              {
+                /*
+                  <p>
+                    { [1,2,3].map( (e,i) => {
+                      return (<Badge key={i} href="#" color="secondary" className="mr-2">{loremIpsum({count:2, units:'words'})}</Badge>)
+                    })}
+                  </p>
+                */
+              }
+            </div>
+          </Row>
+          <Row>
+            <div className="col-12">
+              <h4 className="display-4">Table of Contents</h4>
+            </div>
+            <CTOC course={this.state.course} options={ {showLink:false} }/>
+          </Row>
+        </Container>
+        <Container>
           <Row>
             <div className="col-12 mb-2">
               <h2 className="display-4 text-center">Recent Customers</h2>
-              <p>Have to figure out how to do this</p>
             </div>
            { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
               '256x256 TMIG-rd.png', '256x256 WBG-rd.png' ].map( (e,i) => {
@@ -145,32 +172,10 @@ export default class CoursePromo extends Component {
              })}
           </Row>
         </Container>
-        <Container>
-          <Row>
-            <div className="col-12">
-              <h4 className="display-4">Table of Contents</h4>
-            </div>
-            <CTOC course={this.state.course} options={ {showLink:false} }/>
-          </Row>
-          <Row>
-            <div className="col-12">
-              <h3 className="display-4">Final Thoughts</h3>
-              { this.state.course.description.split('\n').map( (e,i) => {
-                return (<p className="lead text-left" key={i}>{e}</p>)
-              })}
-              <EnrolButton {...this.state} handleEnrolCourse={this.handleEnrolCourse} />
-              <p>
-              { [1,2,3].map( (e,i) => {
-                return (<Badge key={i} href="#" color="secondary" className="mr-2">{loremIpsum({count:2, units:'words'})}</Badge>)
-              })}
-              </p>
-            </div>
-          </Row>
-        </Container>
         <Jumbotron fluid>
           <Container>
             <h1 className="display-3">Pricing</h1>
-            <p className="lead">Just RM{this.state.course.price}</p>
+            <p className="lead">RM{this.state.course.price}</p>
             <div className="d-flex">
             <EnrolButton {...this.state} handleEnrolCourse={this.handleEnrolCourse} className="mx-auto"/>
             </div>

@@ -14,7 +14,7 @@ export default class CTOC extends Component {
   constructor(props){
     super(props);
 
-    this.state = {modules:[], options:null}
+    this.state = {modules:[], options:null, loading:true}
 
   }
   componentDidMount = async() => {
@@ -22,7 +22,7 @@ export default class CTOC extends Component {
 
     //update the options
     var newOptions = Object.assign(this.props.defaultOptions, this.props.options);
-    handle.setState({options:newOptions});
+    handle.setState({options:newOptions, loading:false});
 
     //get the modules
     try{
@@ -41,8 +41,12 @@ export default class CTOC extends Component {
     });
   }
   render(){
+    if(this.state.loading){
+      return <Notice content="Loading courses ...." />;
+    };
+
     if(this.state.modules.length === 0){
-      return (<Notice content="course modules is loading ..." />)
+      return (<Notice content="This course has zero modules" />)
     }
 
     return (

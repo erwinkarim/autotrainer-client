@@ -2,14 +2,14 @@ import React, { Component } from "react";
 import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import { Navbar } from 'reactstrap';
-import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button}from 'reactstrap';
+import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, FormText}from 'reactstrap';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
-import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, Collapse} from 'reactstrap';
+import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardImg, Collapse} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
 import FontAwesome from 'react-fontawesome';
-import { invokeApig, s3Delete } from "../libs/awsLibs";
+import { invokeApig, s3Upload, s3Delete } from "../libs/awsLibs";
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import './CourseBuilder.css';
@@ -228,6 +228,19 @@ class CourseForm extends Component {
         </h1>
       </FormGroup>
       <FormGroup>
+        <Label>Background Picture</Label>
+        <Input type="file" placeholder="Background picture" id="bg_pic" onChange={this.props.handleChange} />
+        <FormText color="muted">JPEG only images. Should fit in 1600x900 pixels and under 2 MB in size.</FormText>
+        {
+          this.props.course.bg_pic ? <Input disabled={true} value={this.props.course.bg_pic} /> : null
+        }
+        { this.props.bg_pic_data ? (
+          <Card className="mt-2">
+            <CardImg src={this.props.bg_pic_data} />
+          </Card>
+        ) : null}
+      </FormGroup>
+      <FormGroup>
         <Label>Tagline</Label>
           <InputGroup>
             <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
@@ -438,7 +451,11 @@ class CourseModules extends Component {
 export default class CourseBuilder extends Component {
   constructor(props){
     super(props);
-    this.state = {settingActiveTab:'general', userDropdownOpen:false, course:null, loading:true };
+    this.state = {settingActiveTab:'general',
+      userDropdownOpen:false,
+      course:null, loading:true,
+      bg_handle:null , bg_pic_data:null
+    };
   }
   toggle = (tab) => {
     if(this.state.settingActiveTab !== tab){
@@ -452,19 +469,57 @@ export default class CourseBuilder extends Component {
       var result = await this.getCourse();
       result.tagline = result.tagline === undefined || result.tagline === null ? '' : result.tagline;
       result.key_points = result.key_points === undefined || result.key_points === null ? [] : result.key_points;
+      result.bg_pic = result.bg_pic === undefined || result.bg_pic === null ? '' : result.bg_pic;
 
       if(result != null){
         handle.setState({course:result, loading:false});
       }
+
+      //setup the picture preview
+      if(this.state.course.bg_pic !== null && this.state.course.bg_pic !== ''){
+        //course.bg_pic should be a string
+        this.setState({bg_handle: this.state.course.bg_pic});
+        this.updatePicture(this.state.course.bg_pic);
+      };
+
     } catch(e){
       console.log(e);
     };
+
   }
   getCourse = () => {
     return invokeApig({path:`/courses/${this.props.match.params.id}`})
   }
   handleUpdateCourse = async (e) => {
     e.preventDefault();
+    var handle = this;
+
+    //upload new file
+    if(handle.state.bg_handle instanceof Object){
+      //delete old one, upload new one
+
+      var oldFile = null;
+
+      if(handle.state.course.bg_pic !== null){
+        oldFile = handle.state.course.bg_pic;
+      }
+
+      //upload new file
+      try{
+        var newFile = await s3Upload(handle.state.bg_handle);
+        handle.state.course.bg_file = newFile;
+        if(oldFile){
+          //delete old file if applicable
+          await s3Delete(oldFile);
+        };
+      } catch(e){
+        console.log('error uploading new file');
+        console.error(e);
+        return;
+      }
+
+    }
+
     console.log('should send updates on new course settings');
     try{
       await this.updateCourse();
@@ -474,6 +529,7 @@ export default class CourseBuilder extends Component {
     }catch(e){
       console.log(e);
     }
+
 
   }
   updateCourse = () => {
@@ -490,6 +546,7 @@ export default class CourseBuilder extends Component {
   }
   handleChange = event => {
     var newCourse = this.state.course;
+    var handle = this;
     event.target.id === "key_points" ? (
       newCourse[event.target.id][parseInt(event.target.dataset.position, 10)][event.target.dataset.key] =
         event.target.dataset.key === "title" ? toTitleCase(event.target.value) :
@@ -499,7 +556,53 @@ export default class CourseBuilder extends Component {
         event.target.id === "name" ? toTitleCase(event.target.value) :
         event.target.value
     );
+
+    //additional checks if the target id is bg_pic
+    //load as datastream
+    if(event.target.id === 'bg_pic'){
+      //do nothing if files are undefined
+      if(event.target.files[0] === undefined || event.target.files[0] === null){
+        return;
+      }
+
+      if(event.target.files[0].size > 1024*1024*2){
+        console.log('file too big');
+        newCourse['bg_pic'] = '';
+        this.props.addNotification('File size too big', 'danger');
+        return;
+      };
+
+      if(event.target.files[0].type !== 'image/jpeg'){
+        console.log('must be image file');
+        newCourse['bg_pic'] = '';
+        this.props.addNotification('File is not an image', 'danger');
+        return;
+
+      };
+
+      //handle the file
+      handle.setState({bg_handle:event.target.files[0]});
+      handle.updatePicture(event.target.files[0]);
+    };
+
     this.setState({ course:newCourse});
+
+  }
+  updatePicture = (file) => {
+    var handle = this;
+    if(file instanceof Object){
+      let reader = new FileReader();
+      reader.onloadend = () => {
+        handle.setState({bg_pic_data: reader.result});
+      }
+      reader.readAsDataURL(file);
+      return;
+    }
+
+    //think it's a string
+    handle.setState({bg_pic_data: file});
+
+
   }
   validateGeneralForm = () => {
     //validate the general form
