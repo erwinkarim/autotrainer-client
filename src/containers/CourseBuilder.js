@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
-import { Navbar } from 'reactstrap';
+import { Navbar, Jumbotron } from 'reactstrap';
 import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, FormText}from 'reactstrap';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
 import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardImg, Collapse} from 'reactstrap';
@@ -215,6 +215,18 @@ class CourseForm extends Component {
       return (<div>Course not loaded yet ... </div>)
     }
 
+    var bg_styling = this.props.bg_pic_data ?
+      {backgroundImage:`url(${this.props.bg_pic_data})`, backgroundRepeat:'no-repeat', backgroundSize:'cover'} :
+      {};
+    var title_font_styling = this.props.course.title_font_color ?
+      { color:this.props.course.title_font_color} : {color:'black'};
+    var styling = Object.assign({}, bg_styling);
+    styling = Object.assign(styling, title_font_styling );
+
+    var bg_file_name = this.props.bg_handle ?
+      (this.props.bg_handle instanceof Object ? this.props.bg_handle.name : this.props.bg_handle) :
+      '' ;
+
     return (<div>
       <FormGroup>
         <Label>Name</Label>
@@ -228,18 +240,33 @@ class CourseForm extends Component {
         </h1>
       </FormGroup>
       <FormGroup>
+        <Label>Font Color</Label>
+        <Input type="select"
+          id="title_font_color" value={this.props.course.title_font_color} onChange={this.props.handleChange}>
+          <option value="black">Black</option>
+          <option value="darkslategray">Dark Slate Gray</option>
+          <option value="gray">Gray</option>
+          <option value="gainsboro">Gainsboro</option>
+          <option value="ghostwhite">Ghost White</option>
+          <option value="white">White</option>
+        </Input>
+      </FormGroup>
+      <FormGroup>
         <Label>Background Picture</Label>
         <Input type="file" placeholder="Background picture" id="bg_pic" onChange={this.props.handleChange} />
         <FormText color="muted">JPEG only images. Should fit in 1600x900 pixels and under 2 MB in size.</FormText>
         {
-          this.props.course.bg_pic ? <Input disabled={true} value={this.props.course.bg_pic} /> : null
+          this.props.course.bg_pic ? <Input disabled={true} value={bg_file_name} /> : null
         }
-        { this.props.bg_pic_data ? (
-          <Card className="mt-2">
-            <CardImg src={this.props.bg_pic_data} />
-          </Card>
-        ) : null}
       </FormGroup>
+      <p>Preview</p>
+      <Jumbotron fluid style={styling} className="text-center">
+        <Container>
+          <h1 className="display-3 text-center">{this.props.course.name}</h1>
+          { this.props.course.tagline !== undefined ? (<p className="lead">{this.props.course.tagline}</p>) : null}
+          <p><Button outline color="primary">Enrol for RM{this.props.course.price}</Button></p>
+        </Container>
+      </Jumbotron>
       <FormGroup>
         <Label>Tagline</Label>
           <InputGroup>
@@ -470,6 +497,7 @@ export default class CourseBuilder extends Component {
       result.tagline = result.tagline === undefined || result.tagline === null ? '' : result.tagline;
       result.key_points = result.key_points === undefined || result.key_points === null ? [] : result.key_points;
       result.bg_pic = result.bg_pic === undefined || result.bg_pic === null ? '' : result.bg_pic;
+      result.bg_key = result.bg_key === undefined || result.bg_key === null ? '' : result.bg_key;
 
       if(result != null){
         handle.setState({course:result, loading:false});
@@ -498,20 +526,22 @@ export default class CourseBuilder extends Component {
     if(handle.state.bg_handle instanceof Object){
       //delete old one, upload new one
 
-      var oldFile = null;
+      var oldKey = null;
 
       if(handle.state.course.bg_pic !== null){
-        oldFile = handle.state.course.bg_pic;
+        oldKey = handle.state.course.bg_key;
       }
 
       //upload new file
       try{
         var newFile = await s3Upload(handle.state.bg_handle);
-        handle.state.course.bg_file = newFile;
-        if(oldFile){
+        handle.state.course.bg_pic = newFile.Location;
+        handle.state.course.bg_key = newFile.key;
+        if(oldKey){
           //delete old file if applicable
-          await s3Delete(oldFile);
+          await s3Delete(oldKey);
         };
+        handle.setState({bg_handle: newFile.Location});
       } catch(e){
         console.log('error uploading new file');
         console.error(e);
@@ -551,7 +581,10 @@ export default class CourseBuilder extends Component {
       newCourse[event.target.id][parseInt(event.target.dataset.position, 10)][event.target.dataset.key] =
         event.target.dataset.key === "title" ? toTitleCase(event.target.value) :
         event.target.value
-    ) : (
+    ) :
+    event.target.id === 'bg_pic' ?
+      null
+    : (
       newCourse[event.target.id] =
         event.target.id === "name" ? toTitleCase(event.target.value) :
         event.target.value
@@ -567,14 +600,12 @@ export default class CourseBuilder extends Component {
 
       if(event.target.files[0].size > 1024*1024*2){
         console.log('file too big');
-        newCourse['bg_pic'] = '';
         this.props.addNotification('File size too big', 'danger');
         return;
       };
 
       if(event.target.files[0].type !== 'image/jpeg'){
         console.log('must be image file');
-        newCourse['bg_pic'] = '';
         this.props.addNotification('File is not an image', 'danger');
         return;
 
@@ -586,6 +617,9 @@ export default class CourseBuilder extends Component {
     };
 
     this.setState({ course:newCourse});
+
+  }
+  handleFileChange = event => {
 
   }
   updatePicture = (file) => {

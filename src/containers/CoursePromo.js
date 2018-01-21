@@ -98,13 +98,18 @@ export default class CoursePromo extends Component {
     var bg_styling = this.state.course.bg_pic ?
       {backgroundImage:`url(${this.state.course.bg_pic})`, backgroundRepeat:'no-repeat', backgroundSize:'cover'} :
       null;
+    var title_font_styling = this.state.course.title_font_color ?
+      { color:this.state.course.title_font_color} : {color:'black'};
+    var styling = Object.assign({}, bg_styling);
+    styling = Object.assign(styling, title_font_styling );
+
 
     return (
       <div>
         <Helmet>
           <title>{this.state.course.name} - AutoTrainer</title>
         </Helmet>
-        <Jumbotron fluid style={bg_styling}>
+        <Jumbotron fluid style={styling}>
           <Container>
             <h1 className="display-3 text-center">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
