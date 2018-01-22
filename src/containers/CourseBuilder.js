@@ -4,7 +4,7 @@ import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import { Navbar, Jumbotron } from 'reactstrap';
 import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, FormText}from 'reactstrap';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
-import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, CardImg, Collapse} from 'reactstrap';
+import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, Collapse} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
@@ -339,7 +339,7 @@ class CourseForm extends Component {
 class CourseModules extends Component {
   constructor(props){
     super(props)
-    this.state = { modules:[]}
+    this.state = { modules:[], publish_status:'all'}
   }
   componentDidMount = async () => {
     try {
@@ -413,8 +413,21 @@ class CourseModules extends Component {
     return invokeApig({
       endpoint:config.apiGateway.MODULE_URL,
       path:'/modules',
-      queryParams: {courseId:this.props.course.courseId}
+      queryParams: {courseId:this.props.course.courseId, publish_status:this.state.publish_status}
     })
+  }
+  togglePublishStatus = async (event) => {
+    var newPublishStatus = this.state.publish_status;
+    newPublishStatus = newPublishStatus === 'all' ? 'published' : 'all';
+
+    try {
+      await this.setState({publish_status:newPublishStatus});
+      var newModules = await this.getModules();
+      this.setState({modules:newModules});
+    } catch(e){
+      console.log('error refreshing modules')
+      console.error(e);
+    }
 
   }
   getModuleDetail = (courseId, moduleId) => {
@@ -440,6 +453,12 @@ class CourseModules extends Component {
                   <DropdownItem data-type="video" onClick={this.handleCreateModule}>Video</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
+              <UncontrolledDropdown>
+                <DropdownToggle caret nav>Filter</DropdownToggle>
+                <DropdownMenu>
+                  <DropdownItem onClick={this.togglePublishStatus}><FontAwesome name={ this.state.publish_status === 'all' ? 'square' : 'check-square'}/> Published Only</DropdownItem>
+                </DropdownMenu>
+              </UncontrolledDropdown>
             </Nav>
           </Navbar>
           <hr/>
@@ -459,6 +478,7 @@ class CourseModules extends Component {
                       <CardTitle>Module {i+1}: {e.title}</CardTitle>
                       <CardText>{e.description}</CardText>
                       <CardText>Order: {e.order}</CardText>
+                      <CardText>Publish status: {e.publish_status}</CardText>
                       <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
                       <Button className="mr-2 mb-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
                       <Button className="mr-2 mb-2" type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
@@ -581,10 +601,7 @@ export default class CourseBuilder extends Component {
       newCourse[event.target.id][parseInt(event.target.dataset.position, 10)][event.target.dataset.key] =
         event.target.dataset.key === "title" ? toTitleCase(event.target.value) :
         event.target.value
-    ) :
-    event.target.id === 'bg_pic' ?
-      null
-    : (
+    ) : (
       newCourse[event.target.id] =
         event.target.id === "name" ? toTitleCase(event.target.value) :
         event.target.value

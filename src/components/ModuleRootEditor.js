@@ -24,6 +24,13 @@ import {Col, FormGroup,Label, InputGroup, Input, InputGroupAddon } from 'reactst
             id="description" value={this.props.module.description} onChange={this.props.handleChange}
           />
         </FormGroup>
+        <FormGroup>
+          <Label>Publish status</Label>
+          <Input type="select" id="publish_status" value={this.props.module.publish_status} onChange={this.props.handleChange}>
+            <option value="unpublished">Unpublished</option>
+            <option value="published">Published</option>
+          </Input>
+        </FormGroup>
       </Col>
     );
 
