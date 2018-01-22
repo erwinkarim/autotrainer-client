@@ -42,7 +42,7 @@ class EnrolledCourses extends Component {
           <CardBody>
             <CardTitle><Link to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
             <CardText><strong>Progress</strong></CardText>
-            <CardText>{c.progress.length} of {c.moduleCount} modules attended</CardText>
+            <CardText>{c.progress.length} of {c.publishedModuleCount} modules attended</CardText>
             { courseComplete ? <CardText className="text-success">Course Completed!!!</CardText> : null}
           </CardBody>
         </Card>)
@@ -203,7 +203,7 @@ export default class UserLanding extends Component {
                       return (<CardText key={key} className={key===0?'lead':''}>{p}</CardText>);
                     })}
                     <h4>Stats</h4>
-                    <p>Modules: ({e.moduleCount}), Quiz questions: (y)</p>
+                    <p>Modules: (Published: {e.publishedModuleCount}, Total: {e.moduleCount}), Quiz questions: (y)</p>
                     <p>Price: RM{e.price}</p>
                     <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
                     <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
