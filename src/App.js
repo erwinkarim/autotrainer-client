@@ -21,6 +21,7 @@ class App extends Component {
     this.state = {
       announceIsVisible: true,
       isAuthenticated:false,
+      isAuthenticating: false,
       currentUser:null,
       auth:null,
       notifications: OrderedSet()
@@ -33,17 +34,19 @@ class App extends Component {
     var curUrl = window.location.href;
 
     //check for current user, if there is stored in storage, loaded and sign up
+    this.setState({isAuthenticating:true});
     var auth = this.initCognitoSDK();
     auth.parseCognitoWebResponse(curUrl);
     handle.setState({auth:auth});
+
     var currentUser = auth.getCurrentUser();
     if(currentUser != null){
-      //TODO: use AWS credentials to refresh token??
       auth.getSession()
-    }
+    };
+
   }
   userHasAuthenticated = authenticated => {
-    this.setState({ isAuthenticated: authenticated });
+    this.setState({ isAuthenticated: authenticated, isAuthenticating:false });
   }
   initCognitoSDK = () => {
     var handle = this;
@@ -66,10 +69,13 @@ class App extends Component {
       */
       onSuccess: async function(result) {
         console.log("Sign in success");
+        //get the user
         var user = JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) ;
-        await handle.setState({currentUser:user });
-        handle.userHasAuthenticated(true);
         await getAwsCredentials(result.idToken.jwtToken);
+        await handle.setState({currentUser:user });
+
+        //everything done, then tell user is authenticated
+        handle.userHasAuthenticated(true);
         return true;
       },
       onFailure: function(err) {
@@ -103,6 +109,7 @@ class App extends Component {
     })
   }
   render() {
+
     const childProps = {
       ...this.state, ...{addNotification:this.addNotification, removeNotification:this.removeNotification}
     };

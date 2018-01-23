@@ -36,7 +36,8 @@ export default class ArticleBuilder extends Component {
   ]
   constructor(props){
     super(props);
-    this.state = {article:null, loading:true};
+    this.state = {article:null, loading:true
+    };
   }
   componentDidMount = async() => {
     var handle = this;
@@ -101,6 +102,7 @@ export default class ArticleBuilder extends Component {
     newArticle.body = v;
     this.setState({article:newArticle});
   }
+
   render(){
     if(this.state.loading){
       return <Notice content="Article is loading ..."/>;
@@ -147,6 +149,9 @@ export default class ArticleBuilder extends Component {
                 modules={this.modules} formats={this.formats}
                 placeholder="Start writting ... (Copy-paste picture to insert pictures)"
               />
+            </FormGroup>
+            <FormGroup>
+              <Label>New editor test</Label>
             </FormGroup>
             <FormGroup>
               <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm()}>Update</Button>

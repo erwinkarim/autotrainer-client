@@ -46,6 +46,8 @@ async function getUserToken(auth) {
       console.log('session expired, force refresh');
       try{
         await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
+        console.log('done refreshing token');
+        console.log('getUserToken: AWS.credentials', AWS.config.credentials);
       } catch(e){
         console.log('error refreshing token inside getUserToken');
         console.log(e);
@@ -80,7 +82,9 @@ export function initCognitoSDK(){
       //console.log("Sign in success");
       //handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
       //handle.userHasAuthenticated(true);
+      console.log('onSuccess credentials', AWS.config.credentials);
       getAwsCredentials(result.idToken.jwtToken);
+      console.log('onSuccess after getAwsCredentials', AWS.config.credentials);
       return true;
     },
     onFailure: function(err) {
@@ -163,7 +167,7 @@ export async function invokeApig({ path, endpoint = config.apiGateway.URL , meth
   if(!AWS.config.credentials){
     console.log('invokeApig: credentials are empty despite await');
   };
-  
+
   //console.log('invokeApig: AWS.config.credentials', AWS.config.credentials);
   //console.log('invokeApig: new signedRequest');
   const signedRequest = sigV4Client
