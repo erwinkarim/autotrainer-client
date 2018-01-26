@@ -996,6 +996,13 @@ babylon@^6.17.0, babylon@^6.18.0:
   version "6.18.0"
   resolved "https://registry.yarnpkg.com/babylon/-/babylon-6.18.0.tgz#af2f3b88fa6f5c1e4c634d1a0f8eac4f55b395e3"
 
+backstage-modal@^0.3.2:
+  version "0.3.2"
+  resolved "https://registry.yarnpkg.com/backstage-modal/-/backstage-modal-0.3.2.tgz#3cc340bf586da84eb29f6bd06b28da373539f638"
+  dependencies:
+    prop-types "^15.5.10"
+    react-portal-stateless "^1.0.3"
+
 balanced-match@^0.4.2:
   version "0.4.2"
   resolved "https://registry.yarnpkg.com/balanced-match/-/balanced-match-0.4.2.tgz#cb3f3e3c732dc0f01ee70b403f302e61d7709838"
@@ -2116,6 +2123,22 @@ dotenv@4.0.0, dotenv@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-4.0.0.tgz#864ef1379aced55ce6f95debecdce179f7a0cd1d"
 
+draft-js-utils@^0.1.5:
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/draft-js-utils/-/draft-js-utils-0.1.7.tgz#e2b6927ca620edf1855a4bfc1cf1d21080a70f16"
+
+draft-js@0.10.4:
+  version "0.10.4"
+  resolved "https://registry.yarnpkg.com/draft-js/-/draft-js-0.10.4.tgz#147741642097c8120d8edc232e9503e8b7fb8d35"
+  dependencies:
+    fbjs "^0.8.15"
+    immutable "~3.7.4"
+    object-assign "^4.1.0"
+
+draftjs-to-html@^0.8.2:
+  version "0.8.2"
+  resolved "https://registry.yarnpkg.com/draftjs-to-html/-/draftjs-to-html-0.8.2.tgz#fe502d5735bc6079b7b47b7e40997f2e8364e300"
+
 duplexer2@^0.1.4:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/duplexer2/-/duplexer2-0.1.4.tgz#8b12dab878c0d69e3e7891051662a32fc6bddcc1"
@@ -2680,7 +2703,7 @@ fb-watchman@^2.0.0:
   dependencies:
     bser "^2.0.0"
 
-fbjs@^0.8.1, fbjs@^0.8.16, fbjs@^0.8.9:
+fbjs@^0.8.1, fbjs@^0.8.15, fbjs@^0.8.16, fbjs@^0.8.9:
   version "0.8.16"
   resolved "https://registry.yarnpkg.com/fbjs/-/fbjs-0.8.16.tgz#5e67432f550dc41b572bf55847b8aca64e5337db"
   dependencies:
@@ -3398,6 +3421,10 @@ ignore@^3.3.3:
 immutable@^3.8.2:
   version "3.8.2"
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.2.tgz#c2439951455bb39913daf281376f1530e104adf3"
+
+immutable@~3.7.4:
+  version "3.7.6"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.7.6.tgz#13b4d3cb12befa15482a26fe1b2ebae640071e4b"
 
 import-local@^0.1.1:
   version "0.1.1"
@@ -4495,6 +4522,23 @@ md5.js@^1.3.4:
 media-typer@0.3.0:
   version "0.3.0"
   resolved "https://registry.yarnpkg.com/media-typer/-/media-typer-0.3.0.tgz#8710d7af0aa626f8fffa1ce00168545263255748"
+
+megadraft-js-export-markdown@^0.2.3:
+  version "0.2.3"
+  resolved "https://registry.yarnpkg.com/megadraft-js-export-markdown/-/megadraft-js-export-markdown-0.2.3.tgz#56f7689a547fbfcee16137ee122262f5473594da"
+  dependencies:
+    draft-js-utils "^0.1.5"
+
+megadraft@^0.4.33:
+  version "0.4.33"
+  resolved "https://registry.yarnpkg.com/megadraft/-/megadraft-0.4.33.tgz#ae7e40f468267f5955651af47399c9fea4cd2705"
+  dependencies:
+    backstage-modal "^0.3.2"
+    classnames "^2.2.5"
+    draft-js "0.10.4"
+    immutable "~3.7.4"
+    prop-types "^15.5.10"
+    setimmediate "^1.0.4"
 
 mem@^1.1.0:
   version "1.1.0"
@@ -5772,6 +5816,12 @@ react-popper@^0.7.2, react-popper@^0.7.4:
   dependencies:
     popper.js "^1.12.5"
     prop-types "^15.5.10"
+
+react-portal-stateless@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/react-portal-stateless/-/react-portal-stateless-1.0.3.tgz#6f37ead12dd8c7e1d5cf0c89e06b20dc624ce174"
+  dependencies:
+    prop-types "^15.5.8"
 
 react-quill@^1.2.3:
   version "1.2.3"

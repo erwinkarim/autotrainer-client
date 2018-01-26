@@ -42,12 +42,13 @@ async function getUserToken(auth) {
   // replace this w/ something from cognito
   try {
     await auth.getSession();
-    if(Date.now() > AWS.config.credentials.expireTime - 6000){
+    if(Date.now() > AWS.config.credentials.expireTime - 6000 || AWS.config.credentials.expireTime === false){
       console.log('session expired, force refresh');
       try{
         await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
         console.log('done refreshing token');
         console.log('getUserToken: AWS.credentials', AWS.config.credentials);
+        console.log('auth.signInUserSession', auth.signInUserSession);
       } catch(e){
         console.log('error refreshing token inside getUserToken');
         console.log(e);
