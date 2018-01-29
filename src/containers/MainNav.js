@@ -32,7 +32,10 @@ class MainNav extends Component {
     return (
         <Navbar className="bg-light" light expand="lg">
           <NavbarBrand tag={Link} to="/">
-            <img src="/logos/learn_at_ap.png" alt="learn@ap" height="30"/>
+            <img src="/logos/learn.part1.png" alt="learn@ap" height="30"/>
+          </NavbarBrand>
+          <NavbarBrand tag={Link} to="/">
+            <img src="/logos/learn.part2.png" alt="learn@ap" height="30"/>
           </NavbarBrand>
           <NavbarToggler onClick={this.toggle} />
           <Collapse isOpen={this.state.isOpen} navbar>

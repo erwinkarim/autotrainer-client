@@ -10,8 +10,7 @@ import Notice from '../components/Notice';
 import toTitleCase from 'titlecase';
 import Helmet from 'react-helmet';
 import { invokeApig } from "../libs/awsLibs";
-import {MegadraftEditor, editorStateFromRaw, editorStateToJSON } from "megadraft";
-import { ContentState, EditorState, convertFromHTML } from 'draft-js'
+import Editor from '../components/Editor';
 
 /*
   TODO:
@@ -19,13 +18,13 @@ import { ContentState, EditorState, convertFromHTML } from 'draft-js'
     * video support (link / embed and wrap in responsive card)
     * table support
 */
+
+
 export default class ArticleBuilder extends Component {
   constructor(props){
     super(props);
     //var startValue = '<p class="lead">start</p>';
-    this.state = {article:null, loading:true,
-      editorState: editorStateFromRaw(null)
-    };
+    this.state = {article:null, loading:true };
   }
   componentDidMount = async() => {
     var handle = this;
@@ -38,22 +37,11 @@ export default class ArticleBuilder extends Component {
         result.body = '';
       };
 
-      console.log('result', result);
-
       //this will break older version
       // need to figure out how to handle this gracefully
-      var newEditorState = result.body === '' ?
-        editorStateFromRaw(null) :
-      result.body.charAt(0) === '<' ?
-        EditorState.createWithContent( ContentState.createFromBlockArray(
-          convertFromHTML(result.body).contentBlocks,
-          convertFromHTML(result.body).entityMap
-        )) :
-        editorStateFromRaw( JSON.parse(result.body) );
+      handle.setState({article:result, loading:false });
+      this.editor.setEditorStateFromRaw(result.body);
 
-      console.log('newEditorState', newEditorState);
-
-      handle.setState({article:result, loading:false, editorState:newEditorState });
     } catch(e){
       console.log('error getting the article');
       console.log(e);
@@ -79,7 +67,8 @@ export default class ArticleBuilder extends Component {
     console.log('attempt to update article');
 
     //set the state body to raw first
-    this.state.article.body = editorStateToJSON(this.state.editorState);
+    //this.state.article.body = editorStateToJSON(this.state.editorState);
+    this.state.article.body = this.editor.getRaw();
 
     try{
       await this.updateArticle();
@@ -101,17 +90,19 @@ export default class ArticleBuilder extends Component {
     });
   }
   validateForm = () => {
+    console.log('validate', this.editor);
+
+    /*
+    if(!this.editor){
+      return false;
+    };
+    */
+
     return this.state.article.title.length > 0 &&
-      this.state.article.description.length > 0 &&
-      this.state.article.body !== '<p><br></p>';
-  }
-  updateBody = (v) => {
-    var newArticle = this.state.article;
-    newArticle.body = v;
-    this.setState({article:newArticle});
-  }
-  toggleReadOnly = event => {
-    this.setState({editorReadOnly:!this.state.editorReadOnly});
+      this.state.article.description.length > 0
+      //this.state.editorState.getCurrentContent().hasText() &&
+      //this.editor.hasText();
+      //this.state.article.body !== '';
   }
   render(){
     //check auth
@@ -148,8 +139,7 @@ export default class ArticleBuilder extends Component {
             <FormGroup>
               <Label>Article Body</Label>
               <Card className="p-3">
-                <MegadraftEditor editorState={this.state.editorState}
-                  onChange={(editorState) => {this.setState({editorState});} }/>
+                <Editor ref={ (editor) => {this.editor = editor;}} />
               </Card>
             </FormGroup>
             <FormGroup>

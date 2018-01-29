@@ -11,14 +11,12 @@ import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import config from '../config';
 import Waypoint from 'react-waypoint';
-import {MegadraftEditor, editorStateFromRaw } from "megadraft";
-import { ContentState, EditorState, convertFromHTML } from 'draft-js'
-import '../../node_modules/megadraft/dist/css/megadraft.css';
+import Editor from '../components/Editor';
 
 export default class Article extends Component {
   constructor(props){
     super(props);
-    this.state = {article:null, enrolment:null, loading:true, editorState:editorStateFromRaw(null)}
+    this.state = {article:null, enrolment:null, loading:true}
   }
   componentDidMount = async() => {
     var handle = this;
@@ -26,17 +24,8 @@ export default class Article extends Component {
     try {
       var result = await this.loadArticle();
       //var newEditorState = editorStateFromRaw(JSON.parse(result.body) );
-      var newEditorState = result.body === '' ?
-        editorStateFromRaw(null) :
-      result.body.charAt(0) === '<' ?
-        EditorState.createWithContent( ContentState.createFromBlockArray(
-          convertFromHTML(result.body).contentBlocks,
-          convertFromHTML(result.body).entityMap
-        )) :
-        editorStateFromRaw( JSON.parse(result.body) );
-
-      handle.setState({article:result, loading:false, editorState:newEditorState});
-
+      handle.setState({article:result, loading:false});
+      this.editor.setEditorStateFromRaw(result.body);
 
     } catch(e){
       console.log('error fetching article');
@@ -147,7 +136,7 @@ export default class Article extends Component {
           { /* actual */}
           <Row>
             <div className="col-12 col-md-8 text-justify">
-              <MegadraftEditor editorState={this.state.editorState} readOnly={true} />
+              <Editor ref={ (editor) => {this.editor = editor;}} readOnly={true} />
             </div>
           </Row>
           { /* demonstration */}

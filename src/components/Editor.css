@@ -1,0 +1,30 @@
+.megadraft-editor .paragraph + .paragraph {
+    margin-top: 1em !important;
+}
+
+.megadraft-editor .public-DraftStyleDefault-ol, .megadraft-editor .public-DraftStyleDefault-ul {
+    line-height: 2;
+    margin: 0.5em 0 1em 0;
+    padding-left: 1em;
+}
+
+.megadraft-editor .paragraph + blockquote {
+    margin-top: 1em !important;
+}
+
+.megadraft-editor blockquote {
+    border-left: 2px solid #ddd;
+    color: #999;
+    font-style: italic;
+    margin: 0.25em 0 1em 0;
+    padding: 6px 0 5px 18px;
+}
+
+.megadraft-editor .public-DraftEditor-content figure {
+  margin: 1em 0 !important;
+}
+
+.sidebar-button {
+  height:32px;
+  width: 32px;
+}

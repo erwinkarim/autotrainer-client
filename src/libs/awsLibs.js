@@ -1,4 +1,6 @@
 import AWS from 'aws-sdk'
+//import S3 from 'aws-sdk/clients/s3';
+//import CognitoIdentityCredentials from 'aws-sdk/lib/credentials/cognito_identity_credentials';
 import sigV4Client from "./sigV4Client";
 import config from '../config.js'
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
