@@ -1,5 +1,6 @@
-import AWS from 'aws-sdk'
-//import S3 from 'aws-sdk/clients/s3';
+//import AWS from 'aws-sdk'
+import AWS from 'aws-sdk/global'
+import S3 from 'aws-sdk/clients/s3';
 //import CognitoIdentityCredentials from 'aws-sdk/lib/credentials/cognito_identity_credentials';
 import sigV4Client from "./sigV4Client";
 import config from '../config.js'
@@ -122,7 +123,7 @@ export async function s3Upload(file) {
     throw new Error("User is not logged in");
   }
 
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     region: config.apiGateway.REGION,
     params: {
       Bucket: process.env.REACT_APP_S3_BUCKET
@@ -147,7 +148,7 @@ export async function s3Delete(file){
 
   console.log(`attempt to delete ${file}`);
 
-  const s3 = new AWS.S3({
+  const s3 = new S3({
     region: config.apiGateway.REGION,
     params: {
       Bucket: process.env.REACT_APP_S3_BUCKET,
