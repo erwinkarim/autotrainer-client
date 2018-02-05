@@ -121,7 +121,7 @@ export default class DocBuilder extends Component {
     if(this.state.loading){
       return <Notice content="Document is loading ..." />
     }
-    
+
     if(this.props.currentUser === null){
       return (<Notice content="user Unauthorized" />);
     };
@@ -147,7 +147,7 @@ export default class DocBuilder extends Component {
             </Breadcrumb>
           </Col>
           <ModuleRootEditor module={this.state.doc} handleChange={this.handleChange} />
-          <Col md="8" className="text-left">
+          <Col xs={ {size:11, offset:1}} md={ {size:11, offset:1}} lg="8" className="text-left">
             <FormGroup>
               <Label>File Location</Label>
               <Input type="text" disabled={true} value={fileName} />

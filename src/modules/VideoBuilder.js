@@ -153,7 +153,7 @@ export default class VideoBuilder extends Component {
             </Breadcrumb>
           </Col>
           <ModuleRootEditor module={this.state.video} handleChange={this.handleChange}/>
-          <Col md="8" className="text-left">
+          <Col xs={ {size:11, offset:1}} lg="8" className="text-left">
             <FormGroup>
               <Label>Video URL Link</Label>
               <Input type="text" value={this.state.video.body.origUrl} onChange={this.handleVideoUrl} />

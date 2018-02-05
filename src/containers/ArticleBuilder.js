@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row } from 'reactstrap'
+import { Container, Row, Col } from 'reactstrap'
 import {Breadcrumb, BreadcrumbItem, FormGroup, Button, Label } from 'reactstrap';
 import {Card} from 'reactstrap';
 import { Link } from 'react-router-dom';
@@ -135,7 +135,7 @@ export default class ArticleBuilder extends Component {
             </Breadcrumb>
           </div>
           <ModuleRootEditor module={this.state.article} handleChange={this.handleChange} />
-          <div className="col-12 col-md-8">
+          <Col xs={ {size:11, offset:1} } md={ {size:11, offset:1} } lg={ {size:8, offset:0}}>
             <FormGroup>
               <Label>Article Body</Label>
               <Card className="p-3">
@@ -146,7 +146,7 @@ export default class ArticleBuilder extends Component {
               <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm()}>Update</Button>
               <Button color="danger">Cancel</Button>
             </FormGroup>
-          </div>
+          </Col>
         </Row>
       </Container>
     )

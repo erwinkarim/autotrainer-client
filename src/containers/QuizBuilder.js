@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap';
 import { Card, CardHeader, CardBody, CardText } from 'reactstrap';
 import { FormGroup, Input, Button } from 'reactstrap';
 import ModuleRootEditor from '../components/ModuleRootEditor';
@@ -34,8 +34,8 @@ class QuestionForm extends Component {
             />
           </CardText>
           <Row>
-            <div className="col-9">Potential answer:</div>
-            <div className="col-2">Correct answer</div>
+            <div className="col-8">Potential answer:</div>
+            <div className="col-4 text-right">Correct answer</div>
           </Row>
           {
             this.props.q.answers.map( (a, i2) => {
@@ -185,7 +185,7 @@ export default class QuizBuilder extends Component {
     if(this.state.loading){
       return <Notice content="Quiz is loading ..."/>;
     }
-    
+
     if(this.props.currentUser === null){
       return (<Notice title="Unauthorized" content="User not logged in"/>);
     };
@@ -209,7 +209,7 @@ export default class QuizBuilder extends Component {
             </Breadcrumb>
           </div>
           <ModuleRootEditor module={this.state.quiz} handleChange={this.handleChange} />
-          <div className="col-12 col-md-8">
+          <Col xs="12" md="12" lg="8">
             <hr />
             <h6>Questions</h6>
             {
@@ -236,7 +236,7 @@ export default class QuizBuilder extends Component {
             </FormGroup>
             { /* TODO: the new questin will have a dropdown w/ choice of multiple choice, fill-in blanks and check all that is correct */}
             <Button type="button" color="primary" disabled={!this.validateForm()} onClick={this.handleUpdateQuiz}>Update Quiz</Button>
-          </div>
+          </Col>
 
         </Row>
       </Container>

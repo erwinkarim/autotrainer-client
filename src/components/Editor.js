@@ -110,10 +110,27 @@ class ImageBlock extends Component {
   should autoconvert links from youtube / vimeo to embed links
 */
 class VideoButton extends Component {
+  updateUrl = (src) => {
+    //convert url into embed url
+    try {
+      var origUrl = new URL(src);
+      var videoUrl =
+        origUrl.hostname === 'www.youtube.com' || origUrl.hostname === 'youtube.com' ?
+          `https://www.youtube.com/embed/${origUrl.searchParams.get('v')}` :
+        origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
+          `https://player.vimeo.com/video${origUrl.pathname}` :
+        '';
+      return videoUrl;
+    } catch(e){
+      console.log('error updating video url')
+      console.log(e)
+      return false;
+    }
+  }
   onClick = (e) => {
     e.preventDefault();
     const src = window.prompt("Enter a URL");
-    const data = {"type": "video", "src": src, caption:''};
+    const data = {"type": "video", "src": src, caption:'', updatedUrl:this.updateUrl(src)};
     // Calls the onChange method with the new state.
     this.props.onChange(insertDataBlock(this.props.editorState, data));
   }
@@ -134,7 +151,7 @@ class VideoBlock extends Component {
     return (
       <Card {...props}>
         <CardImg top tag="div" className="embed-responsive embed-responsive-16-by-9" style={ {height:'300px'}}>
-          <CardImg top tag="iframe" width="1600" src={this.props.data.src} />
+          <CardImg top tag="iframe" width="1600" src={this.props.data.updatedUrl} />
         </CardImg>
         <CardBody>
           {

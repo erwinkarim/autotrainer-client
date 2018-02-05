@@ -9,7 +9,7 @@ import {Col, FormGroup,Label, InputGroup, Input, InputGroupAddon } from 'reactst
  export default class ModuleRootEditor extends Component {
    render(){
      return (
-      <Col md="8" className="text-left">
+      <Col md={ { size:11, offset:1} } lg={ {size:8, offset:0}} className="text-left">
         <FormGroup>
           <Label>Title</Label>
           <InputGroup>
