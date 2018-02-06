@@ -144,7 +144,7 @@ export default class VideoBuilder extends Component {
           <title>Video Builder: { this.state.video.title } - AutoTrainer</title>
         </Helmet>
         <Row>
-          <Col sm="12">
+          <Col xs="12">
             <Breadcrumb>
               <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
               <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
@@ -153,7 +153,7 @@ export default class VideoBuilder extends Component {
             </Breadcrumb>
           </Col>
           <ModuleRootEditor module={this.state.video} handleChange={this.handleChange}/>
-          <Col xs={ {size:11, offset:1}} lg="8" className="text-left">
+          <Col xs="12" lg="8" className="text-left">
             <FormGroup>
               <Label>Video URL Link</Label>
               <Input type="text" value={this.state.video.body.origUrl} onChange={this.handleVideoUrl} />

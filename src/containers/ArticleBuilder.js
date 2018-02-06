@@ -14,9 +14,8 @@ import Editor from '../components/Editor';
 
 /*
   TODO:
-    * custom image handler to wrap image in responsive card
-    * video support (link / embed and wrap in responsive card)
     * table support
+    * step-by-step accordion support
 */
 
 
@@ -126,16 +125,16 @@ export default class ArticleBuilder extends Component {
           <title>{`Building ${this.state.article.title} - AutoTrainer`}</title>
         </Helmet>
         <Row>
-          <div className="col-12">
+          <Col xs="12">
             <Breadcrumb>
               <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
               <BreadcrumbItem><Link to={`/user/course_builder/${courseId}`}>Course Builder: {this.state.article.courseMeta.name}</Link></BreadcrumbItem>
               <BreadcrumbItem active>Article Builder: {this.state.article.title}</BreadcrumbItem>
             </Breadcrumb>
-          </div>
+          </Col>
           <ModuleRootEditor module={this.state.article} handleChange={this.handleChange} />
-          <Col xs={ {size:11, offset:1} } md={ {size:11, offset:1} } lg={ {size:8, offset:0}}>
+          <Col xs={ {size:11, offset:1}} sm={ {size:12, offset:0} } lg={ {size:8, offset:0}} >
             <FormGroup>
               <Label>Article Body</Label>
               <Card className="p-3">

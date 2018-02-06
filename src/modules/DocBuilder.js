@@ -138,7 +138,7 @@ export default class DocBuilder extends Component {
           <title>Doc Builder: {this.state.doc.title} - AutoTrainer</title>
         </Helmet>
         <Row>
-          <Col sm="12">
+          <Col xs="12">
             <Breadcrumb>
               <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
               <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
@@ -147,7 +147,7 @@ export default class DocBuilder extends Component {
             </Breadcrumb>
           </Col>
           <ModuleRootEditor module={this.state.doc} handleChange={this.handleChange} />
-          <Col xs={ {size:11, offset:1}} md={ {size:11, offset:1}} lg="8" className="text-left">
+          <Col xs={ {size:12}} lg="8" className="text-left">
             <FormGroup>
               <Label>File Location</Label>
               <Input type="text" disabled={true} value={fileName} />

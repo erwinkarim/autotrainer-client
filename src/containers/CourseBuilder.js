@@ -16,6 +16,62 @@ import './CourseBuilder.css';
 import config from '../config.js'
 
 /*
+  sets the compan(ies) that attend this course. upto 6 will be displayed
+  all logos are in /public/logo directory
+  TODO: move logo's directory to S3 (technically it is)
+*/
+class ClientTestimonials extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      coList:[]
+    };
+  }
+  render(){
+    return (
+      <div>
+        <Row>
+          { this.props.clientList.map( (c,i) => {
+            return (
+              <Col xs="6" md="2" key={i}>
+                <img className="img-fluid img-grayscale" alt={c} src={`/logos/${c}`} />
+              </Col>
+            );
+          })}
+        </Row>
+        <FormGroup check className="row p-2">
+          { this.props.companyList.sort( (ca,cb) => { return ca.name > cb.name; }).map( (c,i) => {
+            return (
+              <Label key={i} check className="col-6 col-md-3">
+                <Input type="checkbox" name="companies[]" value={c.logo}
+                  onChange={this.props.toggleCompany}
+                  checked={this.props.clientList.includes(c.logo)}/>
+                {` ${c.name}`}
+              </Label>
+            )
+          })}
+        </FormGroup>
+      </div>
+    )
+  }
+}
+
+ClientTestimonials.defaultProps = {
+  companyList:[
+    { logo:"256x256 BKR-rd.png" , name:'Bank Rakyat'},
+    { logo:"256x256 IIT-rd.png" , name:'Insurance Islam TAIB'},
+    { logo:"256x256 KN-rd.png" , name:'Khazanah Nasional'},
+    { logo:"256x256 TI-rd.png" , name:'Thanachart Insurance'},
+    { logo:"256x256 TMIG-rd.png" , name:'Tokyo Marine Insurance Group'},
+    { logo:"256x256 WBG-rd.png" , name:'World Bank Group'},
+    { logo:"hsbc_amanah.gif" , name:'HSBC Amanah Takaful'},
+    { logo:"256x80 BankIslam.png" , name:'Bank Islam'},
+    { logo:"256 HLA.png" , name:'Hong Leong Assurance'},
+    { logo:"256x512 Etiqa.png" , name:'Etiqa Insurance'},
+    { logo:"256x256 TuneIns.png" , name:'Tune Insurance'}
+  ]
+}
+/*
   describe the course user, it's progress
 */
 class CourseUser extends Component {
@@ -330,6 +386,11 @@ class CourseForm extends Component {
           }
         </CardDeck>
       </FormGroup>
+      <div>
+        <Label>Client attendees</Label>
+        <FormText>Select upto 6 companies that have attended this course. WARNING: We are not liable if you give out false information</FormText>
+        <ClientTestimonials toggleCompany={this.props.toggleCompany} clientList={this.props.course.clientList}/>
+      </div>
       <Button color="primary" onClick={this.props.handleUpdateCourse} disabled={!this.props.validateGeneralForm()}>Update Course Setting</Button>
     </div>);
 
@@ -509,6 +570,25 @@ export default class CourseBuilder extends Component {
       this.setState({settingActiveTab:tab});
     }
   }
+  toggleCompany = (e) => {
+    //update company list
+    if(e.target.value !== undefined){
+      //add if not there, delete if it's there
+      var newCourse = this.state.course;
+      var newCoList = newCourse.clientList;
+      newCoList.includes( e.target.value) ?
+        newCoList.splice( newCoList.findIndex( (elm) => { return elm === e.target.value}),1) :
+        newCoList.push(e.target.value);
+
+      //if more than 8, slice the first element
+      if(newCoList.length > 6){
+        newCoList.splice(0,1);
+      };
+
+      newCourse.clientList = newCoList;
+      this.setState({course:newCourse});
+    }
+  }
   componentDidMount = async() => {
     //load the course
     var handle = this;
@@ -518,6 +598,7 @@ export default class CourseBuilder extends Component {
       result.key_points = result.key_points === undefined || result.key_points === null ? [] : result.key_points;
       result.bg_pic = result.bg_pic === undefined || result.bg_pic === null ? '' : result.bg_pic;
       result.bg_key = result.bg_key === undefined || result.bg_key === null ? '' : result.bg_key;
+      result.clientList = result.clientList === undefined || result.clientList === null ? [] : result.clientList;
 
       if(result != null){
         handle.setState({course:result, loading:false});
@@ -755,6 +836,7 @@ export default class CourseBuilder extends Component {
                 <CourseForm {...this.state}
                   handleChange={this.handleChange} enableAddKeyPoint={this.enableAddKeyPoint} newKeyPoint={this.newKeyPoint}
                   handleUpdateCourse={this.handleUpdateCourse} deleteKeyPoint={this.deleteKeyPoint} validateGeneralForm={this.validateGeneralForm}
+                  toggleCompany={this.toggleCompany}
                 />
               </TabPane>
               <TabPane tabId='pub_status'>

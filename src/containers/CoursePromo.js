@@ -27,6 +27,28 @@ EnrolButton.defaultProps = {
   enrolledText: 'Table of Contents'
 }
 
+class RecentCustomers extends Component {
+  render(){
+    return (
+      <Container>
+        <Row>
+          <div className="col-12 mb-2">
+            <h2 className="display-4 text-center">Recent Customers</h2>
+          </div>
+         {
+            this.props.clientList.map( (e,i) => {
+             return (
+              <div className="col-3 col-md-2 mb-2" key={i}>
+               <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
+              </div>
+             );
+           })}
+        </Row>
+      </Container>
+    )
+  }
+}
+
 export default class CoursePromo extends Component {
   constructor(props){
     super(props);
@@ -162,21 +184,12 @@ export default class CoursePromo extends Component {
             <CTOC course={this.state.course} options={ {showLink:false} }/>
           </Row>
         </Container>
-        <Container>
-          <Row>
-            <div className="col-12 mb-2">
-              <h2 className="display-4 text-center">Recent Customers</h2>
-            </div>
-           { ['256x256 BKR-rd.png','256x256 IIT-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
-              '256x256 TMIG-rd.png', '256x256 WBG-rd.png' ].map( (e,i) => {
-               return (
-                <div className="col-3 col-md-2 mb-2" key={i}>
-                 <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
-                </div>
-               );
-             })}
-          </Row>
-        </Container>
+        {
+          this.state.course.clientList ?
+            this.state.course.clientList.length > 0 ?
+              <RecentCustomers clientList={this.state.course.clientList} /> : null
+          : null
+        }
         <Jumbotron fluid>
           <Container>
             <h1 className="display-3">Pricing</h1>
