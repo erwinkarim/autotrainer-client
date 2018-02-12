@@ -101,10 +101,15 @@ export default class Quiz extends Component {
       try{
         if(! this.state.enrolment.progress.includes(this.state.quiz.moduleId)){
           //notify attendance
-          await this.notifyProgress();
+          var result = await this.notifyProgress();
 
+          //should notify if course completed
+          if(result.status === 0){
+            this.props.addNotification('Course complete. View your certificate at the landing page');
+          };
+          
           //update enrolment progress
-          var result = await this.loadEnrolment();
+          result = await this.loadEnrolment();
           this.setState({enrolment:result});
 
           this.props.addNotification('We remark that you have completed this quiz');

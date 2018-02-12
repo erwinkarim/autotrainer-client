@@ -137,7 +137,10 @@ class App extends Component {
         <footer className="footer text-muted">
           <Container>
             <p>
-              &copy; AutoTrainer 2017 &bull; <Link to="/legal">Legal</Link> &bull; <Link to="/contact">Contact</Link>
+              &copy; AutoTrainer 2017 &bull; {' '}
+              <Link to="/legal">Legal</Link> &bull; {' '}
+              <Link to="/contact">Contact</Link> &bull; {' '}
+              <Link to='/cert_check'>Certificate Check</Link>
             </p>
           </Container>
         </footer>

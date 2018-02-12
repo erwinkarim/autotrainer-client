@@ -12,13 +12,13 @@ export async function authUser() {
     AWS.config.credentials &&
     Date.now() < AWS.config.credentials.expireTime - 60000
   ) {
-    console.log('authUser: credentials is valid');
+    //console.log('authUser: credentials is valid');
     return true;
   }
 
 
   //console.log('authUser: initCognitoSDK and getCurrentUser');
-  console.log('attempt to rebuild session');
+  //console.log('attempt to rebuild session');
   var auth = initCognitoSDK();
   var curUrl = window.location.href;
 
@@ -32,10 +32,10 @@ export async function authUser() {
   }
 
   //const userToken = await getUserToken(currentUser);
-  console.log('authUser: getUserToken');
+  //console.log('authUser: getUserToken');
   const userToken = await getUserToken(auth);
 
-  console.log('authUser: getAwsCredentials');
+  //console.log('authUser: getAwsCredentials');
   await getAwsCredentials(userToken);
 
   return true;
@@ -46,12 +46,12 @@ async function getUserToken(auth) {
   try {
     await auth.getSession();
     if(Date.now() > AWS.config.credentials.expireTime - 6000 || AWS.config.credentials.expireTime === false){
-      console.log('session expired, force refresh');
+      //console.log('session expired, force refresh');
       try{
         await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
-        console.log('done refreshing token');
-        console.log('getUserToken: AWS.credentials', AWS.config.credentials);
-        console.log('auth.signInUserSession', auth.signInUserSession);
+        //console.log('done refreshing token');
+        //console.log('getUserToken: AWS.credentials', AWS.config.credentials);
+        //console.log('auth.signInUserSession', auth.signInUserSession);
       } catch(e){
         console.log('error refreshing token inside getUserToken');
         console.log(e);
@@ -86,9 +86,9 @@ export function initCognitoSDK(){
       //console.log("Sign in success");
       //handle.setState({currentUser:JSON.parse(atob(result.idToken.jwtToken.split('.')[1])) });
       //handle.userHasAuthenticated(true);
-      console.log('onSuccess credentials', AWS.config.credentials);
+      //console.log('onSuccess credentials', AWS.config.credentials);
       getAwsCredentials(result.idToken.jwtToken);
-      console.log('onSuccess after getAwsCredentials', AWS.config.credentials);
+      //console.log('onSuccess after getAwsCredentials', AWS.config.credentials);
       return true;
     },
     onFailure: function(err) {

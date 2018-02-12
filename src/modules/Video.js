@@ -44,7 +44,12 @@ export default class Video extends Component {
     try{
       if(this.state.enrolment !== null){
         if(!this.state.enrolment.progress.includes(this.state.video.moduleId)){
-          await this.triggerComplete();
+          result = await this.triggerComplete();
+
+          if(result.status === 0){
+            this.props.addNotification('Course complete. View your certificate at the landing page');
+          };
+          
           this.props.addNotification('We remark that you have watched this video');
 
           //update enrolment

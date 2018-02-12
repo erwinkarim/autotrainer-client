@@ -22,7 +22,6 @@ export default class Article extends Component {
       var result = await this.loadArticle();
       //var newEditorState = editorStateFromRaw(JSON.parse(result.body) );
       handle.setState({article:result, loading:false});
-      this.editor.setEditorStateFromRaw(result.body);
 
     } catch(e){
       console.log('error fetching article');
@@ -33,6 +32,10 @@ export default class Article extends Component {
     try {
       result = await this.getEnrolment();
       handle.setState({enrolment:result});
+
+      //setup the editor once enrolment is confirmed
+      this.editor.setEditorStateFromRaw(this.state.article.body);
+
     } catch(e){
       console.log('error getting enrolment status');
       console.log('ignore if you own this course');
@@ -69,14 +72,21 @@ export default class Article extends Component {
         try {
           //check attendance
           console.log('notifyProgress');
-          await this.notifyProgress();
+          var result = await this.notifyProgress();
+
+          this.props.addNotification('We remark that you have read this article');
+
+          if(result.status === 0){
+            this.props.addNotification('Course complete. View your certificate at the landing page');
+          };
 
           //update the erolment
           console.log('get updated enrollment status');
-          var result = await this.getEnrolment();
+          result = await this.getEnrolment();
 
-          this.props.addNotification('We remark that you have read this article');
+
           handle.setState({enrolment:result});
+
         } catch (e){
           console.log('error getting attendance');
           console.log(e);
@@ -103,6 +113,13 @@ export default class Article extends Component {
 
     if(this.state.article === null){
       return (<Notice content="Loading article ..." />);
+    }
+
+    /*
+      ignore this is you are the owner ...
+    */
+    if(this.state.enrolment === null){
+      return (<Notice content="You are not enrolled in this course ..." />);
     }
 
     /*

@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import {CardColumns, Card, CardTitle, CardBody, CardText, Button} from 'reactstrap';
+import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
@@ -12,7 +13,7 @@ class EnrolledCourses extends Component {
   constructor(props){
     super(props);
     this.state = {
-      courses:[], isLoading:false
+      courses:[], isLoading:false, modal:false
     }
   }
   componentDidMount = async() => {
@@ -33,6 +34,9 @@ class EnrolledCourses extends Component {
     })
 
   }
+  toggleModal = (e) =>{
+    this.setState({modal:!this.state.modal});
+  }
   render(){
     if(this.state.isLoading){
       return <Notice content="Checking enrolled courses ..." />
@@ -42,13 +46,18 @@ class EnrolledCourses extends Component {
       <div>You haven't enrolled in any courses yet.</div>
     ) : (
       <CardColumns>{ this.state.courses.map( (c,i) => {
-        var courseComplete = c.progress.length === c.publishedModuleCount;
+        var courseComplete = c.progress.length >= c.publishedModuleCount;
         return (<Card key={i} className={`${courseComplete ? 'border border-success' : ''}`}>
           <CardBody>
             <CardTitle><Link to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
             <CardText><strong>Progress</strong></CardText>
             <CardText>{c.progress.length} of {c.publishedModuleCount} modules attended</CardText>
-            { courseComplete ? <CardText className="text-success">Course Completed!!!</CardText> : null}
+            {
+              courseComplete ?
+              <CardText className="text-success">
+                Course Completed!!! <Button color="info" size="small" onClick={this.toggleModal}>View Cert</Button>
+              </CardText> : null
+            }
           </CardBody>
         </Card>)
       })}</CardColumns>
@@ -60,6 +69,16 @@ class EnrolledCourses extends Component {
           <h3>Enrolled Courses</h3>
           <hr />
           { enrolledCourses }
+          <Modal isOpen={this.state.modal} >
+            <ModalHeader>Cert</ModalHeader>
+            <ModalBody>
+              <p>Show cert here</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="primary" onClick={this.toggleModal}>OK</Button>
+            </ModalFooter>
+
+          </Modal>
           <div className="col-12">
             <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
           </div>

@@ -16,8 +16,9 @@ export default class DocViewer extends Component {
     }
   }
   componentDidMount = async () => {
+    var result = null;
     try {
-      var result = await this.loadEnrolment()
+      result = await this.loadEnrolment()
       this.setState({enrolment:result, loading:false});
     } catch(e){
       console.log('failed to get enrolment');
@@ -30,7 +31,7 @@ export default class DocViewer extends Component {
       var fileLoc = result.body === null || result.body === undefined ?
         null :
         result.body.location || result.body;
-      this.setState({doc:result, file:fileLoc});
+      this.setState({doc:result, file:fileLoc, loading:false});
     } catch(e){
       console.log('error in loading document');
       console.log(e);
@@ -56,10 +57,15 @@ export default class DocViewer extends Component {
       if(! this.state.enrolment.progress.includes( this.state.doc.moduleId)){
         try{
           //mark attendance if required
-          await this.notifyProgress();
+          var result = await this.notifyProgress();
+
+          //notify course completion if required
+          if(result.status === 0){
+            this.props.addNotification('Course complete. View your certificate at the landing page');
+          };
 
           //update enrolment state
-          var result = this.loadEnrolment();
+          result = this.loadEnrolment();
           this.setState({enrolment:result});
           this.props.addNotification('We remark that you have read this document');
         } catch(e){
@@ -81,7 +87,7 @@ export default class DocViewer extends Component {
     if(this.state.loading){
       return <Notice content="Document is loading ..." />
     };
-    
+
     if(this.state.doc === null){
       return (<Notice content="Document not loaded" />);
     }
