@@ -13,7 +13,8 @@ class EnrolledCourses extends Component {
   constructor(props){
     super(props);
     this.state = {
-      courses:[], isLoading:false, modal:false
+      courses:[], isLoading:false, modal:false,
+      certContents:{}
     }
   }
   componentDidMount = async() => {
@@ -36,6 +37,14 @@ class EnrolledCourses extends Component {
   }
   toggleModal = (e) =>{
     this.setState({modal:!this.state.modal});
+
+    if(!this.state.modal){
+      //should update cert info
+      var courseIndex = e.target.dataset.course;
+      this.setState({
+        certContents: this.state.courses[courseIndex]
+      });
+    }
   }
   render(){
     if(this.state.isLoading){
@@ -55,7 +64,7 @@ class EnrolledCourses extends Component {
             {
               courseComplete ?
               <CardText className="text-success">
-                Course Completed!!! <Button color="info" size="small" onClick={this.toggleModal}>View Cert</Button>
+                Course Completed!!! <Button color="info" size="small" onClick={this.toggleModal} data-course={i}>View Cert</Button>
               </CardText> : null
             }
           </CardBody>
@@ -63,21 +72,22 @@ class EnrolledCourses extends Component {
       })}</CardColumns>
     );
 
+    var certDate = new Date(this.state.certContents.certIssued);
     return (
       <Row>
         <div className="col-12">
           <h3>Enrolled Courses</h3>
           <hr />
           { enrolledCourses }
-          <Modal isOpen={this.state.modal} >
-            <ModalHeader>Cert</ModalHeader>
+          <Modal isOpen={this.state.modal} onOpened={this.handleModalOpen} >
+            <ModalHeader>Attendance Certificate</ModalHeader>
             <ModalBody>
-              <p>Show cert here</p>
+              <p>ID: {this.state.certContents.certId}</p>
+              <p>Issued: {certDate.toString()}</p>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={this.toggleModal}>OK</Button>
             </ModalFooter>
-
           </Modal>
           <div className="col-12">
             <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>

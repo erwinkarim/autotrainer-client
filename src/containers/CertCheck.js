@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import {Container, Row, Col, FormGroup, Input, Button } from "reactstrap";
-import { Card, CardText } from 'reactstrap';
+import { Card, CardTitle, CardText } from 'reactstrap';
 import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
@@ -71,10 +71,15 @@ export default class CertCheck extends Component {
                   this.state.found ?
                     (
                       <Card body>
-                        <CardText>courseId: {this.state.cert.courseId}</CardText>
-                        <CardText>userId: {this.state.cert.userId}</CardText>
-                        <CardText>certId: {this.state.cert.certId}</CardText>
-                        <CardText>certIssued: {this.state.cert.certIssued}</CardText>
+                        <CardTitle>{this.state.cert.certId}</CardTitle>
+                        <CardText>
+                          {this.state.cert.actualname} <small>has attended</small> {this.state.cert.coursename}
+                        </CardText>
+                        <CardText><small>between</small></CardText>
+                        <CardText>
+                          {(new Date(this.state.cert.createdAt)).toString()} <small>and </small>
+                          {(new Date(this.state.cert.certIssued)).toString()}
+                        </CardText>
                       </Card>
                     ) :
                     ( <Notice content={`Certificate ${this.state.certNo} not found ...`} />) :
@@ -87,5 +92,4 @@ export default class CertCheck extends Component {
     )
 
   }
-
 }
