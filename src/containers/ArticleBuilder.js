@@ -69,6 +69,12 @@ export default class ArticleBuilder extends Component {
     //this.state.article.body = editorStateToJSON(this.state.editorState);
     this.state.article.body = this.editor.getRaw();
 
+    //sanity check at update level
+    if(!this.editor.hasText()){
+      this.props.addNotification('Article is empty.', 'danger')
+      return;
+    };
+
     try{
       await this.updateArticle();
       //TODO: add snackbar for this
@@ -89,8 +95,6 @@ export default class ArticleBuilder extends Component {
     });
   }
   validateForm = () => {
-    console.log('validate', this.editor);
-
     /*
     if(!this.editor){
       return false;
@@ -100,7 +104,7 @@ export default class ArticleBuilder extends Component {
     return this.state.article.title.length > 0 &&
       this.state.article.description.length > 0
       //this.state.editorState.getCurrentContent().hasText() &&
-      //this.editor.hasText();
+      //this.editor.hasText(); <= this doesn't really work because state / props doesn't change at this level
       //this.state.article.body !== '';
   }
   render(){
