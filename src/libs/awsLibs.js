@@ -7,7 +7,8 @@ import config from '../config.js'
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 
 export async function authUser() {
-  //console.log('authUser: check Credentials');
+  console.log('authUser: check credentials exists and within expire time');
+
   if (
     AWS.config.credentials &&
     Date.now() < AWS.config.credentials.expireTime - 60000
@@ -18,7 +19,7 @@ export async function authUser() {
 
 
   //console.log('authUser: initCognitoSDK and getCurrentUser');
-  //console.log('attempt to rebuild session');
+  console.log('authUser: initCognitoSDK');
   var auth = initCognitoSDK();
   var curUrl = window.location.href;
 
@@ -32,10 +33,10 @@ export async function authUser() {
   }
 
   //const userToken = await getUserToken(currentUser);
-  //console.log('authUser: getUserToken');
+  console.log('authUser: getUserToken');
   const userToken = await getUserToken(auth);
 
-  //console.log('authUser: getAwsCredentials');
+  console.log('authUser: getAwsCredentials');
   await getAwsCredentials(userToken);
 
   return true;
@@ -46,16 +47,28 @@ async function getUserToken(auth) {
   try {
     await auth.getSession();
     if(Date.now() > AWS.config.credentials.expireTime - 6000 || AWS.config.credentials.expireTime === false){
-      //console.log('session expired, force refresh');
+      console.log('session expired, force refresh');
+      var refreshPromise = new Promise( (resolve, reject) => {
+        console.log('attempt to refresh')
+        auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
+        resolve();
+      });
+
+      refreshPromise.then( () => {
+        console.log('done refreshing;')
+      });
+      /*
       try{
+        //should try to wrap this  in a promise
         await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
-        //console.log('done refreshing token');
+        console.log('done refreshing token');
         //console.log('getUserToken: AWS.credentials', AWS.config.credentials);
         //console.log('auth.signInUserSession', auth.signInUserSession);
       } catch(e){
         console.log('error refreshing token inside getUserToken');
         console.log(e);
       }
+      */
     }
   } catch(e){
     //console.log(e);

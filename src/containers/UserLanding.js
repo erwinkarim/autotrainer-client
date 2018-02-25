@@ -64,7 +64,7 @@ class EnrolledCourses extends Component {
             {
               courseComplete ?
               <CardText className="text-success">
-                Course Completed!!! <Button color="info" size="small" onClick={this.toggleModal} data-course={i}>View Cert</Button>
+                Course Completed <Button color="info" size="small" onClick={this.toggleModal} data-course={i}>View Cert</Button>
               </CardText> : null
             }
           </CardBody>
@@ -219,7 +219,6 @@ export default class UserLanding extends Component {
     this.state = {courses:[], isLoading:false};
   }
   componentDidMount = async() => {
-    console.log('UserLanding: currentUser', this.props.currentUser);
     if(this.props.currentUser === null){
       return;
     }

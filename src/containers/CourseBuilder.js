@@ -14,6 +14,7 @@ import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import './CourseBuilder.css';
 import config from '../config.js'
+import EmailValidator from 'email-validator';
 
 /*
   sets the compan(ies) that attend this course. upto 6 will be displayed
@@ -82,6 +83,33 @@ class CourseUser extends Component {
   toggleMenu = (e) => {
     this.setState({collapse: !this.state.collapse});
   }
+  handleResendInvite = async (e) => {
+    console.log('should handle resent invite');
+
+    // at this point, userMeta does not exists yet, so userId should hold the
+    // email address
+    try{
+      console.log('attempt to resend invite');
+      await this.resendInvite();
+      this.props.addNotification(`Resend invite to ${this.props.student.userId}`);
+    } catch(e){
+      console.log('error in resending invite');
+      console.log(e);
+    };
+
+  }
+  resendInvite = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${this.props.course.courseId}/invite`,
+      body: {
+        inviteList: [ { email:this.props.student.userId, name: this.props.student.userId }],
+        meta: { course_owner: this.props.currentUser.name }
+      }
+    })
+
+  }
   render(){
     var modulesAttended = this.props.student.progress === undefined ? 0 :
       this.props.student.progress.length;
@@ -90,13 +118,17 @@ class CourseUser extends Component {
       this.props.student.userMeta.UserAttributes.find( e => e.Name === 'name').Value :
       this.props.student.userId;
 
+    var currentStatus = this.props.student.status ?
+      toTitleCase(this.props.student.status) : 'Enrolled';
+
     return (
       <Row>
         <Col xs="12" md="1">{this.props.index+1}</Col>
-        <Col xs="12" md="8">
+        <Col xs="12" md="5">
           <Button className="p-0" color="link" onClick={this.toggleMenu}>{studentName}</Button>
         </Col>
         <Col xs="12" md="3">{modulesAttended} modules</Col>
+        <Col xs="12" md="3">{currentStatus}</Col>
         <Collapse isOpen={this.state.collapse} className="col-12 mt-2">
           <CardColumns>
             <Card body>
@@ -104,8 +136,9 @@ class CourseUser extends Component {
               <CardText>{modulesAttended} modules completed</CardText>
             </Card>
             <Card body>
-              <CardTitle>Action</CardTitle>
-              <CardText><Button>Resend invite</Button></CardText>
+              <CardTitle>Status</CardTitle>
+              <CardText>{currentStatus}</CardText>
+              { currentStatus === 'Invited' ? <Button size="sm" onClick={this.handleResendInvite}>Resend Invite</Button> : null }
             </Card>
           </CardColumns>
         </Collapse>
@@ -126,7 +159,10 @@ class CourseUsers extends Component {
       students:[]
     }
   }
-  componentDidMount = async () => {
+  componentDidMount = () => {
+    this.handleLoadStudents();
+  }
+  handleLoadStudents = async () => {
     //load enrolled users
     try{
       var results = await this.loadStudents()
@@ -135,12 +171,23 @@ class CourseUsers extends Component {
       console.log('error getting students');
       console.log(e);
     }
+
   }
   loadStudents = () => {
     return invokeApig({
       endpoint: config.apiGateway.ENROLMENT_URL,
       path: `/enrolment/${this.props.course.courseId}/students`
     });
+  }
+  handleRefreshStudents = async () => {
+    this.setState({students:[]});
+    try {
+      var result = await this.loadStudents();
+      this.setState({students:result});
+    } catch(e){
+      console.log('error refreshing student list');
+      console.log(e);
+    }
   }
   render(){
     if(this.state.students.length === 0){
@@ -151,16 +198,26 @@ class CourseUsers extends Component {
       <Container className="mt-2">
         <Row>
           <Col xs="12" md="1"><strong>No</strong></Col>
-          <Col xs="12" md="8"><strong>Name</strong></Col>
+          <Col xs="12" md="5"><strong>Name</strong></Col>
           <Col xs="12" md="3"><strong>Progress</strong></Col>
+          <Col xs="12" md="3"><strong>Status</strong></Col>
           <Col xs="12"><hr /></Col>
+        </Row>
+        <Row>
+          <Col xs="12" className="text-right">
+            <Button color="secondary" onClick={this.handleRefreshStudents}>
+              <FontAwesome name="redo" />
+            </Button>
+          </Col>
         </Row>
         {
           this.state.students.map( (student,i) => {
-            return <CourseUser key={i} index={i} student={student} course={this.props.course} />
+            return <CourseUser key={i} index={i} student={student} {...this.props } />
           })
         }
-        <InviteBox />
+        <InviteBox {...this.props} students={this.state.students }
+          handleLoadStudents={this.handleLoadStudents}
+        />
       </Container>
     );
   }
@@ -174,8 +231,7 @@ class InviteBox extends Component {
     super(props);
     this.state = {
       showInviteForm:false,
-      inviteList:[],
-      inviteMessage:'please join our initative.'
+      inviteList:[]
     }
   }
   componentDidMount = () => {
@@ -195,9 +251,81 @@ class InviteBox extends Component {
   toggleMenu = (e) => {
     this.setState({showInviteForm: !this.state.showInviteForm});
   }
-  sendInvite = (e) => {
+  handleSendInvite = async (e) => {
     console.log('process the email list and send invites ...')
     this.setState({showInviteForm:false});
+
+    //pre-flight checks
+    // drop users that already has been invited
+    this.props.students.forEach( e => {
+      //TODO: need to handle cases where user attributes doesn't exists
+      var dropIndex = this.state.inviteList.findIndex( elm => {
+        //check if the user id is an email
+        if(elm.email === e.userId){
+          return true;
+        };
+
+        //check for  userMeta info
+        if(!e.userMeta){
+          return false;
+        }
+
+        if(!e.userMeta.UserAttributes){
+          return false;
+        }
+
+        return elm.email === e.userMeta.UserAttributes.find(
+          urAtr => { return urAtr.Name === 'email'}).Value; }
+        )
+
+      if(dropIndex !== -1){
+        console.log(`dropping ${ this.state.inviteList[dropIndex].email} ...`)
+        this.props.addNotification(`${ this.state.inviteList[dropIndex].email } dropped from invite list ...`, 'danger')
+        this.state.inviteList.splice(dropIndex, 1);
+      };
+    });
+
+    //if the invite list is empty, drop the invite request
+    if(this.state.inviteList.length === 0){
+      this.props.addNotification('Invite list is empty. Aborting invite request', 'danger');
+      return;
+    };
+
+    //api call to send invite
+    try{
+      console.log(Date.now()/1000, 'sending invite');
+      await this.sendInvite();
+    } catch(e){
+      console.log('error in sending invite');
+      console.log(e);
+      return;
+    }
+
+    //notification on invite sent
+    this.props.addNotification('Invitation sent');
+
+    //reset the invite list and reload the course
+    this.setState({inviteList:[]});
+
+    //wait for a while
+    //setTimeout( () => {}, 2000);
+
+    //actually need to invoke the parents to reload the student list
+    // TODO: just try to add the new invites in the student list instead of making an API call
+    console.log(Date.now()/1000, 'refreshing student list');
+    this.props.handleLoadStudents();
+  }
+  sendInvite = () => {
+    invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      method: 'POST',
+      path: `/enrolment/${ this.props.course.courseId}/invite`,
+      body: {
+        inviteList: this.state.inviteList,
+        meta: { course_owner:this.props.currentUser.name}
+      }
+
+    })
   }
   addInvite = (e) => {
     const defaultInvite = {
@@ -217,9 +345,11 @@ class InviteBox extends Component {
     var validateList = this.state.inviteList.reduce( (a,v) => {
       return a && v.email.length > 0 && v.name.length > 0;
     }, true);
-    var validateMessage = this.state.inviteMessage.length > 0;
+    var validateEmail = this.state.inviteList.reduce( (a,v) => {
+      return a && EmailValidator.validate(v.email)
+    }, true);
 
-    return validateListLength && validateList && validateMessage;
+    return validateListLength && validateList && validateEmail;
   }
   render(){
     return (
@@ -234,7 +364,8 @@ class InviteBox extends Component {
             return (
               <FormGroup className="row" key={i}>
                 <Col xs="12" md="5" className="mb-2">
-                  <Input type="text" placeholder="email" onChange={this.handleChange}
+                  <Input type="email" placeholder="email" onChange={this.handleChange}
+                    valid={EmailValidator.validate(invitee.email)}
                     data-index={i} data-attr="email" id="invite" value={invitee.email} />
                 </Col>
                 <Col xs="12" md="5" className="mb-2">
@@ -250,13 +381,9 @@ class InviteBox extends Component {
               </FormGroup>
             )
           })}
-          <Col xs="12" className="px-0"><Button color="primary" onClick={this.addInvite}><FontAwesome name="plus" /></Button></Col>
-          <FormGroup>
-            <Label>Message</Label>
-            <Input id="inviteMessage" type="textarea" rows="6" value={this.state.inviteMessage} onChange={this.handleChange} />
-          </FormGroup>
+          <Col xs="12" className="px-0 mb-2"><Button color="primary" onClick={this.addInvite}><FontAwesome name="plus" /></Button></Col>
           <Col xs="12" className="px-0">
-            <Button className="mb-2 mr-2" color="primary" onClick={this.sendInvite} disabled={!this.validateForm()}>Send Invite</Button>
+            <Button className="mb-2 mr-2" color="primary" onClick={this.handleSendInvite} disabled={!this.validateForm()}>Send Invite</Button>
             <Button className="mb-2 mr-2" color="danger" onClick={this.toggleMenu}>Cancel</Button>
           </Col>
         </Collapse>
