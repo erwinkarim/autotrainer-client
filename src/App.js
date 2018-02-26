@@ -138,9 +138,9 @@ class App extends Component {
           <Container>
             <p>
               &copy; AutoTrainer 2017 &bull; {' '}
-              <Link to="/legal">Legal</Link> &bull; {' '}
+              <Link to="/legal">Terms of Use and Privacy Policy</Link> &bull; {' '}
               <Link to="/contact">Contact</Link> &bull; {' '}
-              <Link to='/cert_check'>Certificate Check</Link>
+              <Link to='/verify_cert'>Verify Certificate</Link>
             </p>
           </Container>
         </footer>

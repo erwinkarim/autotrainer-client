@@ -1,6 +1,6 @@
 import React, { Component } from "react";
-import { Container, Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
-import {CardColumns, Card, CardTitle, CardBody, CardText, Button} from 'reactstrap';
+import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
+import {CardColumns, Card, CardImg, CardImgOverlay, CardTitle, CardBody, CardText, Button} from 'reactstrap';
 import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
@@ -93,6 +93,73 @@ class EnrolledCourses extends Component {
             <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
           </div>
         </div>
+      </Row>
+    )
+  }
+}
+
+class InvitedCourses extends Component {
+  constructor(props){
+    super(props);
+    this.state = {
+      courses:[], isLoading:false
+    }
+  }
+  componentDidMount = async () => {
+    //load invited courses
+    this.setState({isLoading:true});
+    try{
+      var result = await this.loadInvitedCourses();
+      this.setState({courses:result, isLoading:false});
+    } catch(e){
+      console.log('error loading invited courses');
+      console.log(e);
+    };
+
+  }
+  loadInvitedCourses = () => {
+    return invokeApig({
+      endpoint: config.apiGateway.ENROLMENT_URL,
+      path: '/enrolment/invited',
+      queryParams: {email: this.props.email }
+    });
+  }
+  render(){
+    if(this.state.isLoading){
+      return <Notice content="Loading courses invites ..." />;
+    };
+
+    //just don't show anything if you're not invited. just to magically show new things
+    // as you use this app
+    if(this.state.courses.length === 0){
+      return null;
+    };
+
+    return (
+      <Row>
+        <Col xs="12">
+          <h3 id="invited">Invited Courses</h3>
+          <hr />
+        </Col>
+        <Col xs="12">{
+          this.state.courses.length === 0 ? (
+            <Row><Col>You haven't been invited to any courses yet ...</Col></Row>
+          ) : (
+            <Row><Col><CardColumns>{ this.state.courses.map( (course,i) => {
+              return (<Card key={i}>
+                <div style={ {overflow:'hidden', height:'3em'}}>
+                  <CardImg top src={ course.bg_pic } />
+                </div>
+                <CardBody>
+                  <CardTitle className="text-center" tag="h2">{ course.name }</CardTitle>
+                  <CardText className="lead">{course.description.split('\n')[0]}</CardText>
+                  { course.description.split('\n').length > 1 ? <CardText>...</CardText> : null }
+                  <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/promo/${course.courseId}`} >View</Button>
+                </CardBody>
+              </Card>);
+            })}</CardColumns></Col></Row>
+          )
+        }</Col>
       </Row>
     )
   }
@@ -271,11 +338,13 @@ export default class UserLanding extends Component {
           <div className="col-12 col-md-8 mb-3">
             <ul>
               <li><Link to="#enrolled">Enrolled Courses</Link></li>
+              <li><Link to="#invited">Invited Courses</Link></li>
               <li><Link to="#managed">Managed Courses</Link></li>
             </ul>
           </div>
         </Row>
         <EnrolledCourses />
+        <InvitedCourses email={this.props.currentUser.email} />
         {
           /*
           -- to be implemented then you have more than 30 courses

@@ -190,9 +190,11 @@ class CourseUsers extends Component {
     }
   }
   render(){
+    /*
     if(this.state.students.length === 0){
       return <div>Nobody is enrolled in the course</div>
     };
+    */
 
     return (
       <Container className="mt-2">
@@ -211,7 +213,11 @@ class CourseUsers extends Component {
           </Col>
         </Row>
         {
-          this.state.students.map( (student,i) => {
+          this.state.students.length === 0 ? (
+            <Row>
+              <Col>Nobody is enrolled in this course yet</Col>
+            </Row>
+          ) : this.state.students.map( (student,i) => {
             return <CourseUser key={i} index={i} student={student} {...this.props } />
           })
         }
@@ -351,12 +357,16 @@ class InviteBox extends Component {
 
     return validateListLength && validateList && validateEmail;
   }
+  enableInviteButton = () => {
+    return this.props.course.status === 'published';
+  }
   render(){
     return (
       <Row>
         <Collapse isOpen={!this.state.showInviteForm}>
           <Col>
-            <Button onClick={this.toggleMenu}>Invite Participants</Button>
+            <Button onClick={this.toggleMenu} disabled={ !this.enableInviteButton()}>Invite Participants</Button>
+            { this.props.course.status === 'unpublished' ? <small className="text-muted ml-2">You can only invite people when the course is published</small> : null}
           </Col>
         </Collapse>
         <Collapse isOpen={this.state.showInviteForm} className="w-100">
@@ -655,8 +665,7 @@ class CourseModules extends Component {
         <CardColumns>
           {
             this.state.modules.length === 0 ? (
-              <div>No modules.</div>
-
+              <Col><Row><p>No Modules</p></Row></Col>
             ) : (
               this.state.modules.sort( (a,b) => parseInt(a.order,10) > parseInt(b.order,10) ).map( (e,i) => {
                 var titleCaseType = toTitleCase(e.moduleType);
