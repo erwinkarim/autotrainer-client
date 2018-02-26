@@ -50,7 +50,11 @@ export default class CertCheck extends Component {
     return (
       <Container className="mt-3">
         <Row>
-          <h3>Check attendance certificate</h3>
+          <Col xs="12" className="text-left">
+            <h3>Verify a Certificate</h3>
+            <p>All certificates issued by learn@AP has a unique identification number</p>
+            <p>To verify a certificate, please key in the ID number below</p>
+          </Col>
           <Col xs="12">
             <FormGroup>
               <Input type="text" placeholder="Certificate No."
