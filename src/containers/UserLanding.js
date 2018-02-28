@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
-import {CardColumns, Card, CardImg, CardImgOverlay, CardTitle, CardBody, CardText, Button} from 'reactstrap';
+import {CardColumns, Card, CardImg, CardTitle, CardBody, CardText, Button} from 'reactstrap';
 import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
