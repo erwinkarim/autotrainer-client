@@ -84,7 +84,7 @@ export default class CertCheck extends Component {
         <Row>
           <Col xs="12" className="text-left">
             <h3>Verify a Certificate</h3>
-            <p>All certificates issued by learn@AP has a unique identification number</p>
+            <p>All certificates issued by learn@AP have a unique identification number</p>
             <p>To verify a certificate, please key in the ID number below</p>
           </Col>
           <Col xs="12">
@@ -95,7 +95,7 @@ export default class CertCheck extends Component {
             </FormGroup>
             <p className="text-center">
               <Button color="primary" onClick={this.handleCheckCert} disabled={ !this.enableBtn()}>
-                { this.state.checking ? 'Checking' : 'Check'}
+                { this.state.checking ? 'Verifying' : 'Verify'}
               </Button>
             </p>
           </Col>

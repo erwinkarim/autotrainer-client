@@ -137,7 +137,7 @@ class App extends Component {
         <footer className="footer text-muted">
           <Container>
             <p>
-              &copy; AutoTrainer 2017 &bull; {' '}
+              &copy; 2017-2018 learn@AP. All rights reserved &bull; {' '}
               <Link to="/legal">Terms of Use and Privacy Policy</Link> &bull; {' '}
               <Link to="/contact">Contact</Link> &bull; {' '}
               <Link to='/verify_cert'>Verify Certificate</Link>
