@@ -104,7 +104,7 @@ export default class CoursePromo extends Component {
       endpoint: config.apiGateway.ENROLMENT_URL,
       method: 'POST',
       path: '/enrolment',
-      body: { courseId: courseId}
+      body: { courseId: courseId, enrolmentContext:'email', email:this.props.currentUser.email }
     });
   }
   render(){

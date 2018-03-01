@@ -129,12 +129,6 @@ class InvitedCourses extends Component {
       return <Notice content="Loading courses invites ..." />;
     };
 
-    //just don't show anything if you're not invited. just to magically show new things
-    // as you use this app
-    if(this.state.courses.length === 0){
-      return null;
-    };
-
     return (
       <Row>
         <Col xs="12">
@@ -143,7 +137,7 @@ class InvitedCourses extends Component {
         </Col>
         <Col xs="12">{
           this.state.courses.length === 0 ? (
-            <Row><Col>You haven't been invited to any courses yet ...</Col></Row>
+            <Row><Col><p>You haven't been invited to any courses yet ...</p></Col></Row>
           ) : (
             <Row><Col><CardColumns>{ this.state.courses.map( (course,i) => {
               return (<Card key={i}>
