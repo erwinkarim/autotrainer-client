@@ -22,6 +22,7 @@ const AsyncLogout = asyncComponent(() => import("./containers/Logout"));
 const AsyncNotFound = asyncComponent(() => import("./containers/NotFound"));
 const AsyncTestFn = asyncComponent(() => import("./containers/TestFn"));
 const AsyncCertCheck = asyncComponent(() => import("./containers/CertCheck"));
+const AsyncAbout = asyncComponent(() => import("./containers/About"));
 
 const AsyncCourseBuilder = asyncComponent(() => import("./containers/CourseBuilder"));
 const AsyncArticleBuilder = asyncComponent(() => import("./containers/ArticleBuilder"));
@@ -61,6 +62,7 @@ export default ({childProps}) =>
     <Route path="/legal" exact component={AsyncLegal} />
     <AppliedRoute path="/contact" exact component={AsyncContact} props={childProps} />
     <AppliedRoute path="/verify_cert" exact component={AsyncCertCheck} props={childProps} />
+    <AppliedRoute path="/about" exact component={AsyncAbout} props={childProps} />
     <AppliedRoute path="/test" exact component={AsyncTestFn} props={childProps} />
 
     { /* Finally, catch all unmatched routes */ }

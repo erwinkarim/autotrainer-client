@@ -914,6 +914,11 @@ export default class CourseBuilder extends Component {
       return (<Notice content='User is not authenticated.' />);
     };
 
+    //you need to be admin to see this for now
+    if(!this.props.currentUser['cognito:groups'].includes('admin')){
+      return <Notice content="You need to be admin to manage a course" />;
+      
+    };
     //course has been loaded
     if(this.state.course === null){
       //return note('Course is note loaded yet ...')

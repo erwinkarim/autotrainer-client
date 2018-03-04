@@ -6,7 +6,7 @@ import FontAwesome from 'react-fontawesome';
 export default class DocPreview extends Component {
   constructor(props){
     super(props)
-    this.state = {};
+    this.state = {docHeight:'2em'};
   }
   onDocumentComplete = (pages) => {
     this.setState({ page: 1, pages });
@@ -15,6 +15,10 @@ export default class DocPreview extends Component {
     if(pages === 1){
       this.props.triggerComplete();
     }
+
+    //report page height
+    console.log('document.body.scrollHeight', document.body.scrollHeight);
+    this.setState({docHeight:`${document.body.scrollHeight}px` });
 
   }
   onPageComplete = (page) => {
@@ -60,7 +64,7 @@ export default class DocPreview extends Component {
     var fileName = this.props.file instanceof File ? `${this.props.file.name} (${this.props.file.size/1000} KB)`: this.props.file;
 
     return (
-      <Row>
+      <Row style={ {minHeight:this.state.docHeight}}>
         <Col sm="12">
           <h3>Preview</h3>
           <hr />
@@ -74,6 +78,7 @@ export default class DocPreview extends Component {
             onDocumentComplete={this.onDocumentComplete}
             onPageComplete={this.onPageComplete}
             page={this.state.page}
+            pdf={ (input) => { this.pdf = input;}}
             fillWidth
           />
         </Col>

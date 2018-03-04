@@ -97,6 +97,7 @@ export default class DocViewer extends Component {
     }
 
     var doc = this.state.doc;
+
     return (
       <div>
         <Helmet>
@@ -107,12 +108,12 @@ export default class DocViewer extends Component {
             <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to="/welcome">{ this.props.currentUser.name}</Link></BreadcrumbItem>
             <BreadcrumbItem><Link to={`/courses/toc/${doc.courseId}`}>{doc.courseMeta.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem active>Module X: {doc.title}</BreadcrumbItem>
+            <BreadcrumbItem active>{doc.order}: {doc.title}</BreadcrumbItem>
           </Breadcrumb>
         </Container>
         <Jumbotron fluid>
           <Container>
-            <h4 className="display-4">Chapter X: {doc.title}</h4>
+            <h4 className="display-4">Chapter {doc.order}: {doc.title}</h4>
             <p className="lead">{doc.description}</p>
           </Container>
         </Jumbotron>

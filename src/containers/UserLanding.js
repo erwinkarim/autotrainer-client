@@ -333,7 +333,12 @@ export default class UserLanding extends Component {
             <ul>
               <li><Link to="#enrolled">Enrolled Courses</Link></li>
               <li><Link to="#invited">Invited Courses</Link></li>
-              <li><Link to="#managed">Managed Courses</Link></li>
+              {
+                /* only allow course to be managed by an admin for now */
+                this.props.currentUser['cognito:groups'].includes('admin') ?
+                  <li><Link to="#managed">Managed Courses</Link></li> :
+                  null
+              }
             </ul>
           </div>
         </Row>
@@ -345,7 +350,10 @@ export default class UserLanding extends Component {
           <CourseHighLights />
           */
         }
-        <CourseManager />
+        {
+          /* allow course to be managed by admins for now */
+          this.props.currentUser['cognito:groups'].includes('admin') ? <CourseManager /> : null
+        }
       </Container>
     )
   }
