@@ -101,7 +101,7 @@ export default class DocViewer extends Component {
     return (
       <div>
         <Helmet>
-          <title>{ this.state.doc.title } - AutoTrainer</title>
+          <title>{ this.state.doc.title } - {config.site_name}</title>
         </Helmet>
         <Container className="mt-2">
           <Breadcrumb>

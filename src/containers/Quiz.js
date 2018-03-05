@@ -107,7 +107,7 @@ export default class Quiz extends Component {
           if(result.status === 0){
             this.props.addNotification('Course complete. View your certificate at the landing page');
           };
-          
+
           //update enrolment progress
           result = await this.loadEnrolment();
           this.setState({enrolment:result});
@@ -163,7 +163,7 @@ export default class Quiz extends Component {
     return (
       <Container className="mt-2 text-left">
         <Helmet>
-          <title>{this.state.quiz.title} - AutoTrainer</title>
+          <title>{this.state.quiz.title} - {config.site_name}</title>
         </Helmet>
         <Row>
           <div className="col-12">

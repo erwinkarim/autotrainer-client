@@ -3,6 +3,7 @@ import {Container, Row, Col, FormGroup, Input, Button } from "reactstrap";
 import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
+import Helmet from 'react-helmet';
 import './CertCheck.css';
 
 /*
@@ -45,8 +46,29 @@ export default class CertCheck extends Component {
       checking:false, checked:false, found: false
     }
   }
+  componentDidMount = async () => {
+    //check the url. load the cert if cert_id=<somerthing>
+    var urlState = new URL(window.location.href);
+    var certNo = urlState.searchParams.get('certNo');
+
+    if(certNo){
+      try {
+        await this.setState({certNo:certNo, checking:true, found:false});
+        var result = await this.checkCert();
+        if(result){
+          this.setState({found:true, cert:result});
+        }
+      } catch(e){
+        console.log(e)
+      };
+      this.setState({checking:false, checked:true});
+    }
+  }
   handleCheckCert = async (e) => {
     this.setState({checking:true, found:false});
+    this.props.history.push(`/verify_cert?certNo=${this.state.certNo}`)
+
+    //re-write the url
     try {
       var result = await this.checkCert();
       if(result){
@@ -81,6 +103,9 @@ export default class CertCheck extends Component {
 
     return (
       <Container className="mt-3">
+        <Helmet>
+          <title>Verify Certificate - {config.site_name}</title>
+        </Helmet>
         <Row>
           <Col xs="12" className="text-left">
             <h3>Verify a Certificate</h3>

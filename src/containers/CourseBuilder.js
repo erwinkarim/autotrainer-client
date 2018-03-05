@@ -917,7 +917,7 @@ export default class CourseBuilder extends Component {
     //you need to be admin to see this for now
     if(!this.props.currentUser['cognito:groups'].includes('admin')){
       return <Notice content="You need to be admin to manage a course" />;
-      
+
     };
     //course has been loaded
     if(this.state.course === null){
@@ -939,7 +939,7 @@ export default class CourseBuilder extends Component {
     return (
       <Container className="mt-2 text-left">
         <Helmet>
-          <title>Course Builder for {this.state.course.name} - AutoTrainer</title>
+          <title>Course Builder for {this.state.course.name} - {config.site_name}</title>
         </Helmet>
         <Row>
           <Col>

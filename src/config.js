@@ -1,4 +1,5 @@
 export default {
+  site_name: 'learn@AP',
   MAX_ATTACHMENT_SIZE: 5000000 ,
   apiGateway: {
     URL: "https://iuwoyhr5oi.execute-api.ap-southeast-1.amazonaws.com/prod",

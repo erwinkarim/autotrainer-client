@@ -6,6 +6,7 @@ import { invokeApig } from "../libs/awsLibs";
 import toTitleCase from 'titlecase';
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
+import config from '../config';
 
 export default class NewCourse extends Component {
   constructor(props){
@@ -50,7 +51,7 @@ export default class NewCourse extends Component {
 
     return (<Container className="mt-2">
       <Helmet>
-        <title>New course - AutoTrainer</title>
+        <title>New course - {config.site_name}</title>
       </Helmet>
       <Breadcrumb>
         <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>

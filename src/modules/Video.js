@@ -49,7 +49,7 @@ export default class Video extends Component {
           if(result.status === 0){
             this.props.addNotification('Course complete. View your certificate at the landing page');
           };
-          
+
           this.props.addNotification('We remark that you have watched this video');
 
           //update enrolment
@@ -103,7 +103,7 @@ export default class Video extends Component {
     return (
       <div className="mt-3">
         <Helmet>
-          <title>Video: {video.title }- AutoTrainer</title>
+          <title>Video: {video.title } - {config.site_name}</title>
         </Helmet>
         <Container>
           <Row>

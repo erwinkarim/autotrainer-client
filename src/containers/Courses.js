@@ -100,7 +100,7 @@ export default class Courses extends Component {
     return (
       <Container className="mt-2">
         <Helmet>
-          <title>Courses - AutoTrainer</title>
+          <title>Courses - {config.site_name}</title>
         </Helmet>
         <Row>
           <div className="col-12">

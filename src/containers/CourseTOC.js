@@ -72,7 +72,7 @@ export default class CourseTOC extends Component {
     return (
       <div>
         <Helmet>
-          <title>{this.state.course.name}/TOC - AutoTrainer</title>
+          <title>{this.state.course.name}/TOC - {config.site_name}</title>
         </Helmet>
         <Container className="mt-2">
           <Breadcrumb>

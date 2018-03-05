@@ -197,7 +197,7 @@ export default class QuizBuilder extends Component {
     return (
       <Container className="text-left mt-2">
         <Helmet>
-          <title>Quiz Builder: {this.state.quiz.title} - AutoTrainer</title>
+          <title>Quiz Builder: {this.state.quiz.title} - {config.site_name}</title>
         </Helmet>
         <Row>
           <div className="col-12">

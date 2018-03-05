@@ -126,7 +126,7 @@ export default class ArticleBuilder extends Component {
     return (
       <Container className="mt-2 text-left">
         <Helmet>
-          <title>{`Building ${this.state.article.title} - AutoTrainer`}</title>
+          <title>{`Building ${this.state.article.title} - ${config.site_name}`}</title>
         </Helmet>
         <Row>
           <Col xs="12">

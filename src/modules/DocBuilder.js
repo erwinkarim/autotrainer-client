@@ -135,7 +135,7 @@ export default class DocBuilder extends Component {
     return (
       <Container className="mt-3">
         <Helmet>
-          <title>Doc Builder: {this.state.doc.title} - AutoTrainer</title>
+          <title>Doc Builder: {this.state.doc.title} - {config.site_name}</title>
         </Helmet>
         <Row>
           <Col xs="12">

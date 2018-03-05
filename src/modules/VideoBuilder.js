@@ -141,7 +141,7 @@ export default class VideoBuilder extends Component {
     return (
       <Container className="mt-3">
         <Helmet>
-          <title>Video Builder: { this.state.video.title } - AutoTrainer</title>
+          <title>Video Builder: { this.state.video.title } - {config.site_name}</title>
         </Helmet>
         <Row>
           <Col xs="12">

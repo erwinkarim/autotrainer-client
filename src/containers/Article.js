@@ -129,7 +129,7 @@ export default class Article extends Component {
     return (
       <div className="text-left">
         <Helmet>
-          <title>{ this.state.article.title } - AutoTrainer</title>
+          <title>{ this.state.article.title } - {config.site_name}</title>
         </Helmet>
         <Container className="mt-2">
           <Breadcrumb>

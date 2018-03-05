@@ -2,12 +2,17 @@ import React, { Component } from "react";
 import {Jumbotron, Container, Row} from 'reactstrap';
 //import { Link } from "react-router-dom";
 import { HashLink as Link } from "react-router-hash-link";
+import Helmet from 'react-helmet';
+import config from '../config';
 import "./Home.css";
 
 export default class Home extends Component {
   render() {
     return (
       <div className="Home">
+        <Helmet>
+          <title>{config.site_name} - We Provide Actuarial, Insurance and Financial Training Programs</title>
+        </Helmet>
         <Jumbotron fluid className="mb-0 position-relative py-0" id="jumbotron-1">
           <div id="video-1" className="video-container">
             <video playsInline autoPlay muted={true} loop>

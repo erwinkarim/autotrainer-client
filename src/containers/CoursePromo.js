@@ -129,7 +129,7 @@ export default class CoursePromo extends Component {
     return (
       <div>
         <Helmet>
-          <title>{this.state.course.name} - AutoTrainer</title>
+          <title>{this.state.course.name} - {config.site_name}</title>
         </Helmet>
         <Jumbotron fluid style={styling}>
           <Container>
