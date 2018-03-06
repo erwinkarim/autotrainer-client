@@ -30,6 +30,7 @@ class App extends Component {
   }
   dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
   componentDidMount = async () => {
+    console.log('process.env', process.env);
     var handle = this;
     var curUrl = window.location.href;
 
@@ -115,7 +116,8 @@ class App extends Component {
     };
 
     const topBanner = (
-        <Alert color="primary" className="mb-0 text-left" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}>
+        <Alert color="primary" className="text-left mb-0" isOpen={this.state.announceIsVisible} toggle={this.dismissAnnouncement}
+          style={ {paddingRight:'4rem'}} >
           { config.banner.text }
           {
             config.banner.showButton ? (

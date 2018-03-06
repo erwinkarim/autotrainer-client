@@ -1,10 +1,10 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Breadcrumb, BreadcrumbItem, Jumbotron } from 'reactstrap'
-import { Link } from 'react-router-dom';
+import { Container, Row, Col, Jumbotron } from 'reactstrap'
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import config from '../config.js';
 import { invokeApig } from "../libs/awsLibs";
+import CourseMenu from '../components/CourseMenu';
 
 export default class Video extends Component {
   constructor(props){
@@ -105,18 +105,7 @@ export default class Video extends Component {
         <Helmet>
           <title>Video: {video.title } - {config.site_name}</title>
         </Helmet>
-        <Container>
-          <Row>
-            <Col sm="12">
-              <Breadcrumb>
-                <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
-                <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
-                <BreadcrumbItem><Link to={`/courses/toc/${video.courseId}`}>{video.courseMeta.name}</Link></BreadcrumbItem>
-                <BreadcrumbItem active>Module X: {video.title}</BreadcrumbItem>
-              </Breadcrumb>
-            </Col>
-          </Row>
-        </Container>
+        <Container><Row><Col><CourseMenu courseId={video.courseId} moduleId={video.moduleId} /></Col></Row></Container>
         <Jumbotron fluid className="mb-0">
           <Container>
             <h4 className="display-4">Chapter X: {video.title}</h4>

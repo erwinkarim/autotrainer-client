@@ -1,0 +1,14 @@
+@media (min-width: 768px) {
+  .sidebar-links{
+    display:block !important;
+  }
+
+}
+
+@media (max-width: 575.98px){
+  .brand-text{
+    overflow:hidden;
+    text-overflow: ellipsis;
+    max-width: 70vw;
+  }
+}

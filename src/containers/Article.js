@@ -1,14 +1,14 @@
 import React, { Component } from "react";
 //import AWS from 'aws-sdk';
-import { Container, Row, Jumbotron, Breadcrumb, BreadcrumbItem} from 'reactstrap';
+import { Container, Row, Col, Jumbotron } from 'reactstrap';
 import './Article.css';
-import { Link } from 'react-router-dom';
 import { invokeApig } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import Helmet from 'react-helmet';
 import config from '../config';
 import Waypoint from 'react-waypoint';
 import Editor from '../components/Editor';
+import CourseMenu from '../components/CourseMenu';
 
 export default class Article extends Component {
   constructor(props){
@@ -131,14 +131,7 @@ export default class Article extends Component {
         <Helmet>
           <title>{ this.state.article.title } - {config.site_name}</title>
         </Helmet>
-        <Container className="mt-2">
-          <Breadcrumb>
-            <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/welcome">{ this.props.currentUser.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to={`/courses/toc/${article.courseId}`}>{article.courseMeta.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem active>Module {article.order}: {article.title}</BreadcrumbItem>
-          </Breadcrumb>
-        </Container>
+        <Container><Row><Col><CourseMenu courseId={article.courseId} moduleId={article.moduleId} /></Col></Row></Container>
         <Jumbotron fluid>
           <Container>
             <h4 className="display-4">Chapter {article.order}: {article.title}</h4>

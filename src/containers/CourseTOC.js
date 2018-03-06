@@ -1,12 +1,12 @@
 import React, { Component } from "react";
-import { Jumbotron, Container, Row, Breadcrumb, BreadcrumbItem} from 'reactstrap';
+import { Jumbotron, Container, Row, Col } from 'reactstrap';
 import CTOC from '../components/CTOC';
 import './CourseTOC.css';
-import { Link } from 'react-router-dom';
 import { invokeApig } from "../libs/awsLibs";
 import config from '../config';
 import Helmet from 'react-helmet';
-import Notice from '../components/Notice'
+import Notice from '../components/Notice';
+import CourseMenu from '../components/CourseMenu';
 
 export default class CourseTOC extends Component {
   constructor(props){
@@ -74,13 +74,7 @@ export default class CourseTOC extends Component {
         <Helmet>
           <title>{this.state.course.name}/TOC - {config.site_name}</title>
         </Helmet>
-        <Container className="mt-2">
-          <Breadcrumb>
-            <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem active>{this.state.course.name}</BreadcrumbItem>
-          </Breadcrumb>
-        </Container>
+        <Container><Row><Col><CourseMenu courseId={this.props.match.params.id} /></Col></Row></Container>
         <Jumbotron fluid style={ styling }>
           <Container>
             <h1 className="display-3">Welcome to {this.state.course.name}</h1>

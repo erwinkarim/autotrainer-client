@@ -1,15 +1,15 @@
 import React, { Component } from "react";
-import { Container,  Row, Breadcrumb, BreadcrumbItem } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import {  Card, CardBody, CardText, Button} from 'reactstrap';
 import {FormGroup, Label, Input} from 'reactstrap';
 import {Nav, Navbar, NavItem} from 'reactstrap';
-import { Link } from 'react-router-dom';
 import Notice from '../components/Notice'
 import config from '../config.js';
 import { invokeApig } from "../libs/awsLibs";
 import Helmet from 'react-helmet'
 import Sticky from 'react-sticky-el';
 import './Quiz.css';
+import CourseMenu from '../components/CourseMenu';
 
 
 export default class Quiz extends Component {
@@ -165,15 +165,8 @@ export default class Quiz extends Component {
         <Helmet>
           <title>{this.state.quiz.title} - {config.site_name}</title>
         </Helmet>
+        <Row><Col><CourseMenu courseId={this.state.quiz.courseId} moduleId={this.state.quiz.moduleId} /></Col></Row>
         <Row>
-          <div className="col-12">
-            <Breadcrumb>
-              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link to={`/courses/toc/${this.state.quiz.courseId}`}>{this.state.quiz.courseMeta.name}</Link></BreadcrumbItem>
-              <BreadcrumbItem active>Module {this.state.quiz.order}: {this.state.quiz.title}</BreadcrumbItem>
-            </Breadcrumb>
-          </div>
           <div className="col-12 col-md-8 mb-3">
             <Sticky style={ {zIndex:100}}>
               <Navbar color="light" dark>

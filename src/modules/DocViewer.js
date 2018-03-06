@@ -2,10 +2,10 @@ import React, { Component } from "react";
 import Notice from '../components/Notice';
 import config from '../config.js';
 import { invokeApig } from "../libs/awsLibs";
-import { Container, Breadcrumb, BreadcrumbItem, Jumbotron} from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Container, Row, Col, Jumbotron} from 'reactstrap';
 import Helmet from 'react-helmet';
 import DocPreview from '../components/DocPreview';
+import CourseMenu from '../components/CourseMenu';
 
 export default class DocViewer extends Component {
   constructor(props){
@@ -103,14 +103,7 @@ export default class DocViewer extends Component {
         <Helmet>
           <title>{ this.state.doc.title } - {config.site_name}</title>
         </Helmet>
-        <Container className="mt-2">
-          <Breadcrumb>
-            <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to="/welcome">{ this.props.currentUser.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem><Link to={`/courses/toc/${doc.courseId}`}>{doc.courseMeta.name}</Link></BreadcrumbItem>
-            <BreadcrumbItem active>{doc.order}: {doc.title}</BreadcrumbItem>
-          </Breadcrumb>
-        </Container>
+        <Container><Row><Col><CourseMenu courseId={doc.courseId} moduleId={doc.moduleId} /></Col></Row></Container>
         <Jumbotron fluid>
           <Container>
             <h4 className="display-4">Chapter {doc.order}: {doc.title}</h4>

@@ -30,47 +30,42 @@ class MainNav extends Component {
   toggleSession = () => { this.setState({ sessionIsOpen: !this.state.sessionIsOpen }); }
   render(){
     return (
-        <Navbar className="bg-light" light expand="lg">
-          <NavbarBrand tag={Link} to="/">
+        <Navbar className="bg-light" light expand="lg" tag="header">
+          <NavbarBrand className="" tag={Link} to="/">
             <img src="/logos/learn.part1.png" alt="learn@ap" height="30"/>
           </NavbarBrand>
-          <NavbarBrand tag={Link} to="/">
+          <NavbarBrand className="d-none d-md-block" tag={Link} to="/">
             <img src="/logos/learn.part2.png" alt="learn@ap" height="30"/>
           </NavbarBrand>
-          <NavbarToggler onClick={this.toggle} />
-          <Collapse isOpen={this.state.isOpen} navbar>
-            <Nav className="ml-auto" navbar>
-              {
-                this.props.isAuthenticated ? (
-                  <UncontrolledDropdown className="nav-item" tag="li">
-                    <DropdownToggle caret nav className="py-0" >
-                      <img alt={this.props.currentUser.name} height="42" className="circle" src={this.props.currentUser.picture} />
-                    </DropdownToggle>
-                    <DropdownMenu right className="" style={ {'width':`${this.props.currentUser.email.length*0.9}em`, maxWidth:'100vw'}} >
-                      <DropdownItem tag={Link} to="/welcome">
-                        <Row className="mx-0">
-                          <div className="col-3 pl-0">
-                            <img height="45" alt={this.props.currentUser.name} className="circle" src={this.props.currentUser.picture} />
-                          </div>
-                          <div className="col-9">
-                            <span>{this.props.currentUser.name}</span><br />
-                            <span>{this.props.currentUser.email}</span>
-                          </div>
-                        </Row>
-                      </DropdownItem>
-                      <DropdownItem tag={Link} to="/courses">Courses</DropdownItem>
-                      <DropdownItem divider />
-                      <Button color="link" className="dropdown-item" onClick={this.signOutUser}>Logout</Button>
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                ) : (
-                  <NavItem>
-                    <Button outline color="primary" onClick={this.signInUser}>Login</Button>
-                  </NavItem>
-                )
-              }
-            </Nav>
-          </Collapse>
+          <Nav className="ml-auto" navbar>
+            {
+              this.props.isAuthenticated ? (
+                <UncontrolledDropdown className="nav-item" tag="li">
+                  <DropdownToggle caret nav className="py-0 nav-link" >
+                    <img alt={this.props.currentUser.name} height="42" className="circle" src={this.props.currentUser.picture} />
+                  </DropdownToggle>
+                  <DropdownMenu right className="" style={ {'width':`${this.props.currentUser.email.length*0.9}em`, maxWidth:'100vw'}} >
+                    <DropdownItem tag={Link} to="/welcome">
+                      <Row className="mx-0">
+                        <div className="col-3 pl-0">
+                          <img height="45" alt={this.props.currentUser.name} className="circle" src={this.props.currentUser.picture} />
+                        </div>
+                        <div className="col-9">
+                          <span>{this.props.currentUser.name}</span><br />
+                          <span>{this.props.currentUser.email}</span>
+                        </div>
+                      </Row>
+                    </DropdownItem>
+                    <DropdownItem tag={Link} to="/courses">Courses</DropdownItem>
+                    <DropdownItem divider />
+                    <Button color="link" className="dropdown-item" onClick={this.signOutUser}>Logout</Button>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              ) : (
+                <NavItem><Button outline color="primary" onClick={this.signInUser}>Login</Button></NavItem>
+              )
+            }
+          </Nav>
         </Navbar>
       );
 

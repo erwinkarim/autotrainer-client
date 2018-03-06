@@ -2,6 +2,7 @@ import React from "react";
 import { Route, Switch } from "react-router-dom";
 import AppliedRoute from "./components/AppliedRoute";
 import asyncComponent from "./components/AsyncComponent";
+import CourseTest from './components/CourseTest';
 
 const AsyncHome = asyncComponent(() => import("./containers/Home"));
 const AsyncLogin = asyncComponent(() => import("./containers/Login"));
@@ -63,7 +64,8 @@ export default ({childProps}) =>
     <AppliedRoute path="/contact" exact component={AsyncContact} props={childProps} />
     <AppliedRoute path="/verify_cert" exact component={AsyncCertCheck} props={childProps} />
     <AppliedRoute path="/about" exact component={AsyncAbout} props={childProps} />
-    <AppliedRoute path="/test" exact component={AsyncTestFn} props={childProps} />
+    { process.env.NODE_ENV === 'development' ? <AppliedRoute path="/test" exact component={AsyncTestFn} props={childProps} /> : null}
+    { process.env.NODE_ENV === 'development' ? <Route path="/courses/test" exact component={CourseTest} props={childProps} /> : null }
 
     { /* Finally, catch all unmatched routes */ }
     <Route component={AsyncNotFound} />
