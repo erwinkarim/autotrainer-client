@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 import AWS from 'aws-sdk'
-import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
+import { Container, Row, Col } from 'reactstrap'
 import { CardColumns, Card, CardBody, CardTitle, CardText, CardFooter, Button} from 'reactstrap';
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 import {Link} from 'react-router-dom';
@@ -103,12 +103,6 @@ export default class Courses extends Component {
           <title>Courses - {config.site_name}</title>
         </Helmet>
         <Row>
-          <div className="col-12">
-            <Breadcrumb>
-              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem active>Courses</BreadcrumbItem>
-            </Breadcrumb>
-          </div>
           {
             isAdmin ?
               <Col xs="12" className="mb-2">

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
+import { Container, Row, Col } from 'reactstrap'
 import {CardColumns, Card, CardImg, CardTitle, CardBody, CardText, Button} from 'reactstrap';
 import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import Notice from '../components/Notice';
@@ -317,14 +317,6 @@ export default class UserLanding extends Component {
         <Helmet>
           <title>{`Welcome, ${handle.props.currentUser.name}`} - {config.site_name}</title>
         </Helmet>
-        <Row>
-          <div className="col-12">
-            <Breadcrumb>
-              <BreadcrumbItem><Link to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem active>{handle.props.currentUser.name}</BreadcrumbItem>
-            </Breadcrumb>
-          </div>
-        </Row>
         <Row>
           <div className="col-12">
             <p className="lead">Welcome, {handle.props.currentUser.name}</p>

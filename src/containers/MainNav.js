@@ -1,8 +1,7 @@
-import React, { Component } from "react";
-import { Row, Nav, NavbarBrand, Navbar, NavbarToggler, Collapse, UncontrolledDropdown, DropdownItem, DropdownMenu, DropdownToggle, Button } from "reactstrap";
-import { NavItem } from 'reactstrap';
-import { Link } from "react-router-dom";
 import './MainNav.css'
+import React, { Component } from "react";
+import { Nav, NavLink, NavItem, NavbarBrand, Navbar, Button } from "reactstrap";
+import { Link } from "react-router-dom";
 
 class MainNav extends Component {
   constructor(props){
@@ -30,42 +29,28 @@ class MainNav extends Component {
   toggleSession = () => { this.setState({ sessionIsOpen: !this.state.sessionIsOpen }); }
   render(){
     return (
-        <Navbar className="bg-light" light expand="lg" tag="header">
-          <NavbarBrand className="" tag={Link} to="/">
+        <Navbar className="bg-light flex-column flex-md-row" light expand tag="header">
+          <NavbarBrand className="mr-0 mr-md-2" tag={Link} to="/">
             <img src="/logos/learn.part1.png" alt="learn@ap" height="30"/>
           </NavbarBrand>
           <NavbarBrand className="d-none d-md-block" tag={Link} to="/">
             <img src="/logos/learn.part2.png" alt="learn@ap" height="30"/>
           </NavbarBrand>
-          <Nav className="ml-auto" navbar>
+          <div className="navbar-nav-scroll ml-md-auto">
             {
-              this.props.isAuthenticated ? (
-                <UncontrolledDropdown className="nav-item" tag="li">
-                  <DropdownToggle caret nav className="py-0 nav-link" >
-                    <img alt={this.props.currentUser.name} height="42" className="circle" src={this.props.currentUser.picture} />
-                  </DropdownToggle>
-                  <DropdownMenu right className="" style={ {'width':`${this.props.currentUser.email.length*0.9}em`, maxWidth:'100vw'}} >
-                    <DropdownItem tag={Link} to="/welcome">
-                      <Row className="mx-0">
-                        <div className="col-3 pl-0">
-                          <img height="45" alt={this.props.currentUser.name} className="circle" src={this.props.currentUser.picture} />
-                        </div>
-                        <div className="col-9">
-                          <span>{this.props.currentUser.name}</span><br />
-                          <span>{this.props.currentUser.email}</span>
-                        </div>
-                      </Row>
-                    </DropdownItem>
-                    <DropdownItem tag={Link} to="/courses">Courses</DropdownItem>
-                    <DropdownItem divider />
-                    <Button color="link" className="dropdown-item" onClick={this.signOutUser}>Logout</Button>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              ) : (
-                <NavItem><Button outline color="primary" onClick={this.signInUser}>Login</Button></NavItem>
-              )
+              this.props.isAuthenticated ?
+                <Nav className="flex-scroll" navbar>
+                  <NavItem><NavLink tag={Link} to="/">Home</NavLink></NavItem>
+                  <NavItem><NavLink tag={Link} to="/courses">Courses</NavLink></NavItem>
+                  <NavItem><NavLink tag={Link} to="/welcome">You</NavLink></NavItem>
+                  <NavItem className="pl-4"><Button outline color="danger" onClick={this.signOutUser}>Logout</Button> </NavItem>
+                </Nav>
+              :
+                <Nav className="flex-scroll" navbar>
+                  <NavItem><Button outline color="primary" onClick={this.signInUser}>Login</Button></NavItem>
+                </Nav>
             }
-          </Nav>
+          </div>
         </Navbar>
       );
 

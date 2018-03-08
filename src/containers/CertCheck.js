@@ -23,7 +23,7 @@ class Cert extends Component {
         <div className="pb-4">{this.props.cert.actualname}</div>
         <div className="cert-text pb-4">has completed the short course entitled</div>
         <div className="pb-4"><strong>{this.props.cert.coursename.toUpperCase()}</strong></div>
-        <div className="pb-4"><img src="/logos/learn.part1.png" alt="learn@AP" /></div>
+        <div className="pb-4"><img className="cert-logo" src="/logos/learn.part1.png" alt="learn@AP" /></div>
         <div className="w-80 d-flex justify-content-between  pb-4">
           <span className="cert-text cert-text-border col-4 pt-4"><small>{this.props.cert.certId}</small></span>
           <span className="col-4"></span>
@@ -46,23 +46,34 @@ export default class CertCheck extends Component {
       checking:false, checked:false, found: false
     }
   }
-  componentDidMount = async () => {
-    //check the url. load the cert if cert_id=<somerthing>
-    var urlState = new URL(window.location.href);
-    var certNo = urlState.searchParams.get('certNo');
+  componentDidUpdate = async (prevProps, prevState) => {
+    /*
+      get the cert info
+      1. after authenticated is done
+      2. authenticated state changed from false to true
+      3. there's a certNo in the current url params
+    */
+    if(!prevProps.isAuthenticated && this.props.isAuthenticated){
+      console.log('prevProps.isAuthenticated', prevProps.isAuthenticated);
+      console.log('this.props.isAuthenticated', this.props.isAuthenticated);
+      
+      var urlState = new URL(window.location.href);
+      var certNo = urlState.searchParams.get('certNo');
 
-    if(certNo){
-      try {
-        await this.setState({certNo:certNo, checking:true, found:false});
-        var result = await this.checkCert();
-        if(result){
-          this.setState({found:true, cert:result});
-        }
-      } catch(e){
-        console.log(e)
-      };
-      this.setState({checking:false, checked:true});
-    }
+      if(certNo){
+        try {
+          await this.setState({certNo:certNo, checking:true, found:false});
+          var result = await this.checkCert();
+          if(result){
+            this.setState({found:true, cert:result});
+          }
+        } catch(e){
+          console.log(e)
+        };
+        this.setState({checking:false, checked:true});
+      }
+
+    };
   }
   handleCheckCert = async (e) => {
     this.setState({checking:true, found:false});

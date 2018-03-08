@@ -30,7 +30,6 @@ class App extends Component {
   }
   dismissAnnouncement = () => {this.setState({announceIsVisible:false})}
   componentDidMount = async () => {
-    console.log('process.env', process.env);
     var handle = this;
     var curUrl = window.location.href;
 

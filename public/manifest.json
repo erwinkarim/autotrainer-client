@@ -1,6 +1,7 @@
 {
-  "short_name": "React App",
-  "name": "Create React App Sample",
+  "short_name": "learn@AP",
+  "name": "learn@AP",
+  "description": "learn & development business of Actuarial Partners Consulting",
   "icons": [
     {
       "src": "favicon.ico",

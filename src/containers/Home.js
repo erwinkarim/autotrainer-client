@@ -41,6 +41,14 @@ export default class Home extends Component {
              })}
           </Row>
         </Container>
+        <Container className="text-left">
+          <h1 className="display-3">Catchy Three Worder.</h1>
+          <h4 className="text-muted">With great punchline.</h4>
+          <p className="lead">learn@AP is the learning and development business of Actuarial Partners Consulting</p>
+          <p>Since 2015, we have trained more than 500 people through our public workshops, in-house training programs and conferences on various technical subjects relating to actuarial, insurance and finance. These programs has assisted our clients and partners in developing their actuarial human capital.</p>
+          <p>Our courses are delivered by highly experienced and qualified practicineers who posses both the depth of knowledge as well as the practical experience in the relevant subject matter.</p>
+          <p>We seek to deliver the most effective (and fun) learning experience for our clients by incorporating new and innovative learning method </p>
+        </Container>
         {
           /*
         <Jumbotron className="mb-0">
@@ -67,9 +75,9 @@ export default class Home extends Component {
         </Jumbotron>
           */
         }
-        <Jumbotron fluid className="mb-0">
-          <div id="video" className="embed-responsive embed-responsive-16-by-9" style={{height:'80vh', width:'100vw'}}>
-            <video controls poster="/videos/668515766_1200x680.webp">
+        <Jumbotron fluid className="mb-0 py-0">
+          <div id="video" className="embed-responsive embed-responsive-16-by-9 video-container">
+            <video controls className="" poster="/images/home-keynote-image.jpg">
               <source src={`//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4`} />
             </video>
           </div>

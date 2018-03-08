@@ -48,3 +48,35 @@
   width:100vw;
 
 }
+
+/* phones */
+@media (max-width: 575.25px){
+  .video-container {
+    height:56.25vh;
+    width:100vw;
+  }
+}
+
+/* phone landscape mode */
+@media (min-width: 576px ) {
+  .video-container {
+    height:100vh;
+    width:100vw;
+  }
+}
+
+/* tablet portrait */
+@media (min-width: 768px){
+  .video-container {
+    width:100vw;
+    height:56.25vh;
+  }
+}
+
+/* tablet landscape + desktop */
+@media (min-width: 992px) {
+  .video-container {
+    height:75vh;
+    width: 100vw;
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "autotrainer-client",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "dependencies": {
     "amazon-cognito-auth-js": "^1.1.0",

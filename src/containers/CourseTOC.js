@@ -23,7 +23,6 @@ export default class CourseTOC extends Component {
     var handle = this;
     try {
       var result = await this.getCourse();
-      console.log('results', result);
       if(result != null){
         handle.setState({course:result, loading: false});
       }

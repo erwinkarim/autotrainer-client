@@ -34,3 +34,7 @@
 .w-80{
   width: 80% !important;
 }
+
+.cert-logo{
+  max-width: 8rem;
+}
