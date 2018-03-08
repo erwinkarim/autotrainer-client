@@ -319,7 +319,10 @@ export default class UserLanding extends Component {
         </Helmet>
         <Row>
           <div className="col-12">
-            <p className="lead">Welcome, {handle.props.currentUser.name}</p>
+            <p className="lead">
+              <img height="32" src={handle.props.currentUser.picture} className="rounded-circle mr-2" />
+              Welcome, {handle.props.currentUser.name}
+            </p>
           </div>
           <div className="col-12 col-md-8 mb-3">
             <ul>
