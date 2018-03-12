@@ -80,6 +80,8 @@ class App extends Component {
       },
       onFailure: function(err) {
         console.log("Error!" + err);
+        //attempt to clear all local storage
+        window.localStorage.clear();
         handle.userHasAuthenticated(false);
         return false;
       }

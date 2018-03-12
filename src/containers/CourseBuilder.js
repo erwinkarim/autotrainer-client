@@ -2,9 +2,9 @@ import React, { Component } from "react";
 import { Container, Row, Col, Breadcrumb, BreadcrumbItem } from 'reactstrap'
 import { Nav, NavItem, NavLink, TabContent, TabPane} from 'reactstrap';
 import { Navbar, Jumbotron } from 'reactstrap';
-import { FormGroup, Label,InputGroup, Input, InputGroupAddon, Button, FormText}from 'reactstrap';
+import { FormGroup, Label,InputGroup, Input, InputGroupAddon, InputGroupText, Button, FormText}from 'reactstrap';
 import { UncontrolledDropdown, DropdownToggle, DropdownMenu, DropdownItem} from 'reactstrap';
-import { CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, Collapse} from 'reactstrap';
+import { Alert, CardColumns, CardDeck, Card, CardBody, CardTitle, CardText, Collapse} from 'reactstrap';
 import { Link } from 'react-router-dom';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
@@ -428,7 +428,7 @@ class CourseForm extends Component {
             <Input type="text" placeholder="Course Name. Should be less than 140 characters"
               className="display-3 text-center" style={ {fontSize:'inherit'}}
               maxLength="140" id="name" value={this.props.course.name} onChange={this.props.handleChange} />
-            <InputGroupAddon className="text-muted">{ 140 - this.props.course.name.length}</InputGroupAddon>
+            <InputGroupAddon addonType="append" className="text-muted"><InputGroupText>{ 140 - this.props.course.name.length}</InputGroupText></InputGroupAddon>
           </InputGroup>
         </h1>
       </FormGroup>
@@ -466,7 +466,9 @@ class CourseForm extends Component {
             <Input type="text" placeholder="Tag Line. Should be less than 140 characters" id="tagline"
               className="lead text-center"
               maxLength="140" value={this.props.course.tagline} onChange={this.props.handleChange} />
-            <InputGroupAddon className="text-muted">{ 140 - this.props.course.tagline.length }</InputGroupAddon>
+            <InputGroupAddon addonType="append" className="text-muted">
+              <InputGroupText>{ 140 - this.props.course.tagline.length }</InputGroupText>
+            </InputGroupAddon>
           </InputGroup>
       </FormGroup>
       <FormGroup>
@@ -476,7 +478,7 @@ class CourseForm extends Component {
       <FormGroup>
         <Label>Pricing</Label>
         <InputGroup>
-          <InputGroupAddon>RM</InputGroupAddon>
+          <InputGroupAddon addonType="prepend">RM</InputGroupAddon>
           <Input type="number" id="price" onChange={this.props.handleChange} value={this.props.course.price} />
         </InputGroup>
       </FormGroup>
@@ -498,7 +500,9 @@ class CourseForm extends Component {
                             maxLength="70" id={`key_points`} data-position={i} data-key="title"
                             value={e.title} onChange={this.props.handleChange}
                           />
-                          <InputGroupAddon className="text-muted">{ 70 - e.title.length }</InputGroupAddon>
+                          <InputGroupAddon addonType="append" className="text-muted">
+                            <InputGroupText>{ 70 - e.title.length }</InputGroupText>
+                          </InputGroupAddon>
                         </InputGroup>
                       </h4>
                       <InputGroup className="mb-2">
@@ -507,7 +511,9 @@ class CourseForm extends Component {
                           maxLength="140" id={`key_points`} data-position={i} data-key="subtext"
                           value={e.subtext} onChange={this.props.handleChange}
                         />
-                        <InputGroupAddon className="text-muted">{ 140 - e.subtext.length }</InputGroupAddon>
+                        <InputGroupAddon addonType="append" className="text-muted">
+                          <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
+                        </InputGroupAddon>
                       </InputGroup>
                       <Button type="button" color="danger" data-position={i} onClick={this.props.deleteKeyPoint}><FontAwesome name="minus" /></Button>
                     </FormGroup>
@@ -537,7 +543,9 @@ class CourseForm extends Component {
 class CourseModules extends Component {
   constructor(props){
     super(props)
-    this.state = { modules:[], publish_status:'all'}
+    this.state = { modules:[], publish_status:'all',
+      showOrderChangedBanner:false, orig_modules:null, updating_order: false
+    }
   }
   componentDidMount = async () => {
     try {
@@ -584,7 +592,10 @@ class CourseModules extends Component {
     var moduleIndex = e.target.dataset.index;
     var module = this.state.modules[moduleIndex]
     try {
-      /* if the module is a file, also delete the file */
+      /*
+        if the module is a file, also delete the file
+        issues if the old version is not there. like, there's no key
+      */
       if(module.moduleType === 'doc'){
         var result = await this.getModuleDetail(module.courseId, module.moduleId);
         console.log(`attempt to delete ${result.body.key}`)
@@ -605,6 +616,63 @@ class CourseModules extends Component {
       method: 'DELETE',
       path:`/modules/${moduleId}`,
       queryParams: {courseId:courseId}
+    });
+  }
+  handleOrderUpdate = (e) => {
+    //console.log('should re-arrange the modules');
+
+    /*
+      plan,
+      1. find out which module order the update and get the current ordering
+      2. splice and put the currently selected module in the array
+      3. update the ordering at state level
+      4. put up a banner showing order has change and needs confirmation to update it
+    */
+    if(!this.state.orig_modules){
+      this.setState({orig_modules: JSON.parse( JSON.stringify( this.state.modules ))});
+    };
+
+    var newModuleOrder = this.state.modules.sort( (a,b) => a.order > b.order );
+    var moduleIndex = newModuleOrder.findIndex( (elm) => elm.moduleId === e.target.dataset.moduleId );
+    var newModuleIndex = newModuleOrder.findIndex( (elm) => elm.moduleId > e.target.value);
+    var moduleInfo = newModuleOrder.splice(moduleIndex,1);
+    newModuleOrder.splice(newModuleIndex,0, moduleInfo[0]);
+    newModuleOrder.forEach( (e,i) => { e.order = i+1; });
+
+    this.setState({modules:newModuleOrder, showOrderChangedBanner:true});
+
+  }
+  confirmOrderUpdate = async (e) => {
+    this.setState({updating_order:true});
+    /*
+      get each of the module the moduleId and new ordering info
+      invoke API to get the new order
+      reload the modules
+    */
+    try {
+      var result = await this.orderUpdate()
+      this.setState({modules:result, orig_modules:null , showOrderChangedBanner: false, updating_order: false});
+      this.props.addNotification('Modules re-ordered', 'success');
+    } catch (e){
+      console.log('error updating module orders');
+      console.log(e);
+    }
+  }
+  orderUpdate = () => {
+    return invokeApig({
+      method: 'POST',
+      path: `/courses/${this.props.course.courseId}/reorder_modules`,
+      body: {
+        new_order: this.state.modules.map( (e,i) => { return {moduleId:e.moduleId, order:e.order}; } )
+      }
+    });
+  }
+  handleRevertModuleOrder = (e) => {
+    //console.log('should revert to original');
+    this.setState( {
+      modules: JSON.parse( JSON.stringify( this.state.orig_modules )),
+      orig_modules: null,
+      showOrderChangedBanner: false
     });
   }
   getModules = () => {
@@ -661,6 +729,17 @@ class CourseModules extends Component {
           </Navbar>
           <hr/>
         </div>
+        {
+          /* showing confirmation dialog when order changed */
+          this.state.showOrderChangedBanner ? (
+            <div className="col-12">
+              <Alert color="info">Order has been change. Confirm update?
+                <Button outline color="primary" className="mx-2" onClick={this.confirmOrderUpdate} disabled={this.state.updating_order}>Yes</Button>
+                <Button outline color="danger" onClick={this.handleRevertModuleOrder} disabled={this.state.updating_order}>No</Button>
+              </Alert>
+            </div>
+          ) : null
+        }
         { /* <div className="col-12 col-md-8"> */}
         <CardColumns>
           {
@@ -674,7 +753,13 @@ class CourseModules extends Component {
                     <CardBody>
                       <CardTitle>Module {i+1}: {e.title}</CardTitle>
                       <CardText>{e.description}</CardText>
-                      <CardText>Order: {e.order}</CardText>
+                      <CardText>Order:
+                        <Input type="select" value={e.order} onChange={this.handleOrderUpdate} data-module-id={e.moduleId}>
+                          { this.state.modules.map( (module, module_index) => {
+                            return <option key={module_index} value={module.order} >{module.order}</option>;
+                          })}
+                        </Input>
+                      </CardText>
                       <CardText>Publish status: {e.publish_status}</CardText>
                       <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
                       <Button className="mr-2 mb-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>

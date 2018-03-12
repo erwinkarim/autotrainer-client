@@ -11,14 +11,12 @@ export default class About extends Component{
           <table className="table">
             <tbody>
               <tr>
-                <td><img src="http://placehold.it/64x64" className="rounded-circle"/> FirstName LastName</td>
-                <td><img src="http://placehold.it/64x64" className="rounded-circle"/> FirstName LastName</td>
-                <td><img src="http://placehold.it/64x64" className="rounded-circle"/> FirstName LastName</td>
+                <td><img src="http://placehold.it/64x64" className="rounded-circle" alt="Malek Erwin"/> Malek Erwin</td>
+                <td><img src="http://placehold.it/64x64" className="rounded-circle" alt="Khairul Izad"/> Khairul Izad</td>
+                <td><img src="http://placehold.it/64x64" className="rounded-circle" alt="Penny Cheok"/> Penny Cheok </td>
               </tr>
               <tr>
-                <td><img src="http://placehold.it/64x64" className="rounded-circle"/> FirstName LastName</td>
-                <td><img src="http://placehold.it/64x64" className="rounded-circle"/> FirstName LastName</td>
-                <td><img src="http://placehold.it/64x64" className="rounded-circle"/> FirstName LastName</td>
+                <td colSpan="3"><img src="http://placehold.it/64x64" className="rounded-circle" alt="Hamadah Othman"/> Hamadah Othman</td>
               </tr>
             </tbody>
           </table>

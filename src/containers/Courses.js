@@ -55,6 +55,7 @@ export default class Courses extends Component {
     }
   }
   componentDidMount = async() => {
+    /* sometimes issues getting courses due to authentication issues. maybe move to componentReceiveProps */
     try{
       var results = await this.getCourses();
       var enrolmentResults = await this.getEnrolment();
@@ -64,6 +65,12 @@ export default class Courses extends Component {
       console.log(e);
     }
 
+  }
+  componentDidUpdate = async(prevProps, prevState) => {
+    //load noly when is authenticated
+    if(!prevProps.isAuthenticated && this.props.isAuthenticated){
+
+    };
   }
   getCourses = () => {
     console.log('show_mode', this.state.show_mode);

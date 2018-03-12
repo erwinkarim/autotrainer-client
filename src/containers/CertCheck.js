@@ -19,15 +19,15 @@ class Cert extends Component {
     return (
       <div className="cert cert-background d-flex align-items-center justify-content-center flex-column">
         <div className="py-4"><h2>CERTIFICATE OF COMPLETION</h2></div>
-        <div className="cert-text py-4">This certified that</div>
+        <div className="cert-text py-4">This certifies that</div>
         <div className="pb-4">{this.props.cert.actualname}</div>
         <div className="cert-text pb-4">has completed the short course entitled</div>
         <div className="pb-4"><strong>{this.props.cert.coursename.toUpperCase()}</strong></div>
         <div className="pb-4"><img className="cert-logo" src="/logos/learn.part1.png" alt="learn@AP" /></div>
         <div className="w-80 d-flex justify-content-between  pb-4">
-          <span className="cert-text cert-text-border col-4 pt-4"><small>{this.props.cert.certId}</small></span>
+          <span className="cert-text col-4 pt-4"><small>{this.props.cert.certId}</small></span>
           <span className="col-4"></span>
-          <span className="cert-text cert-text-border col-4 pt-4">{`${this.state.dateHandle.toLocaleString('en-us', {day:'numeric', month:'long', year:'numeric'})}`}</span>
+          <span className="cert-text col-4 pt-4">{`${this.state.dateHandle.toLocaleString('en-us', {day:'numeric', month:'long', year:'numeric'})}`}</span>
         </div>
       </div>
     )
@@ -56,7 +56,7 @@ export default class CertCheck extends Component {
     if(!prevProps.isAuthenticated && this.props.isAuthenticated){
       console.log('prevProps.isAuthenticated', prevProps.isAuthenticated);
       console.log('this.props.isAuthenticated', this.props.isAuthenticated);
-      
+
       var urlState = new URL(window.location.href);
       var certNo = urlState.searchParams.get('certNo');
 
