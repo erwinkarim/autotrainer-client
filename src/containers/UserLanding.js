@@ -5,6 +5,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter} from 'reactstrap';
 import Notice from '../components/Notice';
 import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
+import './CertCheck.css';
 import config from '../config';
 import { invokeApig } from "../libs/awsLibs";
 import Helmet from 'react-helmet';
@@ -73,17 +74,30 @@ class EnrolledCourses extends Component {
     );
 
     var certDate = new Date(this.state.certContents.certIssued);
+    var courseName = this.state.certContents.name ? this.state.certContents.name.toUpperCase() : null;
     return (
       <Row>
         <div className="col-12">
           <h3>Enrolled Courses</h3>
           <hr />
           { enrolledCourses }
-          <Modal isOpen={this.state.modal} onOpened={this.handleModalOpen} >
-            <ModalHeader>Attendance Certificate</ModalHeader>
-            <ModalBody>
-              <p>ID: {this.state.certContents.certId}</p>
-              <p>Issued: {certDate.toString()}</p>
+          <Modal isOpen={this.state.modal} onOpened={this.handleModalOpen} size="lg" >
+            <ModalBody className="cert text-center">
+              <h2>CERTIFICATE OF COMPLETION</h2>
+              <p className="cert-text">This certifies that</p>
+              <p>{ this.props.currentUser.name }</p>
+              <p className="cert-text">has completed the short course entitled</p>
+              <p><strong>{ courseName }</strong></p>
+              <p><img className="cert-logo" src="/logos/learn.part1.png" alt="learn@AP" /></p>
+              <div className="w-100 d-flex justify-content-between  pb-4">
+                <span className="cert-text col-4 pt-4">
+                  <Link to={`/verify_cert?certNo=${this.state.certContents.certId}`}>
+                    <small>{this.state.certContents.certId}</small>
+                  </Link>
+                </span>
+                <span className="col-4"></span>
+                <span className="cert-text col-4 pt-4">{`${certDate.toLocaleString('en-us', {day:'numeric', month:'long', year:'numeric'})}`}</span>
+              </div>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={this.toggleModal}>OK</Button>
@@ -337,7 +351,7 @@ export default class UserLanding extends Component {
             </ul>
           </div>
         </Row>
-        <EnrolledCourses />
+        <EnrolledCourses { ...this.props }/>
         <InvitedCourses email={this.props.currentUser.email} />
         {
           /*

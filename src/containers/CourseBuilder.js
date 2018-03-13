@@ -15,6 +15,7 @@ import Helmet from 'react-helmet';
 import './CourseBuilder.css';
 import config from '../config.js'
 import EmailValidator from 'email-validator';
+import Sticky from 'react-sticky-el';
 
 /*
   sets the compan(ies) that attend this course. upto 6 will be displayed
@@ -733,10 +734,12 @@ class CourseModules extends Component {
           /* showing confirmation dialog when order changed */
           this.state.showOrderChangedBanner ? (
             <div className="col-12">
-              <Alert color="info">Order has been change. Confirm update?
-                <Button outline color="primary" className="mx-2" onClick={this.confirmOrderUpdate} disabled={this.state.updating_order}>Yes</Button>
-                <Button outline color="danger" onClick={this.handleRevertModuleOrder} disabled={this.state.updating_order}>No</Button>
-              </Alert>
+              <Sticky style={ {zIndex:200}} stickyClassName="sticky-class">
+                <Alert color="info">Order has been change. Confirm update?
+                  <Button outline color="primary" className="mx-2" onClick={this.confirmOrderUpdate} disabled={this.state.updating_order}>Yes</Button>
+                  <Button outline color="danger" onClick={this.handleRevertModuleOrder} disabled={this.state.updating_order}>No</Button>
+                </Alert>
+              </Sticky>
             </div>
           ) : null
         }

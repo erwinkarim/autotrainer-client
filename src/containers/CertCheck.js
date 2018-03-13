@@ -46,6 +46,11 @@ export default class CertCheck extends Component {
       checking:false, checked:false, found: false
     }
   }
+  componentDidMount = () => {
+    if(this.props.isAuthenticated){
+      this.retrieveCertFromUrl();
+    }
+  }
   componentDidUpdate = async (prevProps, prevState) => {
     /*
       get the cert info
@@ -57,23 +62,26 @@ export default class CertCheck extends Component {
       console.log('prevProps.isAuthenticated', prevProps.isAuthenticated);
       console.log('this.props.isAuthenticated', this.props.isAuthenticated);
 
-      var urlState = new URL(window.location.href);
-      var certNo = urlState.searchParams.get('certNo');
-
-      if(certNo){
-        try {
-          await this.setState({certNo:certNo, checking:true, found:false});
-          var result = await this.checkCert();
-          if(result){
-            this.setState({found:true, cert:result});
-          }
-        } catch(e){
-          console.log(e)
-        };
-        this.setState({checking:false, checked:true});
-      }
-
+      this.retrieveCertFromUrl();
     };
+  }
+  retrieveCertFromUrl = async () => {
+    var urlState = new URL(window.location.href);
+    var certNo = urlState.searchParams.get('certNo');
+
+    if(certNo){
+      try {
+        await this.setState({certNo:certNo, checking:true, found:false});
+        var result = await this.checkCert();
+        if(result){
+          this.setState({found:true, cert:result});
+        }
+      } catch(e){
+        console.log(e)
+      };
+      this.setState({checking:false, checked:true});
+    }
+
   }
   handleCheckCert = async (e) => {
     this.setState({checking:true, found:false});
