@@ -31,7 +31,7 @@ class ClientTestimonials extends Component {
   }
   render(){
     return (
-      <div>
+      <Col>
         <Row>
           { this.props.clientList.map( (c,i) => {
             return (
@@ -53,7 +53,7 @@ class ClientTestimonials extends Component {
             )
           })}
         </FormGroup>
-      </div>
+      </Col>
     )
   }
 }
@@ -541,6 +541,34 @@ class CourseForm extends Component {
   }
 }
 
+class ModuleCard extends Component {
+  render(){
+    const e = this.props.module;
+    const i = this.props.moduleIndex;
+    var titleCaseType = toTitleCase(e.moduleType);
+
+    return (
+      <Card className="mb-2">
+        <CardBody>
+          <CardTitle> Module {i+1}: {e.title} </CardTitle>
+          <CardText>{e.description}</CardText>
+          <CardText>Order:
+            <Input type="select" value={e.order} onChange={this.props.handleOrderUpdate} data-module-id={e.moduleId}>
+              { this.props.modules.map( (module, module_index) => {
+                return <option key={module_index} value={module.order} >{module.order}</option>;
+              })}
+            </Input>
+          </CardText>
+          <CardText>Publish status: {e.publish_status}</CardText>
+          <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
+          <Button className="mr-2 mb-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
+          <Button className="mr-2 mb-2" type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
+        </CardBody>
+      </Card>
+    );
+  }
+}
+
 class CourseModules extends Component {
   constructor(props){
     super(props)
@@ -743,37 +771,22 @@ class CourseModules extends Component {
             </div>
           ) : null
         }
-        { /* <div className="col-12 col-md-8"> */}
-        <CardColumns>
-          {
-            this.state.modules.length === 0 ? (
-              <Col><Row><p>No Modules</p></Row></Col>
-            ) : (
+        {
+          this.state.modules.length === 0 ? (
+            <Col><Row><p>No Modules</p></Row></Col>
+          ) : (
+            <Col>
+            <CardColumns>{
               this.state.modules.sort( (a,b) => parseInt(a.order,10) > parseInt(b.order,10) ).map( (e,i) => {
-                var titleCaseType = toTitleCase(e.moduleType);
                 return (
-                  <Card key={i} className="mb-2">
-                    <CardBody>
-                      <CardTitle>Module {i+1}: {e.title}</CardTitle>
-                      <CardText>{e.description}</CardText>
-                      <CardText>Order:
-                        <Input type="select" value={e.order} onChange={this.handleOrderUpdate} data-module-id={e.moduleId}>
-                          { this.state.modules.map( (module, module_index) => {
-                            return <option key={module_index} value={module.order} >{module.order}</option>;
-                          })}
-                        </Input>
-                      </CardText>
-                      <CardText>Publish status: {e.publish_status}</CardText>
-                      <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
-                      <Button className="mr-2 mb-2" color="info" tag={Link} to={`/user/${e.moduleType}_builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
-                      <Button className="mr-2 mb-2" type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
-                    </CardBody>
-                  </Card>
+                  <ModuleCard key={i} handleOrderUpdate={this.handleOrderUpdate}
+                    module={e} moduleIndex={i} modules={this.state.modules} />
                 );
               })
-            )
-          }
-        </CardColumns>
+            }</CardColumns>
+            </Col>
+          )
+        }
       </Row>
     )
   }
