@@ -1,11 +1,114 @@
 import React, { Component } from "react";
-import {Jumbotron, Container, Row} from 'reactstrap';
+import {Jumbotron, Container, Row, Col } from 'reactstrap';
+import {CardDeck, Card, CardBody, CardText, CardTitle, CardFooter, Button } from 'reactstrap';
+import { Modal, ModalBody, ModalFooter, FormGroup, Input } from 'reactstrap';
 //import { Link } from "react-router-dom";
 import { HashLink as Link } from "react-router-hash-link";
+import EmailValidator from 'email-validator';
 import Helmet from 'react-helmet';
 import config from '../config';
+import Waypoint from 'react-waypoint';
+import FontAwesome from 'react-fontawesome';
 import "./Home.css";
 
+const client = require("@sendgrid/client");
+client.setApiKey(process.env.REACT_APP_SENDGRID_KEY);
+
+class SignUpModal extends Component {
+  constructor(props){
+    super(props);
+
+    this.state = {
+      showNewsletterModal:false,
+      signup_email:'', first_name:'', last_name:'',
+      signing_up: false,
+      waypointTriggered:false,
+    }
+  }
+  launchNewsletterModal = () =>{
+    console.log('should launch news letter modal');
+    this.setState({showNewsletterModal:true});
+  }
+  handleNewsletterSignUp = async (e) => {
+    console.log('should send email to sendgrid / mailchimp');
+
+    // param to post to sendgrid
+    const request = {
+      method:'POST',
+      url: '/v3/contactdb/recipients',
+      body: [ { email: this.state.signup_email, first_name:this.state.first_name , last_name: this.state.last_name } ]
+    };
+
+    this.setState({signing_up:true});
+
+    await client.request(request)
+      .then( ([response,body]) => {
+          console.log('email signed up');
+      });
+
+    this.props.addNotification('Thank you for signing up', 'info');
+
+    //reset
+    this.setState({signing_up:false, showNewsletterModal:false,
+      signup_email:'', first_name:'', last_name:''});
+
+  }
+  toggleModal = (e) => {
+    this.setState({showNewsletterModal: !this.state.showNewsletterModal});
+  }
+  triggerWaypoint = () => {
+    //trigger the waypoint only once per render
+    if(!this.state.waypointTriggered){
+      this.setState({waypointTriggered:true});
+      this.toggleModal();
+    }
+  }
+  validateFirstName = () => { return this.state.first_name.length > 0; }
+  validateLastName = () => { return this.state.last_name.length > 0; }
+  validateNewsletterModal = () => { return EmailValidator.validate(this.state.signup_email); }
+  render = () => {
+    return (
+      <div>
+        <Button outline color="info" onClick={this.launchNewsletterModal}>Join Newsletter</Button>
+        <Waypoint onEnter={this.triggerWaypoint} />
+        <Modal isOpen={this.state.showNewsletterModal} toggle={this.toggleModal} size="lg">
+          <ModalBody>
+            <p>Stay informed of the latest updates by joining our newsletter:</p>
+              <FormGroup row>
+                <Col xs="12" md="6" className="mb-2">
+                  <Input type="text" value={this.state.first_name}
+                    ref={ (input) => {this.first_name = input;} }
+                    invalid={ !this.validateFirstName() }
+                    onChange={ (e) => this.setState({first_name:e.target.value})} placeholder="First Name"/>
+                </Col>
+                <Col xs="12" md="6" className="">
+                  <Input type="text" value={this.state.last_name}
+                    invalid={ !this.validateLastName() }
+                    onChange={ (e) => this.setState({last_name:e.target.value})} placeholder="Last Name"/>
+                </Col>
+              </FormGroup>
+              <FormGroup>
+                <Input type="email" value={ this.state.signup_email }
+                  invalid={ !this.validateNewsletterModal() }
+                  onChange={ (e) => this.setState({signup_email:e.target.value})} placeholder="email address" />
+              </FormGroup>
+          </ModalBody>
+          <ModalFooter>
+            <Button outline color="danger" onClick={ this.toggleModal }>No Thanks</Button>
+            <Button color="primary" onClick={ this.handleNewsletterSignUp }
+              disabled={ !(this.validateNewsletterModal() && this.validateFirstName() && this.validateLastName() ) || (this.state.signing_up) }>
+                { this.state.signing_up ? <FontAwesome name="asterisk" spin /> : null }
+                Sign Up
+            </Button>
+          </ModalFooter>
+        </Modal>
+      </div>
+
+    )
+
+  }
+
+}
 export default class Home extends Component {
   render() {
     return (
@@ -42,8 +145,8 @@ export default class Home extends Component {
           </Row>
         </Container>
         <Container className="text-left">
-          <h1 className="display-3">Catchy Three Worder.</h1>
-          <h4 className="text-muted">With great punchline.</h4>
+          <h1 className="display-3">Learn. Experince. Succeed.</h1>
+          <h4 className="text-muted">Experienced practitioners providing you with real world knowledge.</h4>
           <p className="lead">learn@AP is the learning and development business of Actuarial Partners Consulting</p>
           <p>Since 2015, we have trained more than 500 people through our public workshops, in-house training programs and conferences on various technical subjects relating to actuarial, insurance and finance. These programs has assisted our clients and partners in developing their actuarial human capital.</p>
           <p>Our courses are delivered by highly experienced and qualified practicineers who posses both the depth of knowledge as well as the practical experience in the relevant subject matter.</p>
@@ -90,6 +193,32 @@ export default class Home extends Component {
             */
           }
         </Jumbotron>
+        <Container className="mt-2">
+          <Row>
+            <Col>
+            <CardDeck>
+              <Card>
+                <CardBody>
+                  <CardTitle>About Actuarial Partners</CardTitle>
+                  <CardText>With nearly 100 years of combined consulting experience, our partners are not only leaders in their field but are progressive and forward-thinking innovators.</CardText>
+                </CardBody>
+                <CardFooter>
+                  <Button tag={Link} to="/about" color="info" outline>Learn More</Button>
+                </CardFooter>
+              </Card>
+              <Card>
+                <CardBody>
+                  <CardTitle>Keep in Touch</CardTitle>
+                  <CardText>Join our newsletter to stay inform of the latest from learn@AP</CardText>
+                </CardBody>
+                <CardFooter>
+                  <SignUpModal {...this.props} />
+                </CardFooter>
+              </Card>
+            </CardDeck>
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }

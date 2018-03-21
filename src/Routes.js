@@ -24,6 +24,7 @@ const AsyncNotFound = asyncComponent(() => import("./containers/NotFound"));
 const AsyncTestFn = asyncComponent(() => import("./containers/TestFn"));
 const AsyncCertCheck = asyncComponent(() => import("./containers/CertCheck"));
 const AsyncAbout = asyncComponent(() => import("./containers/About"));
+const AsyncTeam = asyncComponent(() => import("./containers/Team"));
 
 const AsyncCourseBuilder = asyncComponent(() => import("./containers/CourseBuilder"));
 const AsyncArticleBuilder = asyncComponent(() => import("./containers/ArticleBuilder"));
@@ -64,6 +65,7 @@ export default ({childProps}) =>
     <AppliedRoute path="/contact" exact component={AsyncContact} props={childProps} />
     <AppliedRoute path="/verify_cert" exact component={AsyncCertCheck} props={childProps} />
     <AppliedRoute path="/about" exact component={AsyncAbout} props={childProps} />
+    <AppliedRoute path="/team" exact component={AsyncTeam} props={childProps} />
     { process.env.NODE_ENV === 'development' ? <AppliedRoute path="/test" exact component={AsyncTestFn} props={childProps} /> : null}
     { process.env.NODE_ENV === 'development' ? <Route path="/courses/test" exact component={CourseTest} props={childProps} /> : null }
 

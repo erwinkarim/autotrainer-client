@@ -3,6 +3,7 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
+    "@sendgrid/client": "^6.2.1",
     "amazon-cognito-auth-js": "^1.1.0",
     "amazon-cognito-identity-js": "^1.26.0",
     "aws-sdk": "^2.154.0",

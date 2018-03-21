@@ -15,7 +15,7 @@ export default {
     APP_CLIENT_ID: "YOUR_COGNITO_APP_CLIENT_ID"
   },
   banner: {
-    text:'IFRS17: From global ideas to local issues and challenges',
+    text:'IFRS17 Series of Workshops, 23 – 25 April 2018, Istana Hotel, Kuala Lumpur',
     showButton: false,
     buttonText:'Register Now !',
     buttonLink:'/courses'

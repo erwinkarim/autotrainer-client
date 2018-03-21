@@ -1,0 +1,12 @@
+.banner{
+  background-image: url('/images/people.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  opacity: 0.6;
+  min-height: 30vh;
+}
+
+.text-shadow {
+  text-shadow: 2px 2px black;
+}

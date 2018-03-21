@@ -144,7 +144,8 @@ class App extends Component {
               <Link to="/legal">Terms of Use and Privacy Policy</Link> &bull; {' '}
               <Link to="/contact">Contact</Link> &bull; {' '}
               <Link to='/verify_cert'>Verify Certificate</Link> &bull; {' '}
-              <Link to='/about'>About</Link>
+              <Link to='/about'>About</Link> &bull; {' '}
+              <Link to='/team'>Team</Link>
             </p>
           </Container>
         </footer>
