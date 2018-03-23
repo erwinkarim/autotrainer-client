@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import PropTypes from 'prop-types';
 import { Container, Row, Col, Jumbotron } from 'reactstrap';
 import Waypoint from 'react-waypoint';
 import Helmet from 'react-helmet';
@@ -117,7 +118,7 @@ export default class Article extends Component {
     /*
       TODO: make sure the accordion works
     */
-    const article = this.state.article;
+    const { article } = this.state;
     return (
       <div className="text-left">
         <Helmet>
@@ -150,3 +151,9 @@ export default class Article extends Component {
     );
   }
 }
+
+Article.propTypes = {
+  addNotification: PropTypes.func.isRequired,
+  currentUser: PropTypes.shape.isRequired,
+  match: PropTypes.shape.isRequired
+};

@@ -3,7 +3,6 @@
   "version": "0.2.0",
   "private": true,
   "dependencies": {
-    "@sendgrid/client": "^6.2.1",
     "amazon-cognito-auth-js": "^1.1.0",
     "amazon-cognito-identity-js": "^1.26.0",
     "aws-sdk": "^2.154.0",
@@ -21,6 +20,7 @@
     "megadraft": "^0.4.33",
     "megadraft-js-export-markdown": "^0.2.3",
     "os-browserify": "^0.3.0",
+    "prop-types": "^15.6.1",
     "random-int": "^1.0.0",
     "react": "^16.1.1",
     "react-async-script": "^0.9.1",
@@ -29,6 +29,7 @@
     "react-google-maps": "^9.4.2",
     "react-google-recaptcha": "^0.9.9",
     "react-helmet": "^5.2.0",
+    "react-mailchimp-subscribe": "^2.0.1",
     "react-notification": "^6.8.2",
     "react-pdf-js": "^3.0.3",
     "react-popper": "^0.7.4",
