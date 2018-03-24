@@ -51,12 +51,12 @@ export default class Article extends Component {
   }
   getEnrolment = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
-    path: `/enrolment/${this.state.article.courseId}`
+    path: `/enrolment/${this.state.article.courseId}`,
   })
   loadArticle = () => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,
     path: `/modules/${this.props.match.params.articleId}`,
-    queryParams: { courseId: this.props.match.params.courseId }
+    queryParams: { courseId: this.props.match.params.courseId },
   });
   handleEnterViewport = async () => {
     const handle = this;
@@ -155,5 +155,5 @@ export default class Article extends Component {
 Article.propTypes = {
   addNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape.isRequired,
-  match: PropTypes.shape.isRequired
+  match: PropTypes.shape.isRequired,
 };
