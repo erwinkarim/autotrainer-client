@@ -9,11 +9,11 @@ import './Home.css';
 
 /**
  * Home
- * @param {int} e The first number.
+ * @param {int} props The first number.
  * @param {int} num2 The second number.
  * @returns {int} The sum of the two numbers.
  */
-const Home = () =>
+const Home = props =>
   (
     <div className="Home">
       <Helmet>
@@ -134,7 +134,7 @@ const Home = () =>
                   </CardText>
                 </CardBody>
                 <CardFooter>
-                  <SignUpModal {...this.props} />
+                  <SignUpModal {...props} />
                 </CardFooter>
               </Card>
             </CardDeck>
