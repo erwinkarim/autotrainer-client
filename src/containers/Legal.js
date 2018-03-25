@@ -1,9 +1,9 @@
-import React, { Component } from "react";
-import {Container, Row, Nav, NavItem, NavLink, TabContent, TabPane} from "reactstrap";
-import './Legal.css'
+import React, { Component } from 'react';
+import { Container, Row, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
+import './Legal.css';
 
-var TOC = `This site is provided by Actuarial Partners Consulting ("APC") for informational purposes only. By accessing the site, you are indicating your acceptance of these Terms of Use.
+const TOC = `This site is provided by Actuarial Partners Consulting ("APC") for informational purposes only. By accessing the site, you are indicating your acceptance of these Terms of Use.
 
 Your use of this site is at your own risk. The content is provided “as is” and without warranties of any kind, either expressed or implied. APC disclaims all warranties, including any implied warranties of merchantability, fitness for a particular purpose, title, or non-infringement. APC does not warrant that the functions or content contained in this site will be uninterrupted or error-free, that defects will be corrected, or that this site or the server that makes it available are free of viruses or other harmful components. APC does not warrant or make any representation regarding use, or the result of use, of the content in terms of accuracy, reliability, or otherwise. The content may include technical inaccuracies or typographical errors, and APC may make changes or improvements at any time. You, and not APC, assume the entire cost of all necessary servicing, repair or correction in the event of any loss or damage arising from the use of this site or its content. APC makes no warranties that your use of the content will not infringe the rights of others and assumes no liability or responsibility for errors or omissions in such content.
 
@@ -71,7 +71,7 @@ About Actuarial Partners Consulting Sdn Bhd
 We are an actuarial consulting firm that has been partnering with clients in takaful, insurance and retirement benefits for more than 3 decades.
 `;
 
-var privacy_policy = `
+const PrivacyPolicy = `
 Effective Date: July 15, 2016
 
 Actuarial Partners Consulting (“APC,” “we,” “our,” “us”) are committed to protecting the privacy of the users (“you,” “your”) of this site (“Website”). We collect personally identifiable information about you only with your permission. We respect your privacy and is committed to protecting the personal information you share with us. The purpose of this Privacy Policy is to set out the principles governing our use of personal information. If you give us personal information, we will treat it according to this policy and in compliance with our governing law in Malaysia, the Personal Data Protection Act 2010 (“PDPA”).
@@ -103,48 +103,55 @@ Modification: This privacy policy is subject to change. All changes will be post
 If you have any questions about APC’s privacy practices, please contact us at enquiry@actuarialpartners.com
 `;
 
+/**
+ * Legal stuff
+ * @param {int} tab The first number.
+ * @param {int} num2 The second number.
+ * @returns {int} The sum of the two numbers.
+ */
 export default class Legal extends Component {
-  constructor(props){
-    super(props)
+  /**
+   * Legal stuff
+   * @param {int} props The first number.
+   * @returns {int} The sum of the two numbers.
+   */
+  constructor(props) {
+    super(props);
     this.state = {
-      activeTab:'TermsOfUse'
-    }
+      activeTab: 'TermsOfUse',
+    };
   }
-  toggleTab = (tab) => { if (this.state.activeTab !== tab){ this.setState({ activeTab: tab }); } }
-  render(){
-    return (<Container className="mt-2">
+  toggleTab = (tab) => { if (this.state.activeTab !== tab) { this.setState({ activeTab: tab }); } }
+  render = () => (
+    <Container className="mt-2">
       <Row>
         <div className="col-12">
           <Nav tabs>
             <NavItem>
-             <NavLink className={classnames({ active: this.state.activeTab === 'TermsOfUse' })} onClick={() => { this.toggleTab('TermsOfUse'); }} >
+              <NavLink className={classnames({ active: this.state.activeTab === 'TermsOfUse' })} onClick={() => { this.toggleTab('TermsOfUse'); }} >
                Terms of Use
-             </NavLink>
-           </NavItem>
+              </NavLink>
+            </NavItem>
             <NavItem>
-             <NavLink className={classnames({ active: this.state.activeTab === 'PrivacyPolicy' })} onClick={() => { this.toggleTab('PrivacyPolicy'); }} >
-              Privacy Policy
-             </NavLink>
-           </NavItem>
+              <NavLink className={classnames({ active: this.state.activeTab === 'PrivacyPolicy' })} onClick={() => { this.toggleTab('PrivacyPolicy'); }} >
+                Privacy Policy
+              </NavLink>
+            </NavItem>
           </Nav>
           <TabContent activeTab={this.state.activeTab} className="mt-3">
             <TabPane tabId="TermsOfUse" className="text-justify">
               <h4>Terms of Use</h4>
-              { TOC.split('\n').map( (para, i) => {
-                return (<p key={i}>{para}</p>)
-              }) }
+              { TOC.split('\n').map((para, i) => (<p key={i}>{para}</p>)) }
             </TabPane>
             <TabPane tabId="PrivacyPolicy" className="text-justify">
               <h4>Privacy Policy</h4>
-              { privacy_policy.split('\n').map( (para, i) => {
-                return (<p key={i}>{para}</p>)
-              }) }
+              { PrivacyPolicy.split('\n').map((para, i) => (<p key={i}>{para}</p>)) }
             </TabPane>
 
           </TabContent>
 
         </div>
       </Row>
-    </Container>)
-  }
+    </Container>
+  )
 }
