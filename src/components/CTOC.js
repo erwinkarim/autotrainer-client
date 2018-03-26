@@ -3,74 +3,88 @@
 
   required props.course
 */
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { CardColumns, Card, CardBody, CardTitle, CardText } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import Notice from './Notice';
 import config from '../config';
-import { invokeApig } from "../libs/awsLibs";
+import { invokeApig } from '../libs/awsLibs';
 
+/**
+ * shows course table of content
+ * @param {int} num1 The first number.
+ * @param {int} num2 The second number.
+ * @returns {int} The sum of the two numbers.
+ */
 export default class CTOC extends Component {
-  constructor(props){
+  /**
+   * constructor
+   * @param {int} props properties.
+   * @returns {int} The sum of the two numbers.
+   */
+  constructor(props) {
     super(props);
 
-    this.state = {modules:[], options:null, loading:true}
-
+    this.state = { modules: [], options: null, loading: true };
   }
-  componentDidMount = async() => {
-    var handle = this;
+  componentDidMount = async () => {
+    const handle = this;
 
-    //update the options
-    var newOptions = Object.assign(this.props.defaultOptions, this.props.options);
-    handle.setState({options:newOptions, loading:false});
+    // update the options
+    const newOptions = Object.assign(this.props.defaultOptions, this.props.options);
+    handle.setState({ options: newOptions, loading: false });
 
-    //get the modules
-    try{
-      var results = await this.getModules();
-      handle.setState({modules:results});
-    } catch(e){
+    // get the modules
+    try {
+      const results = await this.getModules();
+      handle.setState({ modules: results });
+    } catch (e) {
       console.log('error getting modules');
       console.log(e);
     }
   }
-  getModules = () => {
-    return invokeApig({
-      endpoint: config.apiGateway.MODULE_URL,
-      path: '/modules',
-      queryParams: {courseId: this.props.course.courseId}
-    });
-  }
-  render(){
-    if(this.state.loading){
+  getModules = () => invokeApig({
+    endpoint: config.apiGateway.MODULE_URL,
+    path: '/modules',
+    queryParams: { courseId: this.props.course.courseId },
+  })
+  render = () => {
+    if (this.state.loading) {
       return <Notice content="Loading courses ...." />;
-    };
-
-    if(this.state.modules.length === 0){
-      return (<Notice content="This course has zero modules" />)
     }
 
+    if (this.state.modules.length === 0) {
+      return (<Notice content="This course has zero modules" />);
+    }
+
+    let completionNotice = null;
+    if (this.props.enrolment === null || this.props.enrolment === undefined) {
+      completionNotice = null;
+    } else if (this.props.enrolment.progress.length === this.state.modules.length) {
+      completionNotice = (
+        <Card body className="border border-success mb-2">
+          <CardTitle className="mb-2">All modules attended</CardTitle>
+        </Card>
+      );
+    }
     return (
       <div>
-        {
-          this.props.enrolment === null || this.props.enrolment === undefined ? null :
-          this.props.enrolment.progress.length === this.state.modules.length ? (
-            <Card body className="border border-success mb-2">
-              <CardTitle className="mb-2">All modules attended</CardTitle>
-            </Card>
-          ) : null
-        }
+        { completionNotice }
         <CardColumns>{
-          this.state.modules.map( (m,i) => {
-            var attended = this.props.enrolment === null || this.props.enrolment === undefined ? false :
-              this.props.enrolment.progress.includes(m.moduleId)
+          this.state.modules.map((m, i) => {
+            const attended =
+              this.props.enrolment === null || this.props.enrolment === undefined ?
+                false :
+                this.props.enrolment.progress.includes(m.moduleId);
             return (
-              <Card key={i} className={`${attended ? 'border border-success' : null}`}>
+              <Card key={m.moduleId} className={`${attended ? 'border border-success' : null}`}>
                 <CardBody>
                   <CardTitle>
                     { this.state.options.showLink ? (
-                      <Link to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{i+1}: {m.title}</Link>
+                      <Link href="/" to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{ i + 1 }: {m.title}</Link>
                     ) : (
-                      <span>{i+1}: {m.title}</span>
+                      <span>{i + 1}: {m.title}</span>
                     )}
                   </CardTitle>
                   <CardText>{m.description}</CardText>
@@ -79,12 +93,26 @@ export default class CTOC extends Component {
               </Card>
             );
           })
-        }</CardColumns>
+        }
+        </CardColumns>
       </div>
-    )
+    );
   }
 }
 
+CTOC.propTypes = {
+  enrolment: PropTypes.shape({
+    progress: PropTypes.array,
+  }),
+  defaultOptions: PropTypes.shape,
+  options: PropTypes.shape,
+  course: PropTypes.shape({
+    courseId: PropTypes.string,
+  }).isRequired,
+};
+
 CTOC.defaultProps = {
-  defaultOptions: { showLink:true, enrolment:null }
-}
+  enrolment: { progress: [] },
+  defaultOptions: { showLink: true, enrolment: null },
+  options: {},
+};
