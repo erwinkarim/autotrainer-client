@@ -49,7 +49,11 @@ class VideoButton extends Component {
 
 VideoButton.propTypes = {
   onChange: PropTypes.func.isRequired,
-  editorState: PropTypes.shape.isRequired,
+  editorState: PropTypes.shape,
+};
+
+VideoButton.defaultProps = {
+  editorState: {},
 };
 
 const VideoBlock = (props) => {
@@ -88,10 +92,17 @@ VideoBlock.propTypes = {
     updateUrl: PropTypes.string,
     data: PropTypes.string,
   }).isRequired,
-  value: PropTypes.number.isRequired,
-  error: PropTypes.shape.isRequired,
-  styles: PropTypes.shape.isRequired,
-  blockProps: PropTypes.shape.isRequired,
+  value: PropTypes.number,
+  error: PropTypes.shape({}),
+  styles: PropTypes.shape({}),
+  blockProps: PropTypes.shape({}),
+};
+
+VideoBlock.defaultProps = {
+  value: 0,
+  error: {},
+  styles: {},
+  blockProps: {},
 };
 
 const VideoPlugin = {

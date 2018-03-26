@@ -26,7 +26,7 @@ export default class Courses extends Component {
     super(props);
 
     this.state = {
-      courses: [], enrolments: [], loading: true, show_mode: 'published_only',
+      courses: [{}], enrolments: [], loading: true, show_mode: 'published_only',
     };
   }
   componentDidMount = async () => {

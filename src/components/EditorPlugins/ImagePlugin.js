@@ -25,6 +25,11 @@ class ImageButton extends Component {
     )
 }
 
+ImageButton.propTypes = {
+  onChange: PropTypes.func.isRequired,
+  editorState: PropTypes.shape({}).isRequired,
+};
+
 const ImageBlock = (props) => {
   const {
     value,
@@ -35,7 +40,7 @@ const ImageBlock = (props) => {
   } = props;
 
   return (
-    <Card {...props}>
+    <Card {...otherProps}>
       <CardImg top src={props.data.src} />
       <CardBody>
         {
@@ -57,13 +62,29 @@ const ImageBlock = (props) => {
 
 ImageBlock.propTypes = {
   data: PropTypes.shape({
+    src: PropTypes.string,
+    caption: PropTypes.string,
     updateUrl: PropTypes.string,
     data: PropTypes.string,
+  }),
+  value: PropTypes.number,
+  error: PropTypes.shape({}),
+  styles: PropTypes.shape({}),
+  blockProps: PropTypes.shape({}),
+  container: PropTypes.shape({
+    updateData: PropTypes.func,
   }).isRequired,
-  value: PropTypes.number.isRequired,
-  error: PropTypes.shape.isRequired,
-  styles: PropTypes.shape.isRequired,
-  blockProps: PropTypes.shape.isRequired,
+};
+
+ImageBlock.defaultProps = {
+  data: {
+    src: 'http://placehold.it/256x256',
+    caption: 'Test Image',
+  },
+  value: 0,
+  error: {},
+  styles: {},
+  blockProps: {},
 };
 
 /*

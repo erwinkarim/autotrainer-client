@@ -84,5 +84,9 @@ export default class Editor extends Component {
 }
 
 Editor.propTypes = {
-  readOnly: PropTypes.bool.isRequired,
+  readOnly: PropTypes.bool,
+};
+
+Editor.defaultProps = {
+  readOnly: false,
 };

@@ -37,8 +37,22 @@ const CourseCard = (props) => {
 };
 
 CourseCard.propTypes = {
-  course: PropTypes.shape.isRequired,
-  enrolments: PropTypes.shape.isRequired,
+  course: PropTypes.shape({
+    courseId: PropTypes.string,
+    tagline: PropTypes.string,
+    description: PropTypes.string,
+    name: PropTypes.string,
+    userId: PropTypes.string,
+  }),
+  enrolments: PropTypes.arrayOf(PropTypes.shape({ courseId: PropTypes.string })).isRequired,
+};
+
+CourseCard.defaultProps = {
+  course: {
+    courseId: 'xxx',
+    tagline: 'Testing',
+    description: 'Test description',
+  },
 };
 
 export default CourseCard;

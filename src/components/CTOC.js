@@ -104,8 +104,8 @@ CTOC.propTypes = {
   enrolment: PropTypes.shape({
     progress: PropTypes.array,
   }),
-  defaultOptions: PropTypes.shape,
-  options: PropTypes.shape,
+  defaultOptions: PropTypes.shape({}),
+  options: PropTypes.shape({}),
   course: PropTypes.shape({
     courseId: PropTypes.string,
   }).isRequired,

@@ -154,6 +154,11 @@ export default class Article extends Component {
 
 Article.propTypes = {
   addNotification: PropTypes.func.isRequired,
-  currentUser: PropTypes.shape.isRequired,
-  match: PropTypes.shape.isRequired,
+  currentUser: PropTypes.shape({}).isRequired,
+  match: PropTypes.shape({
+    params: PropTypes.shape({
+      articleId: PropTypes.string,
+      courseId: PropTypes.string,
+    }),
+  }).isRequired,
 };
