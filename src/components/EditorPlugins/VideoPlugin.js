@@ -49,7 +49,7 @@ class VideoButton extends Component {
 
 VideoButton.propTypes = {
   onChange: PropTypes.func.isRequired,
-  editorState: PropTypes.shape,
+  editorState: PropTypes.shape({}),
 };
 
 VideoButton.defaultProps = {

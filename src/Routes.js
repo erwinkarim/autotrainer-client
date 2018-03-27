@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import AppliedRoute from './components/AppliedRoute';
 import asyncComponent from './components/AsyncComponent';
 import CourseTest from './components/CourseTest';
@@ -33,7 +34,7 @@ const AsyncDocBuilder = asyncComponent(() => import('./modules/DocBuilder'));
 const AsyncVideoBuilder = asyncComponent(() => import('./modules/VideoBuilder'));
 
 
-export default ({ childProps }) =>
+const Routes = ({ childProps }) =>
   (
     <Switch>
       <AppliedRoute path="/" exact component={AsyncHome} props={childProps} />
@@ -74,3 +75,9 @@ export default ({ childProps }) =>
       <Route component={AsyncNotFound} />
     </Switch>
   );
+
+export default Routes;
+
+Routes.propTypes = {
+  childProps: PropTypes.shape({}).isRequired,
+};

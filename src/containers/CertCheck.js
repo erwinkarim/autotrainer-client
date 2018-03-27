@@ -33,7 +33,7 @@ Cert.propTypes = {
     coursename: PropTypes.string,
     courseowner: PropTypes.string,
     certIssued: PropTypes.number,
-  }).isRequired,
+  }),
 };
 
 Cert.defaultProps = {
@@ -185,6 +185,12 @@ export default class CertCheck extends Component {
 
 CertCheck.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
-  history: PropTypes.shape.isRequired,
-  currentUser: PropTypes.shape.isRequired,
+  history: PropTypes.shape({
+    push: PropTypes.func,
+  }).isRequired,
+  currentUser: PropTypes.shape({}),
+};
+
+CertCheck.defaultProps = {
+  currentUser: {},
 };
