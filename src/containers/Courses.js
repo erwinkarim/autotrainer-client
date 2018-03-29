@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Container, Row, Col, CardColumns, Card, Form, FormGroup, Label, Input } from 'reactstrap';
 import Helmet from 'react-helmet';
 import AWS from 'aws-sdk';
-import './Courses.css';
 import { invokeApig } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import config from '../config';

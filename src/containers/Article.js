@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Container, Row, Col, Jumbotron } from 'reactstrap';
 import Waypoint from 'react-waypoint';
 import Helmet from 'react-helmet';
-import './Article.css';
 import { invokeApig } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import config from '../config';

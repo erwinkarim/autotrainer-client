@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Row, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
-import './Legal.css';
 
 const TOC = `This site is provided by Actuarial Partners Consulting ("APC") for informational purposes only. By accessing the site, you are indicating your acceptance of these Terms of Use.
 

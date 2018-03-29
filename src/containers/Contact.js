@@ -8,8 +8,6 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import PropTypes from 'prop-types';
 import { compose, withProps } from 'recompose';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
-import './Contact.css';
-
 
 const MyMapComponent = compose(
   withProps({
