@@ -8,7 +8,7 @@ import 'whatwg-fetch';
 
 const adyenEncrypt = require('adyen-cse-web');
 
-const key = '';
+const key = process.env.REACT_APP_ADYEN_PUBLIC_KEY;
 const options = {};
 const cseInstance = adyenEncrypt.createEncryption(key, options);
 const postData = {};
@@ -25,8 +25,8 @@ postData['card.encrypted.json'] = cseInstance.encrypt({
 
 console.log('postData', postData);
 
-const adyenUser = 'xxx';
-const adyenPass = 'xxx';
+const adyenUser = process.env.REACT_APP_ADYEN_USER;
+const adyenPass = process.env.REACT_APP_ADYEN_PASS;
 const requestPayment = () => fetch('https://pal-test.adyen.com/pal/servlet/Payment/v30/authorise', {
   method: 'POST',
   headers: {
@@ -57,12 +57,13 @@ const handleClick = async () => {
 
 
 const Purchase = () => (
-  <Container>
+  <Container className="mt-2">
     <Row>
       <Col xs="12">
         <h2>Purchase Test</h2>
       </Col>
-      <Col><Button onClick={handleClick}>Test!</Button></Col>
+      <Col><Button onClick={handleClick}>Adyen Test!</Button></Col>
+      <Col><Button>MOL Pay Test</Button></Col>
     </Row>
   </Container>
 );
