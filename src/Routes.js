@@ -11,6 +11,7 @@ const AsyncNewCourse = asyncComponent(() => import('./containers/NewCourse'));
 const AsyncCourses = asyncComponent(() => import('./containers/Courses'));
 const AsyncCoursePromo = asyncComponent(() => import('./containers/CoursePromo'));
 const AsyncCourseTOC = asyncComponent(() => import('./containers/CourseTOC'));
+const AsyncCoursePurchase = asyncComponent(() => import('./containers/Purchase'));
 
 const AsyncArticle = asyncComponent(() => import('./containers/Article'));
 const AsyncQuiz = asyncComponent(() => import('./containers/Quiz'));
@@ -52,6 +53,7 @@ const Routes = ({ childProps }) =>
       <AppliedRoute path="/courses/quiz/:courseId/:moduleId" exact component={AsyncQuiz} props={childProps} />
       <AppliedRoute path="/courses/doc/:courseId/:moduleId" exact component={AsyncDocViewer} props={childProps} />
       <AppliedRoute path="/courses/video/:courseId/:moduleId" exact component={AsyncVideo} props={childProps} />
+      <AppliedRoute path="/courses/purchase" exact component={AsyncCoursePurchase} props={childProps} />
 
       {/* user pages */}
       <AppliedRoute path="/courses/new" exact component={AsyncNewCourse} props={childProps} />
