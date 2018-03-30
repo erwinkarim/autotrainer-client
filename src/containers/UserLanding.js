@@ -1,14 +1,15 @@
-import React, { Component } from "react";
-import { Container, Row, Col } from 'reactstrap'
-import {CardColumns, Card, CardImg, CardTitle, CardBody, CardText, Button} from 'reactstrap';
-import { Modal, ModalBody, ModalFooter} from 'reactstrap';
+import React, { Component } from 'react';
+import {
+  Container, Row, Col, CardColumns, Card, CardImg, CardTitle,
+  CardBody, CardText, Button, Modal, ModalBody, ModalFooter,
+} from 'reactstrap';
+import { HashLink as Link } from 'react-router-hash-link';
+import Helmet from 'react-helmet';
 import Notice from '../components/Notice';
-import { HashLink as Link } from "react-router-hash-link";
 import './UserLanding.css';
 import './CertCheck.css';
 import config from '../config';
-import { invokeApig } from "../libs/awsLibs";
-import Helmet from 'react-helmet';
+import { invokeApig } from '../libs/awsLibs';
 
 class EnrolledCourses extends Component {
   constructor(props){
@@ -47,7 +48,7 @@ class EnrolledCourses extends Component {
       });
     }
   }
-  render(){
+  render = () => {
     if(this.state.isLoading){
       return <Notice content="Checking enrolled courses ..." />
     };

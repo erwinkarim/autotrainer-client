@@ -42,6 +42,7 @@
     "reactstrap": "^5.0.0-alpha.3",
     "source-map-explorer": "^1.5.0",
     "titlecase": "^1.1.2",
+    "uuid": "^3.2.1",
     "whatwg-fetch": "^2.0.3"
   },
   "scripts": {

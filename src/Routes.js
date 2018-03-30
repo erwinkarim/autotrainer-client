@@ -13,8 +13,8 @@ const AsyncCoursePromo = asyncComponent(() => import('./containers/CoursePromo')
 const AsyncCourseTOC = asyncComponent(() => import('./containers/CourseTOC'));
 const AsyncCoursePurchase = asyncComponent(() => import('./containers/Purchase'));
 
-const AsyncArticle = asyncComponent(() => import('./containers/Article'));
-const AsyncQuiz = asyncComponent(() => import('./containers/Quiz'));
+const AsyncArticle = asyncComponent(() => import('./modules/Article'));
+const AsyncQuiz = asyncComponent(() => import('./modules/Quiz'));
 const AsyncDocViewer = asyncComponent(() => import('./modules/DocViewer'));
 const AsyncVideo = asyncComponent(() => import('./modules/Video'));
 
@@ -29,8 +29,8 @@ const AsyncAbout = asyncComponent(() => import('./containers/About'));
 const AsyncTeam = asyncComponent(() => import('./containers/Team'));
 
 const AsyncCourseBuilder = asyncComponent(() => import('./containers/CourseBuilder'));
-const AsyncArticleBuilder = asyncComponent(() => import('./containers/ArticleBuilder'));
-const AsyncQuizBuilder = asyncComponent(() => import('./containers/QuizBuilder'));
+const AsyncArticleBuilder = asyncComponent(() => import('./modules/ArticleBuilder'));
+const AsyncQuizBuilder = asyncComponent(() => import('./modules/QuizBuilder'));
 const AsyncDocBuilder = asyncComponent(() => import('./modules/DocBuilder'));
 const AsyncVideoBuilder = asyncComponent(() => import('./modules/VideoBuilder'));
 

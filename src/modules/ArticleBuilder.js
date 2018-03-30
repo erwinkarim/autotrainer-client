@@ -157,7 +157,11 @@ ArticleBuilder.propTypes = {
   }).isRequired,
   currentUser: PropTypes.shape({
     name: PropTypes.string,
-  }).isRequired,
+  }),
   addNotification: PropTypes.func.isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+};
+
+ArticleBuilder.defaultProps = {
+  currentUser: {},
 };
