@@ -113,11 +113,22 @@ const About = () => (
           </p>
           <h2>About learn@AP</h2>
           <p>
-            Now talk about how learn@AP fits into the picture. Lorem ipsum dolor sit amet,
-            consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore
-            magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris
-            nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in
-            voluptate velit
+            learn@AP is the learning and development business of Actuarial Partners Consulting.
+          </p>
+          <p>
+            Since 2015, we have trained more than 500 people over 4 countries through our public
+            workshops, in-house training programs and conferences on various technical subjects
+            relating to actuarial, insurance and finance. These programs have assisted our clients
+            and partners in developing their actuarial human capital.
+          </p>
+          <p>
+            Our courses are delivered by highly experienced and qualified practitioners who posses
+            both the depth of knowledge as well as the practical experience in the relevant subject
+            matter.
+          </p>
+          <p>
+            We seek to deliver the most effective (and fun) learning experiences for our clients
+            by incorporating new and innovative learning methods.
           </p>
         </Col>
       </Row>
