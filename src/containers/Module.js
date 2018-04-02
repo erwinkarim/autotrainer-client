@@ -18,6 +18,7 @@ import Article from '../modules/Article';
 import Quiz from '../modules/Quiz';
 import Doc from '../modules/DocViewer';
 import Video from '../modules/Video';
+import CourseTOC from '../modules/CourseTOC';
 
 /**
  * Module
@@ -54,11 +55,16 @@ export default class Module extends Component {
       this.loadModule();
     }
   }
-  getModule = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: `/modules/${this.props.match.params.moduleId}`,
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
+  getModule = () => {
+    return (this.props.match.params.moduleType === 'toc') ?
+      invokeApig({ path: `/courses/${this.props.match.params.courseId}` })
+      :
+      invokeApig({
+        endpoint: config.apiGateway.MODULE_URL,
+        path: `/modules/${this.props.match.params.moduleId}`,
+        queryParams: { courseId: this.props.match.params.courseId },
+      });
+  }
   getEnrolment = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.courseId}`,
@@ -148,12 +154,25 @@ export default class Module extends Component {
       layout = <Doc {...this.state} triggerAttendance={this.triggerAttendance} />;
     } else if (module.moduleType === 'video') {
       layout = <Video {...this.state} triggerAttendance={this.triggerAttendance} />;
+    } else if (this.props.match.params.moduleType === 'toc') {
+      layout = <CourseTOC {...this.state} />;
     }
+
+    const moduleJumbotron = this.props.match.params.moduleType === 'toc' ? null : (
+      <Jumbotron fluid>
+        <Container>
+          <h4 className="display-4">Chapter {module.order}: {module.title}</h4>
+          <p className="lead">{module.description}</p>
+        </Container>
+      </Jumbotron>
+    );
+
+    const pageTitle = this.state.module.title || this.state.module.name;
 
     return (
       <div className="text-left">
         <Helmet>
-          <title>{ this.state.module.title } - {config.site_name}</title>
+          <title>{pageTitle} - {config.site_name}</title>
         </Helmet>
         <Container>
           <Row>
@@ -165,12 +184,7 @@ export default class Module extends Component {
             </Col>
           </Row>
         </Container>
-        <Jumbotron fluid>
-          <Container>
-            <h4 className="display-4">Chapter {module.order}: {module.title}</h4>
-            <p className="lead">{module.description}</p>
-          </Container>
-        </Jumbotron>
+        { moduleJumbotron }
         { layout }
       </div>
     );

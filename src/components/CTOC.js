@@ -26,7 +26,7 @@ export default class CTOC extends Component {
   constructor(props) {
     super(props);
 
-    this.state = { modules: [], options: null, loading: true };
+    this.state = { modules: [], loading: true };
   }
   componentDidMount = async () => {
     const handle = this;
@@ -81,7 +81,7 @@ export default class CTOC extends Component {
               <Card key={m.moduleId} className={`${attended ? 'border border-success' : null}`}>
                 <CardBody>
                   <CardTitle>
-                    { this.state.options.showLink ? (
+                    { this.props.showLink ? (
                       <Link href="/" to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{ i + 1 }: {m.title}</Link>
                     ) : (
                       <span>{i + 1}: {m.title}</span>
@@ -101,6 +101,7 @@ export default class CTOC extends Component {
 }
 
 CTOC.propTypes = {
+  showLink: PropTypes.bool,
   enrolment: PropTypes.shape({
     progress: PropTypes.array,
   }),
@@ -112,6 +113,7 @@ CTOC.propTypes = {
 };
 
 CTOC.defaultProps = {
+  showLink: false,
   enrolment: { progress: [] },
   defaultOptions: { showLink: true, enrolment: null },
   options: {},

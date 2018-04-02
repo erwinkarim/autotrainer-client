@@ -10,7 +10,6 @@ const AsyncLogin = asyncComponent(() => import('./containers/Login'));
 const AsyncNewCourse = asyncComponent(() => import('./containers/NewCourse'));
 const AsyncCourses = asyncComponent(() => import('./containers/Courses'));
 const AsyncCoursePromo = asyncComponent(() => import('./containers/CoursePromo'));
-const AsyncCourseTOC = asyncComponent(() => import('./containers/CourseTOC'));
 const AsyncCoursePurchase = asyncComponent(() => import('./containers/Purchase'));
 
 const AsyncModule = asyncComponent(() => import('./containers/Module'));
@@ -51,9 +50,13 @@ const Routes = ({ childProps }) =>
       <AppliedRoute path="/courses" exact component={AsyncCourses} props={childProps} />
       <AppliedRoute path="/courses/promo/:id" exact component={AsyncCoursePromo} props={childProps} />
       {/* course pages that is valid for people who enrolled */}
-      <AppliedRoute path="/courses/toc/:id" exact component={AsyncCourseTOC} props={childProps} />
+      <AppliedRoute path="/courses/:moduleType/:courseId" exact component={AsyncModule} props={childProps} />
       <AppliedRoute path="/courses/:moduleType/:courseId/:moduleId" exact component={AsyncModule} props={childProps} />
-      <AppliedRoute path="/courses/purchase" exact component={AsyncCoursePurchase} props={childProps} />
+      {
+        process.env.NODE_ENV === 'development' ?
+          <AppliedRoute path="/courses/purchase" exact component={AsyncCoursePurchase} props={childProps} />
+          : null
+      }
 
       {/* user pages */}
       <AppliedRoute path="/courses/new" exact component={AsyncNewCourse} props={childProps} />
