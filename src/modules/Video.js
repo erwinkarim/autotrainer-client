@@ -1,131 +1,40 @@
-import React, { Component } from "react";
-import { Container, Row, Col, Jumbotron } from 'reactstrap'
-import Notice from '../components/Notice';
-import Helmet from 'react-helmet';
-import config from '../config.js';
-import { invokeApig } from "../libs/awsLibs";
-import CourseMenu from '../components/CourseMenu';
+import React from 'react';
+import { Container, Jumbotron } from 'reactstrap';
+import PropTypes from 'prop-types';
 
-export default class Video extends Component {
-  constructor(props){
-    super(props);
-    this.state = {
-      video:null, validVideo:false, enrolment:null, loading:true
-    };
-  }
-  componentDidMount = async () => {
-    try {
-      var result = await this.loadVideo();
-      result.body = result.body === null | result.body === undefined ?
-        {origUrl:'', convertedUrl:'', description:''} :
-        result.body;
-      var validVideo = result.body.origUrl.length > 0 && result.body.convertedUrl.length > 0;
-      this.setState({video:result, validVideo:validVideo, loading:false});
+const Video = (props) => {
+  // for now, trigger complete on video loaded,
+  // in the future, will load the appropiate player, and trigger on watch complete
+  props.triggerAttendance();
 
+  const video = props.module;
+  const validVideo = props.module.body.origUrl.length > 0 &&
+    props.module.body.convertedUrl.length > 0;
 
-    } catch(e){
-      console.log('error loading video');
-      console.log(e);
-    }
-
-    //load enrolment
-    try{
-      result = await this.loadEnrolment();
-      this.setState({enrolment:result});
-
-    } catch(e){
-      console.log('error is getting enrolment');
-      console.log('ignore if you own this course');
-      console.log(e);
-    }
-
-    //for now, trigger complete on video loaded,
-    // in the future, will load the appropiate player, and trigger on watch complete
-    try{
-      if(this.state.enrolment !== null){
-        if(!this.state.enrolment.progress.includes(this.state.video.moduleId)){
-          result = await this.triggerComplete();
-
-          if(result.status === 0){
-            this.props.addNotification('Course complete. View your certificate at the landing page');
-          };
-
-          this.props.addNotification('We remark that you have watched this video');
-
-          //update enrolment
-          result = await this.loadEnrolment();
-          this.setState({enrolment:result});
-
-        }
-      }
-    } catch(e){
-      console.log('error updating enrolment');
-      console.log(e);
-    }
-  }
-  loadVideo = () => {
-    return invokeApig({
-      endpoint: config.apiGateway.MODULE_URL,
-      path: `/modules/${this.props.match.params.moduleId}`,
-      queryParams: {courseId:this.props.match.params.courseId}
-    });
-  }
-  loadEnrolment = () => {
-    return invokeApig({
-      endpoint: config.apiGateway.ENROLMENT_URL,
-      path: `/enrolment/${this.state.video.courseId}`
-    });
-  }
-  triggerComplete = () => {
-    return invokeApig({
-      endpoint: config.apiGateway.ENROLMENT_URL,
-      method: 'POST',
-      path: `/enrolment/${this.state.video.courseId}/attend/${this.state.video.moduleId}`
-    })
-
-  }
-  render(){
-    if(this.state.loading){
-      return <Notice content="Video is loading ..." />
-
-    }
-
-    if(this.props.currentUser === null){
-      return (<Notice content="user Unauthorized" />);
-    };
-
-    if(this.state.video === null){
-      return <Notice content="Video not found / loading" />;
-    }
-
-    var video = this.state.video;
-
-    return (
-      <div className="mt-3">
-        <Helmet>
-          <title>Video: {video.title } - {config.site_name}</title>
-        </Helmet>
-        <Container><Row><Col><CourseMenu courseId={video.courseId} moduleId={video.moduleId} /></Col></Row></Container>
-        <Jumbotron fluid className="mb-0">
-          <Container>
-            <h4 className="display-4">Chapter X: {video.title}</h4>
-            <p className="lead">{video.description}</p>
-          </Container>
-        </Jumbotron>
-        <Jumbotron fluid>
-          <Container>
-            { this.state.validVideo ?
-              <div>
-                <div className="embed-responsive embed-responsive-16-by-9" style={ {height:'900px'}}>
-                  <iframe src={video.body.convertedUrl} title={video.title} width="1600"></iframe>
-                </div>
-                { video.body.description.split('\n').map( (p,i) => <p key={i} className="text-left">{p}</p>)}
+  return (
+    <div className="mt-3">
+      <Jumbotron fluid>
+        <Container>
+          { validVideo ?
+            <div>
+              <div className="embed-responsive embed-responsive-16-by-9" style={{ height: '900px' }}>
+                <iframe src={video.body.convertedUrl} title={video.title} width="1600" />
               </div>
-              : <h4>Video is not valid</h4>
-            }
-          </Container>
-        </Jumbotron>
-      </div>
-    );
-  }
-}
+              { video.body.description.split('\n').map(p => <p key={parseInt(Math.random() * 1000, 10)} className="text-left">{p}</p>)}
+            </div>
+            : <h4>Video is not valid</h4>
+          }
+        </Container>
+      </Jumbotron>
+    </div>
+  );
+};
+
+export default Video;
+
+Video.propTypes = {
+  triggerAttendance: PropTypes.func.isRequired,
+  module: PropTypes.shape({
+    body: PropTypes.shape(),
+  }).isRequired,
+};

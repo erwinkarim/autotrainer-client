@@ -13,10 +13,13 @@ const AsyncCoursePromo = asyncComponent(() => import('./containers/CoursePromo')
 const AsyncCourseTOC = asyncComponent(() => import('./containers/CourseTOC'));
 const AsyncCoursePurchase = asyncComponent(() => import('./containers/Purchase'));
 
+const AsyncModule = asyncComponent(() => import('./containers/Module'));
+/*
 const AsyncArticle = asyncComponent(() => import('./modules/Article'));
 const AsyncQuiz = asyncComponent(() => import('./modules/Quiz'));
 const AsyncDocViewer = asyncComponent(() => import('./modules/DocViewer'));
 const AsyncVideo = asyncComponent(() => import('./modules/Video'));
+*/
 
 const AsyncUserLanding = asyncComponent(() => import('./containers/UserLanding'));
 const AsyncLegal = asyncComponent(() => import('./containers/Legal'));
@@ -49,10 +52,7 @@ const Routes = ({ childProps }) =>
       <AppliedRoute path="/courses/promo/:id" exact component={AsyncCoursePromo} props={childProps} />
       {/* course pages that is valid for people who enrolled */}
       <AppliedRoute path="/courses/toc/:id" exact component={AsyncCourseTOC} props={childProps} />
-      <AppliedRoute path="/courses/article/:courseId/:articleId" exact component={AsyncArticle} props={childProps} />
-      <AppliedRoute path="/courses/quiz/:courseId/:moduleId" exact component={AsyncQuiz} props={childProps} />
-      <AppliedRoute path="/courses/doc/:courseId/:moduleId" exact component={AsyncDocViewer} props={childProps} />
-      <AppliedRoute path="/courses/video/:courseId/:moduleId" exact component={AsyncVideo} props={childProps} />
+      <AppliedRoute path="/courses/:moduleType/:courseId/:moduleId" exact component={AsyncModule} props={childProps} />
       <AppliedRoute path="/courses/purchase" exact component={AsyncCoursePurchase} props={childProps} />
 
       {/* user pages */}

@@ -61,6 +61,10 @@ export default class DocPreview extends Component {
       pagination = this.renderPagination(this.state.page, this.state.pages);
     };
 
+    if (this.props.file === '' || this.props.file === null){
+      return <p>Nothing to see</p>;
+    }
+
     var fileName = this.props.file instanceof File ? `${this.props.file.name} (${this.props.file.size/1000} KB)`: this.props.file;
 
     return (

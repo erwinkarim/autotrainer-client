@@ -3,13 +3,10 @@ import {
   Container, Row, Col, Card, CardBody, CardText, Button, FormGroup, Label,
   Input, Nav, Navbar, NavItem,
 } from 'reactstrap';
-import Helmet from 'react-helmet';
 import Sticky from 'react-sticky-el';
 import PropTypes from 'prop-types';
-import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
-import CourseMenu from '../components/CourseMenu';
 
 
 /**
@@ -26,48 +23,25 @@ export default class Quiz extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      quiz: null, answers: [], checkAnswer: false, enrolment: null, loading: true,
+      answers: [], checkAnswer: false,
     };
   }
   componentDidMount = async () => {
-    const handle = this;
-    try {
-      console.log('attemp to load quiz');
-      const result = await this.loadQuiz();
-      handle.setState({
-        quiz: result,
-        answers: Array.from(Array(result.body.length)),
-        checkAnswer: false,
-        loading: false,
-      });
-    } catch (e) {
-      console.log('error getting quiz');
-      console.log(e);
-    }
-
-    // load enrolment
-    try {
-      const result = await this.loadEnrolment();
-      this.setState({ enrolment: result });
-    } catch (e) {
-      console.log('error getting enrolment');
-      console.log('ignore this if you own this course');
-      console.log(e);
-    }
-
     // update current answers if available
-    if (this.state.enrolment !== null) {
-      if (this.state.enrolment.progress_detail === undefined) {
+    if (this.props.enrolment !== null) {
+      if (this.props.enrolment.progress_detail === undefined) {
         return;
       }
 
-      const progressDetail = this.state.enrolment.progress_detail;
+      const progressDetail = this.props.enrolment.progress_detail;
       const currentProgress =
-        progressDetail.find(e => Object.keys(e)[0] === this.state.quiz.moduleId);
+        progressDetail.find(e => Object.keys(e)[0] === this.props.module.moduleId);
+      console.log('currentProgress', currentProgress);
       if (currentProgress) {
         try {
           const currentAnswers =
-            JSON.parse(currentProgress[this.state.quiz.moduleId]).current_answers;
+            JSON.parse(currentProgress[this.props.module.moduleId]).current_answers;
+          console.log('currentAnswers', currentAnswers);
           this.setState({ answers: currentAnswers });
         } catch (e) {
           console.log('error parsing JSON');
@@ -75,15 +49,6 @@ export default class Quiz extends Component {
       }
     }
   }
-  loadQuiz = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: `/modules/${this.props.match.params.moduleId}`,
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
-  loadEnrolment = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    path: `/enrolment/${this.state.quiz.courseId}`,
-  })
   recordAnswer = async (e) => {
     console.log('should record answer');
     const newAnswer = this.state.answers;
@@ -93,9 +58,9 @@ export default class Quiz extends Component {
     if (
       newAnswer.reduce((a, v) => {
         const newA = a + v !== undefined ? 1 : 0; return newA;
-      }, 0) === this.state.quiz.body.length
+      }, 0) === this.props.module.body.length
     ) {
-      this.triggerComplete();
+      this.props.triggerAttendance();
     }
 
     // update answer to the db
@@ -107,40 +72,10 @@ export default class Quiz extends Component {
       console.log(err);
     }
   }
-  triggerComplete = async () => {
-    if (this.state.enrolment !== null) {
-      try {
-        if (!this.state.enrolment.progress.includes(this.state.quiz.moduleId)) {
-          // notify attendance
-          let result = await this.notifyProgress();
-
-          // should notify if course completed
-          if (result.status === 0) {
-            this.props.addNotification('Course complete. View your certificate at the landing page');
-          }
-
-          // update enrolment progress
-          result = await this.loadEnrolment();
-          this.setState({ enrolment: result });
-
-          this.props.addNotification('We remark that you have completed this quiz');
-        }
-      } catch (e) {
-        console.log('error notifying progress');
-        console.log(e);
-      }
-    }
-  }
-  notifyProgress = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    method: 'POST',
-    path: `/enrolment/${this.state.quiz.courseId}/attend/${this.state.quiz.moduleId}`,
-    body: {},
-  })
   notifyProgressDetail = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     method: 'POST',
-    path: `/enrolment/${this.state.quiz.courseId}/mark_progress/${this.state.quiz.moduleId}`,
+    path: `/enrolment/${this.props.module.courseId}/mark_progress/${this.props.module.moduleId}`,
     body: {
       current_answers: this.state.answers,
     },
@@ -152,33 +87,21 @@ export default class Quiz extends Component {
     TODO: stop render new things everytime you cilck something
   */
   render = () => {
-    if (this.state.loading) {
-      return <Notice content="Quiz is loading ..." />;
-    }
-
-    if (this.props.currentUser === null) {
-      return (<Notice content="Not logged in" />);
-    }
-
-    if (this.state.quiz === null) {
-      return (<Notice content="Quiz not loaded" />);
-    }
-
     const answeredQ = this.state.answers.reduce((a, v) => {
       const newA = a + (v !== undefined ? 1 : 0); return newA;
     }, 0);
     const correctAnswer =
       this.state.answers.reduce((a, v, i) => {
-        const newA = a + (v === this.state.quiz.body[i].answer_key ? 1 : 0); return newA;
+        const newA = a + (v === this.props.module.body[i].answer_key ? 1 : 0); return newA;
       }, 0);
 
     let answeredQBlock = (
-      <span>Answered {correctAnswer} of {this.state.quiz.body.length} correctly.</span>
+      <span>Answered {correctAnswer} of {this.props.module.body.length} correctly.</span>
     );
-    if (this.state.quiz.body.length !== answeredQ) {
+    if (this.props.module.body.length !== answeredQ) {
       answeredQBlock = (
         <span>
-          Answered {answeredQ} of {this.state.quiz.body.length} questions.
+          Answered {answeredQ} of {this.props.module.body.length} questions.
         </span>
       );
     } else if (!this.state.checkAnswer) {
@@ -187,16 +110,8 @@ export default class Quiz extends Component {
 
     return (
       <Container className="mt-2 text-left">
-        <Helmet>
-          <title>{this.state.quiz.title} - {config.site_name}</title>
-        </Helmet>
         <Row>
-          <Col>
-            <CourseMenu courseId={this.state.quiz.courseId} moduleId={this.state.quiz.moduleId} />
-          </Col>
-        </Row>
-        <Row>
-          <div className="col-12 col-md-8 mb-3">
+          <Col xs="12" md="8" className="mb-3">
             <Sticky style={{ zIndex: 100 }}>
               <Navbar color="light" dark>
                 <Nav navbar>
@@ -204,12 +119,12 @@ export default class Quiz extends Component {
                 </Nav>
               </Navbar>
             </Sticky>
-          </div>
-          <div className="col-12 col-md-8">
+          </Col>
+          <Col xs="12" md="8">
             {
-            this.state.quiz.body.map((q, i) => {
+            this.props.module.body.map((q, i) => {
               const answerCorrectly = this.state.checkAnswer ?
-                this.state.quiz.body[i].answer_key === this.state.answers[i]
+                this.props.module.body[i].answer_key === this.state.answers[i]
                : null;
               let borderColor = null;
               if (answerCorrectly !== null) {
@@ -224,7 +139,7 @@ export default class Quiz extends Component {
                       q.answers.map((a, i2) => {
                         let checkedAnswerText = null;
                         if (this.state.checkAnswer) {
-                          checkedAnswerText = this.state.quiz.body[i].answer_key === i2 ? <span className="text-success"> - Correct answer</span> : null;
+                          checkedAnswerText = this.props.module.body[i].answer_key === i2 ? <span className="text-success"> - Correct answer</span> : null;
                         }
                         return (
                           <FormGroup check key={parseInt(Math.random() * 1000, 10)}>
@@ -250,7 +165,7 @@ export default class Quiz extends Component {
               );
             })
           }
-          </div>
+          </Col>
         </Row>
       </Container>
     );
@@ -258,11 +173,11 @@ export default class Quiz extends Component {
 }
 
 Quiz.propTypes = {
-  match: PropTypes.shape().isRequired,
-  addNotification: PropTypes.func.isRequired,
-  currentUser: PropTypes.shape(),
+  enrolment: PropTypes.shape({
+    progress_detail: PropTypes.arrayOf(PropTypes.shape()),
+  }).isRequired,
+  module: PropTypes.shape().isRequired,
+  triggerAttendance: PropTypes.func.isRequired,
 };
 
-Quiz.defaultProps = {
-  currentUser: {},
-};
+Quiz.defaultProps = {};
