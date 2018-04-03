@@ -15,6 +15,7 @@ import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import ArticleBuilder from '../modules/ArticleBuilderDumb';
 import VideoBuilder from '../modules/VideoBuilderDumb';
+import DocBuilder from '../modules/DocBuilderDumb';
 
 /**
  * Adds two numbers together.
@@ -57,9 +58,16 @@ export default class ModuleBuilder extends Component {
   })
   handleUpdate = async () => {
     // should update module
+    let isValidBody = false;
+    try {
+      isValidBody = await this.moduleHandle.validBody();
+    } catch (e) {
+      console.log('error awaiting validBody');
+      console.log(e);
+    }
 
     // check if the body is valid
-    if (!this.moduleHandle.validBody()) {
+    if (!isValidBody) {
       this.props.addNotification('Module body is empty', 'danger');
       return;
     }
@@ -139,6 +147,13 @@ export default class ModuleBuilder extends Component {
     } else if (moduleType === 'video') {
       layout = (
         <VideoBuilder
+          ref={(input) => { this.moduleHandle = input; }}
+          module={this.state.module}
+          handleBodyUpdate={this.handleBodyUpdate}
+        />);
+    } else if (moduleType === 'doc') {
+      layout = (
+        <DocBuilder
           ref={(input) => { this.moduleHandle = input; }}
           module={this.state.module}
           handleBodyUpdate={this.handleBodyUpdate}
