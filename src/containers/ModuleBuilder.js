@@ -14,6 +14,7 @@ import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import ArticleBuilder from '../modules/ArticleBuilderDumb';
+import VideoBuilder from '../modules/VideoBuilderDumb';
 
 /**
  * Adds two numbers together.
@@ -51,7 +52,7 @@ export default class ModuleBuilder extends Component {
     endpoint: config.apiGateway.MODULE_URL,
     method: 'PUT',
     path: `/modules/${this.props.match.params.moduleId}`,
-    body: this.state.article,
+    body: this.state.module,
     queryParams: { courseId: this.props.match.params.courseId },
   })
   handleUpdate = async () => {
@@ -131,6 +132,13 @@ export default class ModuleBuilder extends Component {
     if (moduleType === 'article') {
       layout = (
         <ArticleBuilder
+          ref={(input) => { this.moduleHandle = input; }}
+          module={this.state.module}
+          handleBodyUpdate={this.handleBodyUpdate}
+        />);
+    } else if (moduleType === 'video') {
+      layout = (
+        <VideoBuilder
           ref={(input) => { this.moduleHandle = input; }}
           module={this.state.module}
           handleBodyUpdate={this.handleBodyUpdate}
