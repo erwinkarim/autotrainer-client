@@ -13,6 +13,7 @@ const UnderlineIcon = () => <FontAwesome name="underline" />;
 
 /**
  * Editor
+ * @param {int} editorState The first number.
  * @param {int} newContent The first number.
  * @returns {int} The sum of the two numbers.
  */
@@ -70,6 +71,18 @@ export default class Editor extends Component {
   }
   getRaw = () => editorStateToJSON(this.state.editorState)
   hasText = () => this.state.editorState.getCurrentContent().hasText()
+  handleChange = (editorState) => {
+    if (this.props.readOnly) {
+      return;
+    }
+
+    this.setState({ editorState });
+    if (this.props.handleBodyUpdate) {
+      this.props.handleBodyUpdate(this.getRaw());
+    }
+
+    // onChange={this.props.readOnly ? null : editorState => this.setState({ editorState })}
+  }
   render =() => (
     <MegadraftEditor
       placeholder="Start typing away ..."
@@ -77,7 +90,7 @@ export default class Editor extends Component {
       actions={this.state.customActions}
       plugins={[ImagePlugin, VideoPlugin]}
       editorState={this.state.editorState}
-      onChange={this.props.readOnly ? null : editorState => this.setState({ editorState })}
+      onChange={this.handleChange}
       readOnly={this.props.readOnly ? this.props.readOnly : false}
     />
   )
@@ -85,8 +98,10 @@ export default class Editor extends Component {
 
 Editor.propTypes = {
   readOnly: PropTypes.bool,
+  handleBodyUpdate: PropTypes.func,
 };
 
 Editor.defaultProps = {
   readOnly: false,
+  handleBodyUpdate: null,
 };
