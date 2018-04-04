@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { Navbar, NavbarBrand, NavbarToggler, Nav, NavItem, NavLink, Collapse } from 'reactstrap';
 import FontAwesome from 'react-fontawesome';
 import { Link } from 'react-router-dom';
+import PropTypes from 'prop-types';
 import './CourseMenu.css';
 import { invokeApig } from '../libs/awsLibs';
 import config from '../config';
@@ -47,12 +48,12 @@ export default class CourseMenu extends Component {
     }
   }
   getCourseInfo = () => invokeApig({
-    path: `/courses/${this.props.courseId}`
+    path: `/courses/${this.props.courseId}`,
   })
   getCourseModules = () => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,
     path: '/modules',
-    queryParams: { courseId: this.props.courseId },
+    queryParams: { courseId: this.props.courseId, publish_status: this.props.buildMode ? 'all' : 'published' },
   })
   toggleNavbar = () => { this.setState({ collapse: !this.state.collapse }); }
   render = () => {
@@ -60,23 +61,38 @@ export default class CourseMenu extends Component {
       return (<Navbar><NavbarBrand> Loading ... </NavbarBrand></Navbar>);
     }
 
+    const { courseId, moduleId } = this.props;
+    const courseHomePath = this.props.buildMode ?
+      `/user/builder/${courseId}` :
+      `/courses/toc/${courseId}`;
+
     return (
       <Navbar className="px-0">
         <NavbarToggler onClick={this.toggleNavbar} className="">
           <FontAwesome name="bars" />
         </NavbarToggler>
-        <NavbarBrand className="mr-auto brand-text">{ this.state.courseInfo.name }</NavbarBrand>
+        <NavbarBrand className="mr-auto brand-text">
+          { this.props.buildMode ? 'Building ' : '' }
+          { this.state.courseInfo.name }
+        </NavbarBrand>
         <Collapse navbar isOpen={!this.state.collapse} className="">
           <Nav navbar className="text-left">
-            <NavItem><NavLink tag={Link} to={`/courses/toc/${this.props.courseId}`}><h4>Course Overview</h4></NavLink></NavItem>
+            <NavItem>
+              <NavLink tag={Link} to={courseHomePath}><h4>Course Overview</h4></NavLink>
+            </NavItem>
             {
-              this.state.modules.map((m, i) => (
-                <NavItem key={m.moduleId}>
-                  <NavLink tag={Link} to={`/courses/${m.moduleType}/${this.props.courseId}/${m.moduleId}`}>
-                    { m.moduleId === this.props.moduleId ? <i>{m.title}</i> : m.title }
-                  </NavLink>
-                </NavItem>
-              ))
+              this.state.modules.map((m, i) => {
+                const path = this.props.buildMode ?
+                  `/user/builder/${courseId}/${m.moduleId}` :
+                  `/course/${m.moduleType}/${courseId}/${m.moduleId}`;
+                return (
+                  <NavItem key={m.moduleId}>
+                    <NavLink tag={Link} to={path} className={m.publish_status === 'published' ? '' : 'text-muted'}>
+                      { m.moduleId === moduleId ? <i>{m.title}</i> : m.title }
+                    </NavLink>
+                  </NavItem>
+                );
+              })
             }
           </Nav>
         </Collapse>
@@ -85,7 +101,14 @@ export default class CourseMenu extends Component {
   }
 }
 
+CourseMenu.propTypes = {
+  courseId: PropTypes.string,
+  moduleId: PropTypes.string,
+  buildMode: PropTypes.bool,
+};
+
 CourseMenu.defaultProps = {
   courseId: '4c082890-e510-11e7-bd48-59001745cb8e',
   moduleId: '0e1e3b80-ff48-11e7-b64f-c32e5e53678a',
+  buildMode: false,
 };

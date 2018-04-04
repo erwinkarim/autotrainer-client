@@ -4,8 +4,7 @@
  */
 
 import React, { Component } from 'react';
-import { Container, Row, Col, Breadcrumb, BreadcrumbItem, Button, FormGroup } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Container, Row, Col, Button, FormGroup } from 'reactstrap';
 import Helmet from 'react-helmet';
 import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
@@ -13,13 +12,18 @@ import ModuleRootEditor from '../components/ModuleRootEditor';
 import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
+import CourseMenu from '../components/CourseMenu';
 import ArticleBuilder from '../modules/ArticleBuilderDumb';
 import VideoBuilder from '../modules/VideoBuilderDumb';
 import DocBuilder from '../modules/DocBuilderDumb';
+import QuizBuilder from '../modules/QuizBuilderDumb';
 
+const defaultModule = { title: '', description: '', moduleType: null };
 /**
  * Adds two numbers together.
- * @param {int} prevProps The first number.
+ * @param {int} e Event Object
+ * @param {int} prevProps Previous Property
+ * @param {int} body module.body to be updated
  * @returns {int} The sum of the two numbers.
  */
 export default class ModuleBuilder extends Component {
@@ -31,7 +35,7 @@ export default class ModuleBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      module: null, loading: false,
+      module: defaultModule, loading: false,
     };
   }
   componentDidMount = () => {
@@ -100,7 +104,7 @@ export default class ModuleBuilder extends Component {
     this.state.module.description.length > 0
   loadModule = async () => {
     // should load/reload the module
-    this.setState({ module: null, loading: true });
+    this.setState({ module: defaultModule, loading: true });
     try {
       const result = await this.getModule();
       this.setState({ module: result, loading: false });
@@ -115,15 +119,7 @@ export default class ModuleBuilder extends Component {
       return (<Notice content="User is not authenticated." />);
     }
 
-    if (this.state.loading) {
-      return <Notice content="Module is loading ..." />;
-    }
-
-    if (this.state.module === null) {
-      return (<Notice content="Module not loaded..." />);
-    }
-
-    const { courseId } = this.props.match.params;
+    const { courseId, moduleId } = this.props.match.params;
     const { moduleType } = this.state.module;
 
     /*
@@ -137,7 +133,12 @@ export default class ModuleBuilder extends Component {
     */
 
     let layout = null;
-    if (moduleType === 'article') {
+
+    if (this.state.loading) {
+      layout = <Notice content="Module is loading ..." />;
+    } else if (moduleType === null || moduleType === undefined) {
+      layout = (<Notice content="Module not loaded..." />);
+    } else if (moduleType === 'article') {
       layout = (
         <ArticleBuilder
           ref={(input) => { this.moduleHandle = input; }}
@@ -158,6 +159,13 @@ export default class ModuleBuilder extends Component {
           module={this.state.module}
           handleBodyUpdate={this.handleBodyUpdate}
         />);
+    } else if (moduleType === 'quiz') {
+      layout = (
+        <QuizBuilder
+          ref={(input) => { this.moduleHandle = input; }}
+          module={this.state.module}
+          handleBodyUpdate={this.handleBodyUpdate}
+        />);
     }
 
     return (
@@ -167,12 +175,7 @@ export default class ModuleBuilder extends Component {
         </Helmet>
         <Row>
           <Col xs="12">
-            <Breadcrumb>
-              <BreadcrumbItem><Link href="/" to="/">Home</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link href="/" to="/welcome">{this.props.currentUser.name}</Link></BreadcrumbItem>
-              <BreadcrumbItem><Link href="/" to={`/user/course_builder/${courseId}`}>Course Builder: {this.state.module.courseMeta.name}</Link></BreadcrumbItem>
-              <BreadcrumbItem active>Article Builder: {this.state.module.title}</BreadcrumbItem>
-            </Breadcrumb>
+            <CourseMenu courseId={courseId} moduleId={moduleId} buildMode />
           </Col>
           <ModuleRootEditor module={this.state.module} handleChange={this.handleChange} />
         </Row>
