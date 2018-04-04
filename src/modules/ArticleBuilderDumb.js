@@ -9,6 +9,8 @@ import Editor from '../components/Editor';
     * step-by-step accordion support
 */
 
+const defaultBody = '';
+
 /**
  * Adds two numbers together.
  * @param {int} e The first number.
@@ -16,7 +18,13 @@ import Editor from '../components/Editor';
  */
 export default class ArticleBuilder extends Component {
   componentDidMount = async () => {
-    this.editor.setEditorStateFromRaw(this.props.module.body);
+    const { module } = this.props;
+
+    if (!module.body) {
+      this.props.handleBodyUpdate(defaultBody);
+    }
+
+    this.editor.setEditorStateFromRaw(module.body ? module.body : defaultBody);
   }
   validBody = () => this.editor.hasText()
   render = () => (

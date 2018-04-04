@@ -104,6 +104,7 @@ QuestionForm.propTypes = {
   validateDeleteQuestion: PropTypes.func.isRequired,
 };
 
+const defaultBody = [];
 /**
  * The Constructor
  * @param {json} e the props
@@ -116,10 +117,16 @@ export default class QuizBuilder extends Component {
    * @returns {null} The sum of the two numbers.
    */
   componentDidMount = async () => {
-    if (this.props.module.body.length > 0) {
+    const { module } = this.props;
+
+    if (!module.body) {
+      this.props.handleBodyUpdate(defaultBody);
+    }
+
+    if (module.body.length > 0) {
       // check if there's a id on each q, otherwise add one and update
-      if (!this.props.module.body[0].id) {
-        const newBody = this.props.module.body;
+      if (!module.body[0].id) {
+        const newBody = module.body;
         newBody.forEach((e) => {
           e.id = uuid.v4();
         });
@@ -196,7 +203,7 @@ export default class QuizBuilder extends Component {
           <hr />
           <h6>Questions</h6>
           {
-            this.props.module.body.length === 0 ? (
+            this.props.module.body === undefined || this.props.module.body.length === 0 ? (
               <Card className="mb-2">
                 <CardBody>
                   <CardText>No questions yet. Begin by creating a question</CardText>

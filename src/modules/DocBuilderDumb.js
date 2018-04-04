@@ -5,6 +5,11 @@ import DocPreview from '../components/DocPreview';
 import config from '../config';
 import { s3Upload, s3Delete } from '../libs/awsLibs';
 
+const defaultBody = {
+  location: '',
+  key: '',
+};
+
 /**
  * Adds two numbers together.
  * @param {int} e The first number.
@@ -21,7 +26,13 @@ export default class DocBuilder extends Component {
     this.state = { file: null };
   }
   componentDidMount = () => {
-    this.setState({ file: this.props.module.body.location });
+    const { module } = this.props;
+
+    if (!module.body) {
+      this.props.handleBodyUpdate(defaultBody);
+    }
+
+    this.setState({ file: module.body === undefined ? '' : module.body.location });
     console.log('file', this.state.file);
   }
   handleFileChange = (e) => {
@@ -119,13 +130,11 @@ export default class DocBuilder extends Component {
 
 DocBuilder.propTypes = {
   module: PropTypes.shape(),
+  handleBodyUpdate: PropTypes.func.isRequired,
 };
 
 DocBuilder.defaultProps = {
   module: {
-    body: {
-      location: null,
-      key: null,
-    },
+    body: defaultBody,
   },
 };
