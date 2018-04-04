@@ -30,8 +30,8 @@ const AsyncCertCheck = asyncComponent(() => import('./containers/CertCheck'));
 const AsyncAbout = asyncComponent(() => import('./containers/About'));
 const AsyncTeam = asyncComponent(() => import('./containers/Team'));
 
+const AsyncBuilder = asyncComponent(() => import('./containers/Builder'));
 const AsyncCourseBuilder = asyncComponent(() => import('./containers/CourseBuilder'));
-const AsyncModuleBuilder = asyncComponent(() => import('./containers/ModuleBuilder'));
 const AsyncArticleBuilder = asyncComponent(() => import('./modules/ArticleBuilder'));
 const AsyncQuizBuilder = asyncComponent(() => import('./modules/QuizBuilder'));
 const AsyncDocBuilder = asyncComponent(() => import('./modules/DocBuilder'));
@@ -63,8 +63,8 @@ const Routes = ({ childProps }) =>
       <AppliedRoute path="/courses/new" exact component={AsyncNewCourse} props={childProps} />
       <AppliedRoute path="/welcome" exact component={AsyncUserLanding} props={childProps} />
       <AppliedRoute path="/user/course_builder/:id" exact component={AsyncCourseBuilder} props={childProps} />
-      <AppliedRoute path="/user/builder/:courseId" exact component={AsyncModuleBuilder} props={childProps} />
-      <AppliedRoute path="/user/builder/:courseId/:moduleId" exact component={AsyncModuleBuilder} props={childProps} />
+      <AppliedRoute path="/user/builder/:courseId" exact component={AsyncBuilder} props={{ ...childProps, ...{ courseMode: true } }} />
+      <AppliedRoute path="/user/builder/:courseId/:moduleId" exact component={AsyncBuilder} props={childProps} />
       <AppliedRoute path="/user/article_builder/:courseId/:moduleId" exact component={AsyncArticleBuilder} props={childProps} />
       <AppliedRoute path="/user/quiz_builder/:courseId/:moduleId" exact component={AsyncQuizBuilder} props={childProps} />
       <AppliedRoute path="/user/doc_builder/:courseId/:moduleId" exact component={AsyncDocBuilder} props={childProps} />

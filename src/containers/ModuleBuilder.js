@@ -107,6 +107,7 @@ export default class ModuleBuilder extends Component {
     this.setState({ module: defaultModule, loading: true });
     try {
       const result = await this.getModule();
+
       this.setState({ module: result, loading: false });
     } catch (e) {
       console.log('error getting module');
@@ -169,24 +170,21 @@ export default class ModuleBuilder extends Component {
     }
 
     return (
-      <Container className="mt-2 text-left">
+      <div className="mt-2 text-left">
         <Helmet>
           <title>{`Building ${this.state.module.title} - ${config.site_name}`}</title>
         </Helmet>
         <Row>
-          <Col xs="12">
-            <CourseMenu courseId={courseId} moduleId={moduleId} buildMode />
-          </Col>
           <ModuleRootEditor module={this.state.module} handleChange={this.handleChange} />
         </Row>
         { layout }
         <Row>
           <FormGroup>
-            <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm()}>Update</Button>
+            <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm()} >Update</Button>
             <Button color="danger">Cancel</Button>
           </FormGroup>
         </Row>
-      </Container>
+      </div>
     );
   }
 }
@@ -194,6 +192,5 @@ export default class ModuleBuilder extends Component {
 ModuleBuilder.propTypes = {
   match: PropTypes.shape().isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
-  currentUser: PropTypes.shape().isRequired,
   addNotification: PropTypes.func.isRequired,
 };
