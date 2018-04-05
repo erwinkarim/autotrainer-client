@@ -4,7 +4,7 @@
  */
 
 import React, { Component } from 'react';
-import { Container, Row, Col, Button, FormGroup } from 'reactstrap';
+import { Row, Button, FormGroup } from 'reactstrap';
 import Helmet from 'react-helmet';
 import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
@@ -12,7 +12,6 @@ import ModuleRootEditor from '../components/ModuleRootEditor';
 import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
-import CourseMenu from '../components/CourseMenu';
 import ArticleBuilder from '../modules/ArticleBuilderDumb';
 import VideoBuilder from '../modules/VideoBuilderDumb';
 import DocBuilder from '../modules/DocBuilderDumb';
@@ -120,7 +119,6 @@ export default class ModuleBuilder extends Component {
       return (<Notice content="User is not authenticated." />);
     }
 
-    const { courseId, moduleId } = this.props.match.params;
     const { moduleType } = this.state.module;
 
     /*
