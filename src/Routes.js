@@ -31,7 +31,6 @@ const AsyncAbout = asyncComponent(() => import('./containers/About'));
 const AsyncTeam = asyncComponent(() => import('./containers/Team'));
 
 const AsyncBuilder = asyncComponent(() => import('./containers/Builder'));
-const AsyncCourseBuilder = asyncComponent(() => import('./containers/CourseBuilder'));
 const AsyncArticleBuilder = asyncComponent(() => import('./modules/ArticleBuilder'));
 const AsyncQuizBuilder = asyncComponent(() => import('./modules/QuizBuilder'));
 const AsyncDocBuilder = asyncComponent(() => import('./modules/DocBuilder'));
@@ -62,7 +61,6 @@ const Routes = ({ childProps }) =>
       {/* user pages */}
       <AppliedRoute path="/courses/new" exact component={AsyncNewCourse} props={childProps} />
       <AppliedRoute path="/welcome" exact component={AsyncUserLanding} props={childProps} />
-      <AppliedRoute path="/user/course_builder/:id" exact component={AsyncCourseBuilder} props={childProps} />
       <AppliedRoute path="/user/builder/:courseId" exact component={AsyncBuilder} props={{ ...childProps, ...{ courseMode: true } }} />
       <AppliedRoute path="/user/builder/:courseId/:moduleId" exact component={AsyncBuilder} props={childProps} />
       <AppliedRoute path="/user/article_builder/:courseId/:moduleId" exact component={AsyncArticleBuilder} props={childProps} />

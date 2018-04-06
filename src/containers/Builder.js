@@ -6,7 +6,7 @@ import React from 'react';
 import { Container, Row, Col, Card, CardText } from 'reactstrap';
 import PropTypes from 'prop-types';
 import CourseMenu from '../components/CourseMenu';
-import CourseBuilder from '../containers/CourseBuilderDumb';
+import CourseBuilder from '../containers/CourseBuilder';
 import ModuleBuilder from '../containers/ModuleBuilder';
 
 /**
