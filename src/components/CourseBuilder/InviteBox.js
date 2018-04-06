@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Row, Col, FormGroup, Input, Button, Collapse } from 'reactstrap';
 import FontAwesome from 'react-fontawesome';
 import EmailValidator from 'email-validator';
+import PropTypes from 'prop-types';
 import { invokeApig } from '../../libs/awsLibs';
 import config from '../../config';
 
@@ -26,11 +27,6 @@ export default class InviteBox extends Component {
     this.addInvite();
   }
   handleChange = (e) => {
-    if (e.target.id === 'inviteMessage') {
-      this.setState({ inviteMessage: e.target.value });
-      return;
-    }
-
     const newInviteList = this.state.inviteList;
     newInviteList[e.target.dataset.index][e.target.dataset.attr] = e.target.value;
     this.setState({ inviteList: newInviteList });
@@ -61,7 +57,8 @@ export default class InviteBox extends Component {
           return false;
         }
 
-        return elm.email === e.userMeta.UserAttributes.find(urAtr => { return urAtr.Name === 'email'}).Value; });
+        return elm.email === e.userMeta.UserAttributes.find(urAtr => urAtr.Name === 'email').Value;
+      });
 
       if (dropIndex !== -1) {
         console.log(`dropping ${this.state.inviteList[dropIndex].email} ...`);
@@ -109,7 +106,7 @@ export default class InviteBox extends Component {
       meta: { course_owner: this.props.currentUser.name },
     },
   })
-  addInvite = (e) => {
+  addInvite = () => {
     const defaultInvite = {
       email: '', name: '',
     };
@@ -195,3 +192,11 @@ export default class InviteBox extends Component {
     </Row>
   )
 }
+
+InviteBox.propTypes = {
+  students: PropTypes.arrayOf(PropTypes.shape()).isRequired,
+  addNotification: PropTypes.func.isRequired,
+  handleLoadStudents: PropTypes.func.isRequired,
+  currentUser: PropTypes.shape().isRequired,
+  course: PropTypes.shape().isRequired,
+};

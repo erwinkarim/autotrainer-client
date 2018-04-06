@@ -273,7 +273,7 @@ class CourseManager extends Component {
                   <p>Price: RM{e.price}</p>
                   <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/promo/${e.courseId}`}>Course Promo</Button>
                   <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/toc/${e.courseId}`}>Table of Contents</Button>
-                  <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/user/course_builder/${e.courseId}`}>Manage</Button>
+                  <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/user/builder/${e.courseId}`}>Manage</Button>
                   <Button className="mr-2 mb-2" color="danger" id={e.courseId} onClick={this.handleDelete}>Delete</Button>
                 </CardBody>
               </Card>);

@@ -247,8 +247,8 @@ const CourseForm = (props) => {
 
 CourseForm.propTypes = {
   course: PropTypes.shape().isRequired,
-  bg_pic_data: PropTypes.shape(),
-  bg_handle: PropTypes.shape(),
+  bg_pic_data: PropTypes.string,
+  bg_handle: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
   toggleCompany: PropTypes.func.isRequired,
   enableAddKeyPoint: PropTypes.func.isRequired,
   newKeyPoint: PropTypes.func.isRequired,
@@ -382,7 +382,7 @@ export default class CourseBuilder extends Component {
     }
   }
   updateCourse = () => invokeApig({
-    path: `/courses/${this.props.match.params.id}`,
+    path: `/courses/${this.props.match.params.courseId}`,
     method: 'PUT',
     body: this.state.course,
   })

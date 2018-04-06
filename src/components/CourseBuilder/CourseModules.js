@@ -32,7 +32,7 @@ const ModuleCard = (props) => {
         <CardText>Publish status: {e.publish_status}</CardText>
         <Button className="mr-2 mb-2" color="primary" tag={Link} to={`/courses/${e.moduleType}/${e.courseId}/${e.moduleId}`}>View {titleCaseType}</Button>
         <Button className="mr-2 mb-2" color="info" tag={Link} to={`/user/builder/${e.courseId}/${e.moduleId}`}>Edit {titleCaseType}</Button>
-        <Button className="mr-2 mb-2" type="button" color="danger" data-index={i} onClick={this.handleDeleteModule}>Delete {titleCaseType}</Button>
+        <Button className="mr-2 mb-2" type="button" color="danger" data-index={i} onClick={props.handleDeleteModule}>Delete {titleCaseType}</Button>
       </CardBody>
     </Card>
   );
@@ -43,6 +43,7 @@ ModuleCard.propTypes = {
   modules: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   moduleIndex: PropTypes.number.isRequired,
   handleOrderUpdate: PropTypes.func.isRequired,
+  handleDeleteModule: PropTypes.func.isRequired,
 };
 
 /**
@@ -204,9 +205,9 @@ export default class CourseModules extends Component {
     console.log(`create new ${moduleType} for course ${courseId}`);
     try {
       const result = await this.createModule(moduleType, courseId);
-      console.log('create result', result);
-      handle.props.history.push(`/user/${moduleType}_builder/${result.courseId}/${result.moduleId}`);
+      handle.props.history.push(`/user/builder/${result.courseId}/${result.moduleId}`);
     } catch (err) {
+      this.props.addNotification('Problem creating a new module');
       console.log('error creating a new module');
       console.log(err);
     }
@@ -260,6 +261,7 @@ export default class CourseModules extends Component {
                   <ModuleCard
                     key={e.moduleId}
                     handleOrderUpdate={this.handleOrderUpdate}
+                    handleDeleteModule={this.handleDeleteModule}
                     module={e}
                     moduleIndex={i}
                     modules={this.state.modules}
