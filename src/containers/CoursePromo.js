@@ -131,7 +131,7 @@ export default class CoursePromo extends Component {
       return <Notice content="Loading course ..." />;
     }
 
-    if (this.state.course === null) {
+    if (this.state.course === null || this.state.course === undefined) {
       return <Notice content="Course not found..." />;
     }
 
@@ -146,7 +146,7 @@ export default class CoursePromo extends Component {
     let clientList = null;
     if (this.state.course.clientList) {
       if (this.state.course.clientList.length > 0) {
-        clientList = <RecentCustomers clientList={this.stat.course.clientList} />;
+        clientList = <RecentCustomers clientList={this.state.course.clientList} />;
       }
     }
 

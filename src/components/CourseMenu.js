@@ -78,13 +78,13 @@ export default class CourseMenu extends Component {
         <Collapse navbar isOpen={!this.state.collapse} className="">
           <Nav navbar className="text-left">
             <NavItem>
-              <NavLink tag={Link} to={courseHomePath}><h4>Course Overview</h4></NavLink>
+              <NavLink tag={Link} to={courseHomePath}><h4>Course {this.props.buildMode ? 'Builder' : 'Overview'}</h4></NavLink>
             </NavItem>
             {
               this.state.modules.map((m, i) => {
                 const path = this.props.buildMode ?
                   `/user/builder/${courseId}/${m.moduleId}` :
-                  `/course/${m.moduleType}/${courseId}/${m.moduleId}`;
+                  `/courses/${m.moduleType}/${courseId}/${m.moduleId}`;
                 return (
                   <NavItem key={m.moduleId}>
                     <NavLink tag={Link} to={path} className={m.publish_status === 'published' ? '' : 'text-muted'}>

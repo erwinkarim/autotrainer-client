@@ -24,6 +24,7 @@ const Home = props =>
       <Jumbotron fluid className="mb-0 position-relative py-0" id="jumbotron-1">
         <div id="video-1" className="video-container">
           <video playsInline autoPlay muted loop>
+            <track kind="captions" />
             <source src="//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
           </video>
         </div>
@@ -31,8 +32,8 @@ const Home = props =>
         <Container id="panel-2" className="text-white position-absolute">
           <h3 className="display-4">We Provide Actuarial, Insurance and Financial Training Programs</h3>
           <div className="">
-            <Link className="btn btn-primary mr-2" to='/'>REGISTER NOW</Link>
-            <Link className="btn btn-secondary" to='/#video'>WATCH VIDEO</Link>
+            <Link href="/" className="btn btn-primary mr-2" to="/">REGISTER NOW</Link>
+            <Link href="/" className="btn btn-secondary" to="/#video">WATCH VIDEO</Link>
           </div>
         </Container>
       </Jumbotron>
@@ -97,6 +98,7 @@ const Home = props =>
       <Jumbotron fluid className="mb-0 py-0">
         <div id="video" className="embed-responsive embed-responsive-16-by-9 video-container">
           <video controls className="" poster="/images/home-keynote-image.jpg">
+            <track kind="captions" />
             <source src="//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
           </video>
         </div>

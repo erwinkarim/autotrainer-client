@@ -45,11 +45,6 @@ class CourseHighLights extends Component {
  * @returns {null} The sum of the two numbers.
  */
 export default class UserLanding extends Component {
-  /**
-   * The Constructor
-   * @param {json} props the props
-   * @returns {null} The sum of the two numbers.
-   */
   componentDidMount = async () => {
     if (this.props.currentUser === null) {
       return;

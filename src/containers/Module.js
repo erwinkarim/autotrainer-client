@@ -55,16 +55,14 @@ export default class Module extends Component {
       this.loadModule();
     }
   }
-  getModule = () => {
-    return (this.props.match.params.moduleType === 'toc') ?
-      invokeApig({ path: `/courses/${this.props.match.params.courseId}` })
-      :
-      invokeApig({
-        endpoint: config.apiGateway.MODULE_URL,
-        path: `/modules/${this.props.match.params.moduleId}`,
-        queryParams: { courseId: this.props.match.params.courseId },
-      });
-  }
+  getModule = () => invokeApig({
+    endpoint: config.apiGateway.MODULE_URL,
+    path: `/modules/${this.props.match.params.moduleId}`,
+    queryParams: { courseId: this.props.match.params.courseId },
+  })
+  getCourse = () => invokeApig({
+    path: `/courses/${this.props.match.params.courseId}`,
+  })
   getEnrolment = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.courseId}`,
@@ -79,7 +77,7 @@ export default class Module extends Component {
     // the async fn to invoke apiGateway to get the module
     this.setState({ loading: true });
     try {
-      const result = await this.getModule();
+      const result = await (this.props.match.params.moduleType === 'toc' ? this.getCourse() : this.getModule());
       this.setState({ loading: false, module: result });
     } catch (e) {
       console.log('error getting module');
@@ -196,6 +194,7 @@ Module.propTypes = {
   addNotification: PropTypes.func.isRequired,
   match: PropTypes.shape({
     params: PropTypes.shape({
+      moduleType: PropTypes.string,
       moduleId: PropTypes.string,
       courseId: PropTypes.string,
     }),

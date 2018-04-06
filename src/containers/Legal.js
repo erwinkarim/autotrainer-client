@@ -140,11 +140,11 @@ export default class Legal extends Component {
           <TabContent activeTab={this.state.activeTab} className="mt-3">
             <TabPane tabId="TermsOfUse" className="text-justify">
               <h4>Terms of Use</h4>
-              { TOC.split('\n').map((para, i) => (<p key={i}>{para}</p>)) }
+              { TOC.split('\n').map(para => (<p key={parseInt(Math.random() * 1000, 10)}>{para}</p>)) }
             </TabPane>
             <TabPane tabId="PrivacyPolicy" className="text-justify">
               <h4>Privacy Policy</h4>
-              { PrivacyPolicy.split('\n').map((para, i) => (<p key={i}>{para}</p>)) }
+              { PrivacyPolicy.split('\n').map(para => (<p key={parseInt(Math.random() * 1000, 10)}>{para}</p>)) }
             </TabPane>
 
           </TabContent>
