@@ -3,11 +3,15 @@
  */
 
 import React from 'react';
-import { Container, Row, Col, Card, CardText } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import PropTypes from 'prop-types';
 import CourseMenu from '../components/CourseMenu';
-import CourseBuilder from '../containers/CourseBuilder';
+import asyncComponent from '../components/AsyncComponent';
+// import CourseBuilder from '../containers/CourseBuilder';
 import ModuleBuilder from '../containers/ModuleBuilder';
+
+const CourseBuilder = asyncComponent(() => import('../containers/CourseBuilder'));
+// const ModuleBuilder = asyncComponent(() => import('../containers/ModuleBuilder'));
 
 /**
  * Adds two numbers together.
@@ -17,24 +21,14 @@ import ModuleBuilder from '../containers/ModuleBuilder';
 const Builder = (props) => {
   const { courseId, moduleId } = props.match.params;
 
-  if (courseId) {
-    return (
-      <Container>
-        <Row>
-          <Col xs="12">
-            <CourseMenu courseId={courseId} moduleId={moduleId} buildMode />
-          </Col>
-        </Row>
-        { props.courseMode ? <CourseBuilder {...props} /> : <ModuleBuilder {...props} /> }
-      </Container>
-    );
-  }
-
   return (
     <Container>
-      <Card body>
-        <CardText><h3>Loading ...</h3></CardText>
-      </Card>
+      <Row>
+        <Col xs="12">
+          <CourseMenu courseId={courseId} moduleId={moduleId} buildMode />
+        </Col>
+      </Row>
+      { props.courseMode ? <CourseBuilder {...props} /> : <ModuleBuilder {...props} /> }
     </Container>
   );
 };

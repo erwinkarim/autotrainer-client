@@ -13,12 +13,6 @@ const AsyncCoursePromo = asyncComponent(() => import('./containers/CoursePromo')
 const AsyncCoursePurchase = asyncComponent(() => import('./containers/Purchase'));
 
 const AsyncModule = asyncComponent(() => import('./containers/Module'));
-/*
-const AsyncArticle = asyncComponent(() => import('./modules/Article'));
-const AsyncQuiz = asyncComponent(() => import('./modules/Quiz'));
-const AsyncDocViewer = asyncComponent(() => import('./modules/DocViewer'));
-const AsyncVideo = asyncComponent(() => import('./modules/Video'));
-*/
 
 const AsyncUserLanding = asyncComponent(() => import('./containers/UserLanding'));
 const AsyncLegal = asyncComponent(() => import('./containers/Legal'));

@@ -14,11 +14,13 @@ import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import CourseMenu from '../components/CourseMenu';
-import Article from '../modules/Article';
-import Quiz from '../modules/Quiz';
-import Doc from '../modules/DocViewer';
-import Video from '../modules/Video';
-import CourseTOC from '../modules/CourseTOC';
+import asyncComponent from '../components/AsyncComponent';
+
+const CourseTOC = asyncComponent(() => import('../modules/CourseTOC'));
+const Article = asyncComponent(() => import('../modules/Article'));
+const Quiz = asyncComponent(() => import('../modules/Quiz'));
+const Doc = asyncComponent(() => import('../modules/DocViewer'));
+const Video = asyncComponent(() => import('../modules/Video'));
 
 /**
  * Module
@@ -137,6 +139,7 @@ export default class Module extends Component {
     }
 
     const { module } = this.state;
+    const { courseId, moduleId } = this.props.match.params;
     let layout = null;
 
     // render the layout based on the moduleType / loading state ...
@@ -175,10 +178,7 @@ export default class Module extends Component {
         <Container>
           <Row>
             <Col>
-              <CourseMenu
-                courseId={module.courseId}
-                moduleId={module.moduleId}
-              />
+              <CourseMenu courseId={courseId} moduleId={moduleId} />
             </Col>
           </Row>
         </Container>

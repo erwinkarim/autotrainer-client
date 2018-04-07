@@ -12,10 +12,12 @@ import ModuleRootEditor from '../components/ModuleRootEditor';
 import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
-import ArticleBuilder from '../modules/ArticleBuilderDumb';
-import VideoBuilder from '../modules/VideoBuilderDumb';
-import DocBuilder from '../modules/DocBuilderDumb';
-import QuizBuilder from '../modules/QuizBuilderDumb';
+import asyncComponent from '../components/AsyncComponent';
+
+const ArticleBuilder = asyncComponent(() => import('../modules/ArticleBuilderDumb'));
+const VideoBuilder = asyncComponent(() => import('../modules/VideoBuilderDumb'));
+const DocBuilder = asyncComponent(() => import('../modules/DocBuilderDumb'));
+const QuizBuilder = asyncComponent(() => import('../modules/QuizBuilderDumb'));
 
 const defaultModule = { title: '', description: '', moduleType: null };
 /**
