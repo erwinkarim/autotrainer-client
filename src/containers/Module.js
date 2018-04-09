@@ -178,7 +178,7 @@ export default class Module extends Component {
         <Container>
           <Row>
             <Col>
-              <CourseMenu courseId={courseId} moduleId={moduleId} />
+              <CourseMenu courseId={courseId} moduleId={moduleId} {...this.props} />
             </Col>
           </Row>
         </Container>

@@ -56,6 +56,14 @@ export default class CourseMenu extends Component {
     queryParams: { courseId: this.props.courseId, publish_status: this.props.buildMode ? 'all' : 'published' },
   })
   toggleNavbar = () => { this.setState({ collapse: !this.state.collapse }); }
+  handleClick = (e) => {
+    // should close the navbar and push to history
+    e.preventDefault();
+    const url = new URL(e.target.href);
+
+    this.setState({ collapse: true });
+    this.props.history.push(url.pathname);
+  }
   render = () => {
     if (!this.state.loaded) {
       return (<Navbar><NavbarBrand> Loading ... </NavbarBrand></Navbar>);
@@ -78,7 +86,9 @@ export default class CourseMenu extends Component {
         <Collapse navbar isOpen={!this.state.collapse} className="">
           <Nav navbar className="text-left">
             <NavItem>
-              <NavLink tag={Link} to={courseHomePath}><h4>Course {this.props.buildMode ? 'Builder' : 'Overview'}</h4></NavLink>
+              <NavLink tag={Link} to={courseHomePath} onClick={this.handleClick} className="lead" style={{ fontSize: 'xx-large' }}>
+                Course {this.props.buildMode ? 'Builder' : 'Overview'}
+              </NavLink>
             </NavItem>
             {
               this.state.modules.map((m, i) => {
@@ -87,7 +97,7 @@ export default class CourseMenu extends Component {
                   `/courses/${m.moduleType}/${courseId}/${m.moduleId}`;
                 return (
                   <NavItem key={m.moduleId}>
-                    <NavLink tag={Link} to={path} className={m.publish_status === 'published' ? '' : 'text-muted'}>
+                    <NavLink tag={Link} to={path} onClick={this.handleClick} className={m.publish_status === 'published' ? '' : 'text-muted'}>
                       { m.moduleId === moduleId ? <i>{m.title}</i> : m.title }
                     </NavLink>
                   </NavItem>
@@ -105,6 +115,7 @@ CourseMenu.propTypes = {
   courseId: PropTypes.string,
   moduleId: PropTypes.string,
   buildMode: PropTypes.bool,
+  history: PropTypes.shape().isRequired,
 };
 
 CourseMenu.defaultProps = {

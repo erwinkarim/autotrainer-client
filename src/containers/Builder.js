@@ -25,7 +25,7 @@ const Builder = (props) => {
     <Container>
       <Row>
         <Col xs="12">
-          <CourseMenu courseId={courseId} moduleId={moduleId} buildMode />
+          <CourseMenu courseId={courseId} moduleId={moduleId} {...props} buildMode />
         </Col>
       </Row>
       { props.courseMode ? <CourseBuilder {...props} /> : <ModuleBuilder {...props} /> }
