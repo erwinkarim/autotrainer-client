@@ -65,7 +65,7 @@ export default class ModuleBuilder extends Component {
     // should update module
     let isValidBody = false;
     try {
-      isValidBody = await this.moduleHandle.validBody();
+      isValidBody = await this.moduleHandle.theRef.validBody();
     } catch (e) {
       console.log('error awaiting validBody');
       console.log(e);
