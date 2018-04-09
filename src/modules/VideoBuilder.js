@@ -1,162 +1,92 @@
-import React, { Component } from "react";
-import { Container, Col,  Row, Breadcrumb, BreadcrumbItem } from 'reactstrap'
-import { FormGroup, Label, Input, FormText, Button} from 'reactstrap';
-import { Card, CardBody, CardText, CardImg} from 'reactstrap';
-import { Link } from 'react-router-dom';
-import toTitleCase from 'titlecase';
-import ModuleRootEditor from '../components/ModuleRootEditor';
-import Notice from '../components/Notice';
-import Helmet from 'react-helmet';
-import config from '../config.js';
-import { invokeApig } from "../libs/awsLibs";
+import React, { Component } from 'react';
+import { Col, Row, FormGroup, Label, Input, FormText, Card, CardBody, CardText, CardImg } from 'reactstrap';
+import PropTypes from 'prop-types';
 
+const defaultBody = {
+  origUrl: '',
+  convertedUrl: '',
+  description: '',
+};
+
+/**
+ * Adds two numbers together.
+ * @param {int} e The first number.
+ * @returns {int} The sum of the two numbers.
+ */
 export default class VideoBuilder extends Component {
-  constructor(props){
+  /**
+   * Adds two numbers together.
+   * @param {shape} props props
+   * @returns {int} The sum of the two numbers.
+   */
+  constructor(props) {
     super(props);
-    this.state = { video:null, url:'', convertedUrl:'', validVideo:false, loading:true };
+    this.state = { validVideo: false };
   }
   componentDidMount = async () => {
-    try{
-      var result = await this.loadVideo();
-      result.body = result.body === null | result.body === undefined ?
-        {origUrl:'', convertedUrl:'', description:''} :
-        result.body;
-      var validVideo = result.body.origUrl.length > 0 && result.body.convertedUrl.length > 0;
-      this.setState({video:result, validVideo:validVideo, loading:false});
-    } catch(e){
-      console.log('error loading module');
-      console.log(e);
-    }
-  }
-  loadVideo = () => {
-    return invokeApig({
-      endpoint: config.apiGateway.MODULE_URL,
-      path: `/modules/${this.props.match.params.moduleId}`,
-      queryParams: {courseId:this.props.match.params.courseId}
-    });
-  }
-  handleUpdateVideo = async (e) => {
-    //update video button
-    try {
-      await this.updateVideo();
-      this.props.addNotification('Video updated');
-
-    } catch(e){
-      console.log('error updating the video');
-      console.log(e);
+    if (!this.props.module.body) {
+      this.props.handleBodyUpdate(defaultBody);
     }
 
-  }
-  updateVideo = () => {
-    //return invokeApig promise
-    return invokeApig({
-      endpoint:config.apiGateway.MODULE_URL,
-      method: 'PUT',
-      path: `/modules/${this.props.match.params.moduleId}`,
-      queryParams: {courseId:this.props.match.params.courseId},
-      body: this.state.video
+    this.setState({
+      validVideo: this.props.module.body !== undefined &&
+        this.props.module.body.origUrl.length > 0 &&
+        this.props.module.body.convertedUrl.length > 0,
     });
   }
-  validateForm = () => {
-    //form validataion
-    var video = this.state.video;
-
-    return video.title.length > 0 &&
-      video.description.length > 0 &&
-      video.body.description.length > 0 &&
-      this.state.validVideo;
-  }
-  handleChange = (event) => {
-    var newVideo= this.state.video;
-    if(event.target.id === "body") {
-      //update the preview, but notify changes hasn't be saved yet
-      newVideo.body[event.target.dataset.attr] = event.target.value;
-    } else {
-      //title + desciprtion
-      newVideo[event.target.id] =
-        event.target.id === "title" ? toTitleCase(event.target.value) :
-        event.target.value;
-    };
-
-    this.setState({ video:newVideo});
-
-  }
+  validBody = () => this.state.validVideo &&
+    this.props.module.body.description.length > 0
   handleVideoUrl = (e) => {
-    //convert from youtube / vimeo url to embbed url
-    var newVideo = this.state.video;
+    // convert from youtube / vimeo url to embbed url
+    const newVideo = this.props.module.body;
     console.log('target_url', e.target.value);
-    var targetValue = e.target.value;
+    const targetValue = e.target.value;
 
     try {
-      var origUrl = new URL(targetValue);
+      const origUrl = new URL(targetValue);
       console.log('url_obj', origUrl);
-      var videoUrl =
-        origUrl.hostname === 'www.youtube.com' || origUrl.hostname === 'youtube.com' ?
-          `https://www.youtube.com/embed/${origUrl.searchParams.get('v')}` :
-        origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
-          `https://player.vimeo.com/video${origUrl.pathname}` :
-        '';
-      var videoVendor =
-        origUrl.hostname === 'www.youtube.com' || origUrl.hostname === 'youtube.com' ?
-          'YOUTUBE' :
-        origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
-          'VIMEO' :
-        '';
-      var videoID =
-        origUrl.hostname === 'www.youtube.com' || origUrl.hostname === 'youtube.com' ?
-          origUrl.searchParams.get('v') :
-        origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com' ?
-          origUrl.pathname :
-        '';
 
-      newVideo.body.origUrl = targetValue;
-      newVideo.body.convertedUrl = videoUrl;
-      newVideo.body.vendor = videoVendor;
-      newVideo.body.videoID = videoID;
+      let videoUrl = null;
+      let videoVendor = null;
+      let videoID = null;
 
-      //this.setState({url:origUrl, convertedUrl:videoUrl, validVideo:true});
-      this.setState({video:newVideo, validVideo:videoUrl !== ''});
-    } catch(e){
+      if (origUrl.hostname === 'youtube.com' || origUrl.hostname === 'www.youtube.com') {
+        videoUrl = `https://www.youtube.com/embed/${origUrl.searchParams.get('v')}`;
+        videoVendor = 'YOUTUBE';
+        videoID = origUrl.searchParams.get('v');
+      } else if (origUrl.hostname === 'www.vimeo.com' || origUrl.hostname === 'vimeo.com') {
+        videoUrl = `https://player.vimeo.com/video${origUrl.pathname}`;
+        videoVendor = 'VIMEO';
+        videoID = origUrl.pathname;
+      }
+
+      newVideo.origUrl = targetValue;
+      newVideo.convertedUrl = videoUrl;
+      newVideo.vendor = videoVendor;
+      newVideo.videoID = videoID;
+
+      // this.setState({url:origUrl, convertedUrl:videoUrl, validVideo:true});
+      this.setState({ validVideo: videoUrl !== '' });
+      this.props.handleBodyUpdate(newVideo);
+    } catch (err) {
       console.log('error getting url name');
-      newVideo.body.origUrl = targetValue;
-      newVideo.body.convertedUrl = '';
-      this.setState({video:newVideo, validVideo:false});
-    };
+      newVideo.origUrl = targetValue;
+      newVideo.convertedUrl = '';
 
-
-  }
-  render(){
-    if(this.state.loading){
-      return <Notice content="Video is loading ..." />
+      this.setState({ validVideo: false });
+      this.props.handleBodyUpdate(newVideo);
     }
-
-    if(this.props.currentUser === null){
-      return (<Notice content="user Unauthorized" />);
-    };
-
-    if(this.state.video === null){
-      return (<Notice content="Video not loaded" />);
-    };
+  }
+  render = () => {
+    const { module } = this.props;
 
     return (
-      <Container className="mt-3">
-        <Helmet>
-          <title>Video Builder: { this.state.video.title } - {config.site_name}</title>
-        </Helmet>
+      <div className="my-3">
         <Row>
-          <Col xs="12">
-            <Breadcrumb>
-              <BreadcrumbItem tag={Link} to="/">Home</BreadcrumbItem>
-              <BreadcrumbItem tag={Link} to="/welcome">{this.props.currentUser.name}</BreadcrumbItem>
-              <BreadcrumbItem tag={Link} to={`/user/course_builder/${this.state.video.courseId}`}>Course Builder: {this.state.video.courseMeta.name}</BreadcrumbItem>
-              <BreadcrumbItem active>Video Builder: {this.state.video.title}</BreadcrumbItem>
-            </Breadcrumb>
-          </Col>
-          <ModuleRootEditor module={this.state.video} handleChange={this.handleChange}/>
           <Col xs="12" lg="8" className="text-left">
             <FormGroup>
               <Label>Video URL Link</Label>
-              <Input type="text" value={this.state.video.body.origUrl} onChange={this.handleVideoUrl} />
+              <Input type="text" value={module.body !== undefined ? module.body.origUrl : ''} onChange={this.handleVideoUrl} />
               <FormText color="muted">
                 <ul>Valid formats are:-
                   <li>https://www.youtube.com/watch?v=XXXXXX</li>
@@ -164,11 +94,20 @@ export default class VideoBuilder extends Component {
                 </ul>
               </FormText>
               <Label>Converted URL Link</Label>
-              <Input type="text" disabled={true} value={this.state.video.body.convertedUrl} />
+              <Input type="text" disabled value={module.body !== undefined ? module.body.convertedUrl : ''} />
             </FormGroup>
             <FormGroup>
               <Label>Video Description</Label>
-              <Input type="textarea" id="body" data-attr="description" value={this.state.video.body.description} onChange={this.handleChange} />
+              <Input
+                type="textarea"
+                value={module.body !== undefined ? module.body.description : ''}
+                rows="5"
+                onChange={(e) => {
+                  const newBody = module.body;
+                  newBody.description = e.target.value;
+                  this.props.handleBodyUpdate(newBody);
+                }}
+              />
             </FormGroup>
           </Col>
         </Row>
@@ -179,26 +118,32 @@ export default class VideoBuilder extends Component {
             {
               this.state.validVideo ? (
                 <Card>
-                  <CardImg top tag="div" className="embed-responsive embed-responsive-16-by-9" style={ {height:'500px'}}>
-                    <CardImg top tag="iframe" width="1600" src={this.state.video.body.convertedUrl} />
+                  <CardImg top tag="div" className="embed-responsive embed-responsive-16-by-9" style={{ height: '500px' }}>
+                    <CardImg top tag="iframe" width="1600" src={module.body.convertedUrl} />
                   </CardImg>
                   {
-                    this.state.video.body.description.length > 0 ?
-                      <CardBody>{this.state.video.body.description.split('\n').map( (p,i) => <CardText key={i}>{p}</CardText>)}</CardBody> : ''
+                    module.body.description.length > 0 ?
+                      <CardBody>
+                        {
+                          module.body.description.split('\n').map(p =>
+                            <CardText key={parseInt(Math.random() * 1000, 10)}>{p}</CardText>)
+                        }
+                      </CardBody> : ''
                   }
                 </Card>
               ) : (<p>Video link is invalid</p>)
             }
           </Col>
           <Col xs="12">
-            <div id="yt_player">
-            </div>
-          </Col>
-          <Col md="12" className="mt-3 text-left">
-            <Button type="button" color="primary" disabled={!this.validateForm()} onClick={this.handleUpdateVideo}>Update Video</Button>
+            <div id="yt_player" />
           </Col>
         </Row>
-      </Container>
+      </div>
     );
   }
 }
+
+VideoBuilder.propTypes = {
+  module: PropTypes.shape().isRequired,
+  handleBodyUpdate: PropTypes.func.isRequired,
+};

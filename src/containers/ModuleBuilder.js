@@ -14,10 +14,10 @@ import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import asyncComponent from '../components/AsyncComponent';
 
-const ArticleBuilder = asyncComponent(() => import('../modules/ArticleBuilderDumb'));
-const VideoBuilder = asyncComponent(() => import('../modules/VideoBuilderDumb'));
-const DocBuilder = asyncComponent(() => import('../modules/DocBuilderDumb'));
-const QuizBuilder = asyncComponent(() => import('../modules/QuizBuilderDumb'));
+const ArticleBuilder = asyncComponent(() => import('../modules/ArticleBuilder'));
+const VideoBuilder = asyncComponent(() => import('../modules/VideoBuilder'));
+const DocBuilder = asyncComponent(() => import('../modules/DocBuilder'));
+const QuizBuilder = asyncComponent(() => import('../modules/QuizBuilder'));
 
 const defaultModule = { title: '', description: '', moduleType: null };
 /**
