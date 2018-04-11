@@ -8,6 +8,9 @@ import { Row, Button, FormGroup } from 'reactstrap';
 import Helmet from 'react-helmet';
 import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
+import FontAwesome from 'react-fontawesome';
+import { Link } from 'react-router-dom';
+
 import ModuleRootEditor from '../components/ModuleRootEditor';
 import Notice from '../components/Notice';
 import config from '../config';
@@ -36,7 +39,7 @@ export default class ModuleBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      module: defaultModule, loading: false,
+      module: defaultModule, loading: false, updating: false,
     };
   }
   componentDidMount = () => {
@@ -79,8 +82,10 @@ export default class ModuleBuilder extends Component {
 
     // now things are properly valid
     try {
+      this.setState({ updating: true });
       await this.updateModule();
       this.props.addNotification('Module updated', 'success');
+      this.setState({ updating: false });
     } catch (e) {
       console.log('error updating module');
       console.log(e);
@@ -175,13 +180,15 @@ export default class ModuleBuilder extends Component {
           <title>{`Building ${this.state.module.title} - ${config.site_name}`}</title>
         </Helmet>
         <Row>
-          <ModuleRootEditor module={this.state.module} handleChange={this.handleChange} />
+          <ModuleRootEditor {...this.state} handleChange={this.handleChange} />
         </Row>
         { layout }
         <Row>
           <FormGroup>
-            <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm()} >Update</Button>
-            <Button color="danger">Cancel</Button>
+            <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm() || this.state.updating}>
+              { this.state.updating ? <span><FontAwesome spin name="cog" /> Updating</span> : 'Update'}
+            </Button>
+            <Button color="danger" tag={Link} to={`/user/builder/${this.state.module.courseId}`}>Cancel</Button>
           </FormGroup>
         </Row>
       </div>

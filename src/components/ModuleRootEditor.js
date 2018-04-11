@@ -19,6 +19,7 @@ const ModuleRootEditor = props => (
           id="title"
           value={props.module.title}
           onChange={props.handleChange}
+          disabled={props.updating}
         />
         <InputGroupAddon addonType="append" className="text-muted"><InputGroupText>{ 140 - props.module.title.length }</InputGroupText></InputGroupAddon>
       </InputGroup>
@@ -32,11 +33,12 @@ const ModuleRootEditor = props => (
         id="description"
         value={props.module.description}
         onChange={props.handleChange}
+        disabled={props.updating}
       />
     </FormGroup>
     <FormGroup>
       <Label>Publish status</Label>
-      <Input type="select" id="publish_status" value={props.module.publish_status} onChange={props.handleChange}>
+      <Input type="select" id="publish_status" value={props.module.publish_status} onChange={props.handleChange} disabled={props.updating}>
         <option value="unpublished">Unpublished</option>
         <option value="published">Published</option>
       </Input>
@@ -52,6 +54,7 @@ ModuleRootEditor.propTypes = {
     description: PropTypes.string,
   }),
   handleChange: PropTypes.func,
+  updating: PropTypes.bool.isRequired,
 };
 
 ModuleRootEditor.defaultProps = {

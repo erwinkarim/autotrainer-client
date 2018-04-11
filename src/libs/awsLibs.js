@@ -245,13 +245,14 @@ export async function invokeApig({
 
   // body = body ? JSON.stringify(body) : body;
   headers = signedRequest.headers;
+  body = body ? JSON.stringify(body) : body;
 
   const jsonBody = body ? JSON.stringify(body) : body;
 
   const results = await fetch(signedRequest.url, {
     method,
     headers,
-    jsonBody,
+    body,
   });
 
   if (results.status !== 200) {
