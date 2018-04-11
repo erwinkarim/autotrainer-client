@@ -38,7 +38,7 @@ export default class Courses extends Component {
       const enrolmentResults = await this.getEnrolment();
       this.setState({ courses: results, enrolments: enrolmentResults, loading: false });
     } catch (e) {
-      console.log('error getting courses');
+      console.log(`${Date.now()}: Error getting courses`);
       console.log(e);
     }
   }

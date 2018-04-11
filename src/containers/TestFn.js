@@ -1,42 +1,51 @@
-import React, { Component } from "react";
+import React, { Component } from 'react';
 import { Container, Row, Col, Button, Card, CardText } from 'reactstrap';
 import config from '../config';
-import { invokeApig } from "../libs/awsLibs";
+import { invokeApig } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 
-/*
-  a container to invoke module test gateway
-*/
-export default class TestFn extends Component{
-  constructor(props){
+/**
+ * a container to invoke module test gateway
+ * @param {shape} props the auth object
+ * @returns {boolean} The use is authenticated or not
+ */
+export default class TestFn extends Component {
+  /**
+   * a container to invoke module test gateway
+   * @param {shape} props the auth object
+   * @returns {boolean} The use is authenticated or not
+   */
+  constructor(props) {
     super(props);
-    this.state = { loading:false };
+    this.state = { loading: false };
   }
   handleClick = async () => {
-    try{
-      this.setState({loading:true});
+    try {
+      // try to rest current expiration time
+      this.setState({ loading: true });
+
+      console.log(`${Date.now()}: Start invoking`);
       await this.invokeTest();
-      console.log('invoke successful');
-      this.setState({loading:false});
-    } catch(e){
-      console.log('error invoking test');
+      console.log(`${Date.now()}: Done invoking`);
+
+      this.setState({ loading: false });
+    } catch (e) {
+      console.log(`${Date.now()}: error invoking test`);
       console.log(e);
-      this.setState({loading:false});
+      this.setState({ loading: false });
     }
   }
-  invokeTest = () => {
-    return invokeApig({
-      endpoint: config.apiGateway.MODULE_URL,
-      path: '/modules/test'
-    });
-  }
-  render(){
-    //applicable to admins only;
-    if(this.props.currentUser === null){
+  invokeTest = () => invokeApig({
+    endpoint: config.apiGateway.MODULE_URL,
+    path: '/modules/test',
+  })
+  render = () => {
+    // applicable to admins only;
+    if (this.props.currentUser === null) {
       return <Notice content="user not logged in" />;
     }
 
-    if(!this.props.currentUser['cognito:groups'].includes('admin')){
+    if (!this.props.currentUser['cognito:groups'].includes('admin')) {
       return <Notice content="for admins only" />;
     }
 
@@ -50,6 +59,6 @@ export default class TestFn extends Component{
           </Col>
         </Row>
       </Container>
-    )
+    );
   }
-};
+}
