@@ -8,7 +8,7 @@ import FontAwesome from 'react-fontawesome';
 import randomInt from 'random-int';
 import Routes from './Routes';
 import MainNav from './containers/MainNav';
-import { getAwsCredentials } from './libs/awsLibs';
+import { getAwsCredentials, setAuth } from './libs/awsLibs';
 import config from './config';
 import './App.css';
 
@@ -68,13 +68,13 @@ class App extends Component {
       RedirectUriSignOut: `${window.location.protocol}//${window.location.host}/logout`,
     };
     const auth = new CognitoAuth(authData);
+    setAuth(auth);
     // got the refresh token for this, but doesn't process fast enough when logging in
     auth.useCodeGrantFlow();
     auth.userhandler = {
       /*
       onSuccess: (result) => {console.log('logged in!!')},
       onFailure: (err) => {console.log(err)}
-
       */
       async onSuccess(result) {
         // get the user

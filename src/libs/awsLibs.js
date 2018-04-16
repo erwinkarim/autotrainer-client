@@ -73,6 +73,15 @@ export async function getAwsCredentials(userToken) {
 
 /**
  * Initialized the Cognito SDK
+ * @param {shape} auth the Auth object
+ * @returns {shape} the auth object
+ */
+export function setAuth(auth) {
+  AWS.config.auth = auth;
+}
+
+/**
+ * Initialized the Cognito SDK
  * @returns {shape} the auth object
  */
 export function initCognitoSDK() {
@@ -113,7 +122,6 @@ export function initCognitoSDK() {
  */
 export async function authUser() {
   console.log('authUser: check credentials exists and within expire time');
-
   if (
     AWS.config.credentials &&
     Date.now() < AWS.config.credentials.expireTime - 60000
@@ -122,12 +130,26 @@ export async function authUser() {
     return true;
   }
 
-  // refresh promise
   console.log(`${Date.now()}: credentials expired. Refreshing them`);
-  await AWS.config.credentials.refreshPromise();
-  console.log(`${Date.now()}: Done refreshing credentials`);
+  try {
+    // this thing doesn't wait for token to be refreshed
+    await AWS.config.auth.getSession();
+
+    // just sleep for 2 seconds to force token update to complete
+    // this solution is hacky, but works most of the time for now
+    // a feature request has been posted to github calling for a callback fn
+    if (Date.now() > AWS.config.credentials.expireTime - 60000) {
+      await new Promise(resolve => setTimeout(resolve, 1000 * 2));
+    }
+    console.log(`${Date.now()}: Finish waiting`);
+    return true;
+  } catch (e) {
+    console.log('error freshing credentials');
+    console.log(e);
+    return false;
+  }
+
   /*
-  // we already got the credentials, let's try to refresh them??
   // console.log('authUser: initCognitoSDK and getCurrentUser');
   console.log('authUser: initCognitoSDK');
   const auth = initCognitoSDK();
@@ -149,8 +171,6 @@ export async function authUser() {
   console.log(`${Date.now()}: authUser: getAwsCredentials`);
   await getAwsCredentials(userToken);
   */
-
-  return true;
 }
 
 /**
@@ -220,8 +240,9 @@ export async function invokeApig({
     throw new Error('Credentials are not detected');
   }
 
-  // should handle this, ensure user is authenticated before proceeding
-  if (!await authUser()) {
+  // have to figure out how to make this fn to actually wait to finish
+  const authUserResult = await authUser();
+  if (!authUserResult) {
     throw new Error('User is not logged in');
   }
 
@@ -247,8 +268,7 @@ export async function invokeApig({
   headers = signedRequest.headers;
   body = body ? JSON.stringify(body) : body;
 
-  const jsonBody = body ? JSON.stringify(body) : body;
-
+  console.log(`${Date.now()}: Requesting url ${signedRequest.url}`);
   const results = await fetch(signedRequest.url, {
     method,
     headers,
