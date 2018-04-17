@@ -45,17 +45,14 @@ class CourseHighLights extends Component {
  * @returns {null} The sum of the two numbers.
  */
 export default class UserLanding extends Component {
-  componentDidMount = async () => {
-    if (this.props.currentUser === null) {
-      return;
-    }
-
-    // attempt to check username
-    try {
-      await this.checkIdent();
-    } catch (e) {
-      console.log('error checking username');
-      console.log(e);
+  componentDidUpdate = async (prevProps) => {
+    if (prevProps.currentUser !== this.props.currentUser) {
+      try {
+        await this.checkIdent();
+      } catch (e) {
+        console.log('error checking username');
+        console.log(e);
+      }
     }
   }
   checkIdent = () => invokeApig({
