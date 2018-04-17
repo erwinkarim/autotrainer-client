@@ -33,16 +33,23 @@ export default class Quiz extends Component {
         return;
       }
 
+      // check current progress and populate answers if possible
       const progressDetail = this.props.enrolment.progress_detail;
       const currentProgress =
         progressDetail.find(e => Object.keys(e)[0] === this.props.module.moduleId);
-      console.log('currentProgress', currentProgress);
       if (currentProgress) {
         try {
           const currentAnswers =
             JSON.parse(currentProgress[this.props.module.moduleId]).current_answers;
-          console.log('currentAnswers', currentAnswers);
+          // console.log('currentAnswers', currentAnswers);
           this.setState({ answers: currentAnswers });
+
+          // if progress is complete, but attendance hasn't been record, mark attendance
+          if (currentAnswers.length === this.props.module.body.length &&
+            !this.props.enrolment.progress.includes(this.props.module.moduleId)) {
+            // mark attendance
+            this.props.triggerAttendance();
+          }
         } catch (e) {
           console.log('error parsing JSON');
         }
@@ -175,6 +182,7 @@ export default class Quiz extends Component {
 Quiz.propTypes = {
   enrolment: PropTypes.shape({
     progress_detail: PropTypes.arrayOf(PropTypes.shape()),
+    progress: PropTypes.arrayOf(PropTypes.string),
   }).isRequired,
   module: PropTypes.shape().isRequired,
   triggerAttendance: PropTypes.func.isRequired,
