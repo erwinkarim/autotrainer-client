@@ -25,15 +25,21 @@ export default class CourseUsers extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      students: [],
+      students: [], modules: [],
     };
   }
   componentDidMount = () => {
     this.handleLoadStudents();
+    this.handleLoadModules();
   }
   loadStudents = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.courseId}/students`,
+  })
+  loadModules = () => invokeApig({
+    endpoint: config.apiGateway.MODULE_URL,
+    path: '/modules',
+    queryParams: { courseId: this.props.match.params.courseId },
   })
   handleLoadStudents = async () => {
     const handle = this;
@@ -43,6 +49,15 @@ export default class CourseUsers extends Component {
       handle.setState({ students: results });
     } catch (e) {
       console.log('error getting students');
+      console.log(e);
+    }
+  }
+  handleLoadModules = async () => {
+    try {
+      const results = await this.loadModules();
+      this.setState({ modules: results });
+    } catch (e) {
+      console.log('error loading modules');
       console.log(e);
     }
   }
@@ -77,8 +92,15 @@ export default class CourseUsers extends Component {
           <Row>
             <Col>Nobody is enrolled in this course yet</Col>
           </Row>
-        ) : this.state.students.map((student, i) =>
-          <CourseUser key={student.userId} index={i} student={student} {...this.props} />)
+        ) : this.state.students.map((student, i) => (
+          <CourseUser
+            key={student.userId}
+            index={i}
+            student={student}
+            modules={this.state.modules}
+            {...this.props}
+          />
+        ))
       }
       <InviteBox
         {...this.props}

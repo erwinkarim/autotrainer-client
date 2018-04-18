@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Button, CardColumns, Card, CardTitle, CardText, Collapse } from 'reactstrap';
+import { Row, Col, Button, CardColumns, Card, CardBody, CardTitle, CardText, Collapse, ListGroup, ListGroupItem } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
 import { invokeApig } from '../../libs/awsLibs';
@@ -67,15 +68,36 @@ export default class CourseUser extends Component {
         <Col xs="12" md="3">{currentStatus}</Col>
         <Collapse isOpen={this.state.collapse} className="col-12 mt-2">
           <CardColumns>
-            <Card body>
-              <CardTitle>Progress</CardTitle>
-              <CardText>{modulesAttended} modules completed</CardText>
+            <Card>
+              <CardBody>
+                <CardTitle>Progress</CardTitle>
+                <CardText>{modulesAttended} modules completed</CardText>
+              </CardBody>
+              <ListGroup className="list-group-flush">
+                { this.props.modules.map(m => (
+                  <ListGroupItem key={m.moduleId}>
+                    {
+                      this.props.student.progress.includes(m.moduleId) ?
+                        (<strike>{m.title}</strike>) : m.title
+                    }
+                  </ListGroupItem>
+                ))}
+              </ListGroup>
             </Card>
             <Card body>
               <CardTitle>Status</CardTitle>
               <CardText>{currentStatus}</CardText>
               { currentStatus === 'Invited' ? <Button size="sm" onClick={this.handleResendInvite}>Resend Invite</Button> : null }
             </Card>
+            {
+              this.props.student.certId ? (
+                <Card body>
+                  <CardTitle>Cert Issued</CardTitle>
+                  <CardText><Link href="/" to={`/verify_cert?certNo=${this.props.student.certId}`}>{ this.props.student.certId }</Link></CardText>
+                </Card>
+
+              ) : null
+            }
           </CardColumns>
         </Collapse>
         <Col xs="12"><hr /></Col>
