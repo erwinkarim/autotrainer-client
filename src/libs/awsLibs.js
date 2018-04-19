@@ -12,6 +12,7 @@ import config from '../config';
  * @param {shape} auth the auth object
  * @returns {boolean} The use is authenticated or not
  */
+/*
 async function getUserToken(auth) {
   // replace this w/ something from cognito
   // try AWS.config.credentials.refreshPromise()
@@ -40,7 +41,6 @@ async function getUserToken(auth) {
         console.log('error refreshing token inside getUserToken');
         console.log(e);
       }
-      */
     }
   } catch (e) {
     // console.log(e);
@@ -49,6 +49,7 @@ async function getUserToken(auth) {
 
   return auth.signInUserSession.idToken.jwtToken;
 }
+*/
 
 /**
  * Initialized the Cognito SDK
