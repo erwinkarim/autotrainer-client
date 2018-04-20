@@ -6,50 +6,65 @@ import S3 from 'aws-sdk/clients/s3';
 import sigV4Client from './sigV4Client';
 import config from '../config';
 
-
 /**
- * Authenticate a user
- * @param {shape} auth the auth object
- * @returns {boolean} The use is authenticated or not
+ * Get Unauthenticated credentials from identity pool
+ * @returns {shape} the auth object
  */
-/*
-async function getUserToken(auth) {
-  // replace this w/ something from cognito
-  // try AWS.config.credentials.refreshPromise()
-  try {
-    await auth.getSession();
-    if (Date.now() > AWS.config.credentials.expireTime - 6000 ||
-      AWS.config.credentials.expireTime === false) {
-      console.log(`${Date.now()}: session expired, force refresh`);
-      const refreshPromise = new Promise((resolve) => {
-        console.log(`${Date.now()}: attempt to refresh`);
-        auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken);
-        resolve();
-      });
-
-      refreshPromise.then(() => {
-        console.log(`${Date.now()}: Done refreshing;`);
-      });
-      /*
-      try{
-        //should try to wrap this  in a promise
-        await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
-        console.log('done refreshing token');
-        //console.log('getUserToken: AWS.credentials', AWS.config.credentials);
-        //console.log('auth.signInUserSession', auth.signInUserSession);
-      } catch(e){
-        console.log('error refreshing token inside getUserToken');
-        console.log(e);
-      }
-    }
-  } catch (e) {
-    // console.log(e);
-    return ('failed to get user session');
+export async function getUnauthCredentials() {
+  // if credentials already establish, do nothing
+  if (AWS.config.credentials) {
+    return;
   }
 
-  return auth.signInUserSession.idToken.jwtToken;
+  const cognitoIdent = new AWS.CognitoIdentity({ region: 'ap-southeast-1' });
+
+  // get identity id
+  console.log('generate id');
+  let ident = {};
+  const params = {
+    IdentityPoolId: config.cognito.IDENTITY_POOL_ID,
+  };
+
+  const getIdPromise = new Promise((resolve) => {
+    cognitoIdent.getId(params, (err, data) => {
+      console.log('ident', data);
+      ident = data;
+      resolve();
+    });
+  });
+
+  try {
+    await getIdPromise;
+  } catch (e) {
+    console.log('error getting id');
+    console.log(e);
+  }
+
+  // generate credentials
+  console.log('generate credentials from identity');
+  const getCredPromise = new Promise((resolve) => {
+    cognitoIdent.getCredentialsForIdentity(ident, (err, data) => {
+      if (err) {
+        throw err;
+      }
+
+      // save creds in AWS.config.credentials
+      AWS.config.credentials = {
+        accessKeyId: data.Credentials.AccessKeyId,
+        secretAccessKey: data.Credentials.SecretKey,
+        sessionToken: data.Credentials.SessionToken,
+        expireTime: data.Credentials.Expiration,
+      };
+      resolve();
+    });
+  });
+  try {
+    await getCredPromise;
+  } catch (e) {
+    console.log('error getting creds');
+    console.log(e);
+  }
 }
-*/
 
 /**
  * Initialized the Cognito SDK
@@ -308,6 +323,44 @@ async function getUnauthCredentials(){
 }
 */
 
-/*
-  TODO: figure out how use the refresh token
+/**
+ * Authenticate a user
+ * @param {shape} auth the auth object
+ * @returns {boolean} The use is authenticated or not
+  async function getUserToken(auth) {
+    // replace this w/ something from cognito
+    // try AWS.config.credentials.refreshPromise()
+    try {
+      await auth.getSession();
+      if (Date.now() > AWS.config.credentials.expireTime - 6000 ||
+        AWS.config.credentials.expireTime === false) {
+        console.log(`${Date.now()}: session expired, force refresh`);
+        const refreshPromise = new Promise((resolve) => {
+          console.log(`${Date.now()}: attempt to refresh`);
+          auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken);
+          resolve();
+        });
+
+        refreshPromise.then(() => {
+          console.log(`${Date.now()}: Done refreshing;`);
+        });
+        /*
+        try{
+          //should try to wrap this  in a promise
+          await auth.refreshSession(auth.signInUserSession.refreshToken.refreshToken)
+          console.log('done refreshing token');
+          //console.log('getUserToken: AWS.credentials', AWS.config.credentials);
+          //console.log('auth.signInUserSession', auth.signInUserSession);
+        } catch(e){
+          console.log('error refreshing token inside getUserToken');
+          console.log(e);
+        }
+      }
+    } catch (e) {
+      // console.log(e);
+      return ('failed to get user session');
+    }
+
+    return auth.signInUserSession.idToken.jwtToken;
+  }
 */

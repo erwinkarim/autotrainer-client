@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button, Card, CardText } from 'reactstrap';
 import config from '../config';
-import { invokeApig } from '../libs/awsLibs';
-import Notice from '../components/Notice';
+import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
+// import Notice from '../components/Notice';
 
 /**
  * a container to invoke module test gateway
@@ -19,8 +19,22 @@ export default class TestFn extends Component {
     super(props);
     this.state = { loading: false };
   }
+  generateAnonUser = async () => {
+    // attempt to generate unauth user in the identity pool
+    try {
+      await getUnauthCredentials();
+    } catch (e) {
+      console.log('something went wrong');
+      console.log(e);
+    }
+  }
   handleClick = async () => {
     try {
+      // if unautheticated, try to generate one
+      console.log('testing for local credentials');
+      await this.generateAnonUser();
+
+
       // try to rest current expiration time
       this.setState({ loading: true });
 
@@ -41,6 +55,7 @@ export default class TestFn extends Component {
   })
   render = () => {
     // applicable to admins only;
+    /*
     if (this.props.currentUser === null) {
       return <Notice content="user not logged in" />;
     }
@@ -48,6 +63,7 @@ export default class TestFn extends Component {
     if (!this.props.currentUser['cognito:groups'].includes('admin')) {
       return <Notice content="for admins only" />;
     }
+    */
 
     return (
       <Container className="mt-2">

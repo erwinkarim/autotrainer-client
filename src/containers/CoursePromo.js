@@ -3,7 +3,8 @@ import { Container, Jumbotron, Row, CardDeck, Card, CardBody, CardTitle, CardTex
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
-import { invokeApig } from '../libs/awsLibs';
+import AWS from 'aws-sdk/global';
+import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
 import config from '../config';
 import CTOC from '../components/CTOC';
 import Notice from '../components/Notice';
@@ -19,9 +20,17 @@ const EnrolButton = (props) => {
     ...rest
   } = props;
 
+  const getSession = () => {
+    props.addNotification('Attempt to login ...', 'info');
+    props.auth.getSession();
+  };
+
+  // handle betweehn Unauthenticated and authenticated fn
+  const handleEnrolFn = props.isAuthenticated ? props.handleEnrolCourse : getSession;
+
   // check enrolment status
   return props.enrolment === null ?
-    (<Button {...rest} type="button" color="primary" onClick={handleEnrolCourse} data-course={props.course.courseId}>{enrolText}</Button>) :
+    (<Button {...rest} type="button" color="primary" onClick={handleEnrolFn} data-course={props.course.courseId}>{enrolText}</Button>) :
     (<Button {...rest} tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);
 };
 
@@ -32,6 +41,11 @@ EnrolButton.propTypes = {
   loading: PropTypes.bool,
   enrolment: PropTypes.shape(),
   course: PropTypes.shape().isRequired,
+  addNotification: PropTypes.func.isRequired,
+  auth: PropTypes.shape({
+    getSession: PropTypes.func.isRequired,
+  }).isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 EnrolButton.defaultProps = {
@@ -82,6 +96,16 @@ export default class CoursePromo extends Component {
     };
   }
   componentDidMount = async () => {
+    if (AWS.config.credentials === null) {
+      console.log('should get Unauthenticated creds');
+      try {
+        await getUnauthCredentials();
+      } catch (e) {
+        console.log('error getting Unauthenticated creds');
+        console.log(e);
+      }
+    }
+
     // load the course and enrolment status
     const handle = this;
     try {
@@ -92,6 +116,11 @@ export default class CoursePromo extends Component {
     } catch (e) {
       // throw new Error(e);
       console.log(e);
+    }
+
+    // skip enrolment if there's no current user
+    if (this.props.currentUser === null) {
+      return;
     }
 
     try {
@@ -164,6 +193,7 @@ export default class CoursePromo extends Component {
                 outline
                 {...this.state}
                 {...{ enrolText: `Enrol for RM${this.state.course.price}`, handleEnrolCourse: this.handleEnrolCourse }}
+                {...this.props}
               />
             </p>
           </Container>
@@ -215,7 +245,7 @@ export default class CoursePromo extends Component {
             <h1 className="display-3">Pricing</h1>
             <p className="lead">RM{this.state.course.price}</p>
             <div className="d-flex">
-              <EnrolButton {...this.state} handleEnrolCourse={this.handleEnrolCourse} className="mx-auto" />
+              <EnrolButton {...this.state} {...this.props} handleEnrolCourse={this.handleEnrolCourse} className="mx-auto" />
             </div>
           </Container>
         </Jumbotron>
