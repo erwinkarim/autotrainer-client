@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Container, Row, Col, CardColumns, Card, Form, FormGroup, Label, Input } from 'reactstrap';
 import Helmet from 'react-helmet';
 import AWS from 'aws-sdk';
-import { invokeApig } from '../libs/awsLibs';
+import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import config from '../config';
 import CourseCard from '../components/CourseCard';
@@ -29,16 +29,29 @@ export default class Courses extends Component {
     };
   }
   componentDidMount = async () => {
-    /**
-     * sometimes issues getting courses due to authentication issues.
-     * maybe move to componentReceiveProps
-     */
+    // attemp tto get courses, handle cases where credentials does not exists;
     try {
+      if (AWS.config.credentials === null) {
+        await getUnauthCredentials();
+      }
+
       const results = await this.getCourses();
-      const enrolmentResults = await this.getEnrolment();
-      this.setState({ courses: results, enrolments: enrolmentResults, loading: false });
+      this.setState({ courses: results, loading: false });
     } catch (e) {
       console.log(`${Date.now()}: Error getting courses`);
+      console.log(e);
+    }
+
+    // attempt to get enrolment
+    try {
+      if (this.props.currentUser === null) {
+        return;
+      }
+
+      const enrolmentResults = await this.getEnrolment();
+      this.setState({ enrolments: enrolmentResults });
+    } catch (e) {
+      console.log('Error getting enrolment');
       console.log(e);
     }
   }
@@ -68,19 +81,11 @@ export default class Courses extends Component {
       return <Notice content="Loading ..." />;
     }
 
-    if (!this.props.isAuthenticated) {
-      return (<div>User is not authenticated</div>);
-    }
-
-    if (AWS.config.credentials === null) {
-      return (<div>Credentials are not set</div>);
-    }
-
     if (this.state.courses.length === 0) {
       return (<Notice content="Courses not found" />);
     }
 
-    const isAdmin = this.props.currentUser['cognito:groups'].includes('admin');
+    const isAdmin = this.props.currentUser === null ? false : this.props.currentUser['cognito:groups'].includes('admin');
 
     return (
       <Container className="mt-2">

@@ -69,7 +69,7 @@ export default class CTOC extends Component {
       );
     }
     return (
-      <div>
+      <div className="w-100">
         { completionNotice }
         <CardColumns>{
           this.state.modules.map((m, i) => {
