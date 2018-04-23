@@ -13,11 +13,8 @@ import './CoursePromo.css';
 /* button to enrol or show TOC */
 const EnrolButton = (props) => {
   const {
-    handleEnrolCourse,
     enrolText,
     enrolledText,
-    loading,
-    ...rest
   } = props;
 
   const getSession = () => {
@@ -30,15 +27,14 @@ const EnrolButton = (props) => {
 
   // check enrolment status
   return props.enrolment === null ?
-    (<Button {...rest} type="button" color="primary" onClick={handleEnrolFn} data-course={props.course.courseId}>{enrolText}</Button>) :
-    (<Button {...rest} tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);
+    (<Button type="button" color="primary" onClick={handleEnrolFn} data-course={props.course.courseId}>{enrolText}</Button>) :
+    (<Button tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);
 };
 
 EnrolButton.propTypes = {
   handleEnrolCourse: PropTypes.func,
   enrolText: PropTypes.string,
   enrolledText: PropTypes.string,
-  loading: PropTypes.bool,
   enrolment: PropTypes.shape(),
   course: PropTypes.shape().isRequired,
   addNotification: PropTypes.func.isRequired,
@@ -193,7 +189,12 @@ export default class CoursePromo extends Component {
                 outline
                 {...this.state}
                 {...{ enrolText: `Enrol for RM${this.state.course.price}`, handleEnrolCourse: this.handleEnrolCourse }}
-                {...this.props}
+                {...{
+                  auth: this.props.auth,
+                  isAuthenticated: this.props.isAuthenticated,
+                  addNotification: this.props.addNotification,
+                  }
+                }
               />
             </p>
           </Container>
@@ -236,7 +237,7 @@ export default class CoursePromo extends Component {
             <div className="col-12">
               <h4 className="display-4">Table of Contents</h4>
             </div>
-            <CTOC course={this.state.course} options={{ showLink: false }} />
+            <CTOC course={this.state.course} showLink={this.state.enrolment !== null} />
           </Row>
         </Container>
         { clientList }
@@ -244,8 +245,18 @@ export default class CoursePromo extends Component {
           <Container>
             <h1 className="display-3">Pricing</h1>
             <p className="lead">RM{this.state.course.price}</p>
-            <div className="d-flex">
-              <EnrolButton {...this.state} {...this.props} handleEnrolCourse={this.handleEnrolCourse} className="mx-auto" />
+            <div className="text-center">
+              <EnrolButton
+                {...this.state}
+                {...{
+                  auth: this.props.auth,
+                  isAuthenticated: this.props.isAuthenticated,
+                  addNotification: this.props.addNotification,
+                  }
+                }
+                handleEnrolCourse={this.handleEnrolCourse}
+                className="mx-auto"
+              />
             </div>
           </Container>
         </Jumbotron>
@@ -260,6 +271,8 @@ CoursePromo.propTypes = {
   }).isRequired,
   addNotification: PropTypes.func.isRequired,
   currentUser: PropTypes.shape(),
+  auth: PropTypes.shape().isRequired,
+  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 CoursePromo.defaultProps = {
