@@ -41,7 +41,7 @@ export default class CourseMenu extends Component {
     // load the course modules based on courseId
     try {
       const results = await this.getCourseModules();
-      this.setState({ modules: results, loaded: true });
+      this.setState({ modules: results.sort((a, b) => a.order > b.order), loaded: true });
     } catch (e) {
       console.log('error getting modules');
       console.log(e);

@@ -14,6 +14,7 @@ import Notice from '../components/Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import CourseMenu from '../components/CourseMenu';
+import CourseBottomNav from '../components/CourseBottomNav';
 import asyncComponent from '../components/AsyncComponent';
 
 const CourseTOC = asyncComponent(() => import('../modules/CourseTOC'));
@@ -170,6 +171,7 @@ export default class Module extends Component {
 
     const pageTitle = this.state.module.title || this.state.module.name;
 
+
     return (
       <div className="text-left">
         <Helmet>
@@ -184,6 +186,13 @@ export default class Module extends Component {
         </Container>
         { moduleJumbotron }
         { layout }
+        <Container className="mt-2">
+          <Row>
+            <Col>
+              <CourseBottomNav courseId={courseId} moduleId={moduleId} />
+            </Col>
+          </Row>
+        </Container>
       </div>
     );
   }

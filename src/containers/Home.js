@@ -3,6 +3,7 @@ import { Jumbotron, Container, Row, Col, CardDeck, Card, CardBody, CardText, Car
 // import { Link } from "react-router-dom";
 import { HashLink as Link } from 'react-router-hash-link';
 import Helmet from 'react-helmet';
+import PropTypes from 'prop-types';
 import SignUpModal from '../components/SignUpModal';
 import config from '../config';
 import './Home.css';
@@ -32,7 +33,17 @@ const Home = props =>
         <Container id="panel-2" className="text-white position-absolute">
           <h3 className="display-4">We Provide Actuarial, Insurance and Financial Training Programs</h3>
           <div className="">
-            <Link href="/" className="btn btn-primary mr-2" to="/">REGISTER NOW</Link>
+            {
+              props.currentUser === null ? (
+                <Button
+                  color="primary"
+                  className="mr-2"
+                  onClick={() => { props.addNotification('Logging in ...', 'info'); props.auth.getSession(); }}
+                >
+                  REGISTER NOW
+                </Button>
+              ) : <Link href="/" to="/courses" className="btn btn-primary mr-2">EXPLORE</Link>
+            }
             <Link href="/" className="btn btn-secondary" to="/#video">WATCH VIDEO</Link>
           </div>
         </Container>
@@ -145,5 +156,15 @@ const Home = props =>
       </Container>
     </div>
   );
+
+Home.propTypes = {
+  addNotification: PropTypes.func.isRequired,
+  auth: PropTypes.shape().isRequired,
+  currentUser: PropTypes.shape(),
+};
+
+Home.defaultProps = {
+  currentUser: null,
+};
 
 export default Home;
