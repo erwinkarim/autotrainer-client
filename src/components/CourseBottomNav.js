@@ -5,6 +5,7 @@
 import React, { Component } from 'react';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import FontAwesome from 'react-fontawesome';
 import { invokeApig } from '../libs/awsLibs';
 import config from '../config';
 
@@ -52,29 +53,34 @@ export default class CourseBottomNav extends Component {
     const currentIndex = this.props.moduleId === null ?
       -1 :
       this.state.modules.findIndex(e => e.moduleId === this.props.moduleId);
-    console.log('currentIndex', currentIndex);
 
     const prevModule = this.props.currentIndex === -1 || this.props.currentIndex === 0 ?
       null : this.state.modules[currentIndex - 1];
-    console.log('prevModule', prevModule);
-
     const prevLink = prevModule === null || prevModule === undefined ?
       `/courses/toc/${this.props.courseId}` :
       `/courses/${prevModule.moduleType}/${this.props.courseId}/${prevModule.moduleId}`;
+    const prevLinkCaption = prevModule === null || prevModule === undefined ?
+      <span><FontAwesome name="angle-left" />{' Course Overview'}</span> :
+      <span><FontAwesome name="angle-left" />{` ${prevModule.title}`}</span>;
 
     const nextModule = this.props.currentIndex === this.state.modules.length - 1 ?
       null : this.state.modules[currentIndex + 1];
-
     const nextLink = nextModule === null || nextModule === undefined ?
       '#' : `/courses/${nextModule.moduleType}/${this.props.courseId}/${nextModule.moduleId}`;
+    const nextLinkCaption = nextModule === null || nextModule === undefined ?
+      'At End' : <span>{`${nextModule.title} `}<FontAwesome name="angle-right" /></span>;
 
     return (
       <Pagination size="lg">
         <PaginationItem className="w-100">
-          <PaginationLink previous to={prevLink} tag={Link} href={prevLink} />
+          <PaginationLink to={prevLink} tag={Link} href={prevLink} className="h-100">
+            {prevLinkCaption}
+          </PaginationLink>
         </PaginationItem>
         <PaginationItem className="w-100 text-right">
-          <PaginationLink next to={nextLink} tag={Link} href={nextLink} />
+          <PaginationLink to={nextLink} tag={Link} href={nextLink} className="h-100">
+            {nextLinkCaption}
+          </PaginationLink>
         </PaginationItem>
       </Pagination>
     );
