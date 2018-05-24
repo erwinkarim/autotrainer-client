@@ -6,6 +6,7 @@ import React, { Component } from 'react';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import FontAwesome from 'react-fontawesome';
+import PropTypes from 'prop-types';
 import { invokeApig } from '../libs/awsLibs';
 import config from '../config';
 
@@ -27,7 +28,7 @@ export default class CourseBottomNav extends Component {
   componentDidMount = async () => {
     try {
       const results = await this.getCourseModules();
-      this.setState({ modules: results.sort((a, b) => a.order > b.order) });
+      this.setState({ modules: results });
     } catch (e) {
       console.log('error getting courses');
       console.log(e);
@@ -36,7 +37,7 @@ export default class CourseBottomNav extends Component {
   getCourseModules = () => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,
     path: '/modules',
-    queryParams: { courseId: this.props.courseId, publish_status: this.props.buildMode ? 'all' : 'published' },
+    queryParams: { courseId: this.props.courseId },
   })
   render = () => {
     /*
@@ -54,16 +55,23 @@ export default class CourseBottomNav extends Component {
       -1 :
       this.state.modules.findIndex(e => e.moduleId === this.props.moduleId);
 
-    const prevModule = this.props.currentIndex === -1 || this.props.currentIndex === 0 ?
+    const prevModule = currentIndex === -1 || currentIndex === 0 ?
       null : this.state.modules[currentIndex - 1];
-    const prevLink = prevModule === null || prevModule === undefined ?
-      `/courses/toc/${this.props.courseId}` :
-      `/courses/${prevModule.moduleType}/${this.props.courseId}/${prevModule.moduleId}`;
-    const prevLinkCaption = prevModule === null || prevModule === undefined ?
-      <span><FontAwesome name="angle-left" />{' Course Overview'}</span> :
-      <span><FontAwesome name="angle-left" />{` ${prevModule.title}`}</span>;
+    let prevLink = `/courses/toc/${this.props.courseId}`;
+    let prevLinkCaption = (<span><FontAwesome name="angle-left" /> Course Overview</span>);
 
-    const nextModule = this.props.currentIndex === this.state.modules.length - 1 ?
+    if (currentIndex === -1) {
+      prevLink = '#';
+      prevLinkCaption = (<span><FontAwesome name="home" /> Course Overview</span>);
+    } else if (currentIndex === 0) {
+      prevLink = `/courses/toc/${this.props.courseId}`;
+      prevLinkCaption = (<span><FontAwesome name="angle-left" />{' Course Overview'}</span>);
+    } else {
+      prevLink = `/courses/${prevModule.moduleType}/${this.props.courseId}/${prevModule.moduleId}`;
+      prevLinkCaption = <span><FontAwesome name="angle-left" />{` ${prevModule.title}`}</span>;
+    }
+
+    const nextModule = currentIndex === this.state.modules.length - 1 ?
       null : this.state.modules[currentIndex + 1];
     const nextLink = nextModule === null || nextModule === undefined ?
       '#' : `/courses/${nextModule.moduleType}/${this.props.courseId}/${nextModule.moduleId}`;
@@ -72,12 +80,12 @@ export default class CourseBottomNav extends Component {
 
     return (
       <Pagination size="lg">
-        <PaginationItem className="w-100">
+        <PaginationItem className="w-100" disabled={currentIndex === -1}>
           <PaginationLink to={prevLink} tag={Link} href={prevLink} className="h-100">
             {prevLinkCaption}
           </PaginationLink>
         </PaginationItem>
-        <PaginationItem className="w-100 text-right">
+        <PaginationItem className="w-100 text-right" disabled={currentIndex === this.state.modules.length - 1}>
           <PaginationLink to={nextLink} tag={Link} href={nextLink} className="h-100">
             {nextLinkCaption}
           </PaginationLink>
@@ -86,3 +94,8 @@ export default class CourseBottomNav extends Component {
     );
   }
 }
+
+CourseBottomNav.propTypes = {
+  courseId: PropTypes.string.isRequired,
+  moduleId: PropTypes.string.isRequired,
+};
