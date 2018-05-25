@@ -104,6 +104,15 @@ export default class CourseMenu extends Component {
                 );
               })
             }
+            {
+              this.props.buildMode ? null : (
+                <NavItem>
+                  <NavLink tag={Link} to={`/courses/progress/${courseId}`} onClick={this.handleClick} className="lead">
+                    Course Progress
+                  </NavLink>
+                </NavItem>
+              )
+            }
           </Nav>
         </Collapse>
       </Navbar>

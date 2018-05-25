@@ -22,6 +22,7 @@ const Article = asyncComponent(() => import('../modules/Article'));
 const Quiz = asyncComponent(() => import('../modules/Quiz'));
 const Doc = asyncComponent(() => import('../modules/DocViewer'));
 const Video = asyncComponent(() => import('../modules/Video'));
+const CourseProgress = asyncComponent(() => import('../modules/CourseProgress'));
 
 /**
  * Module
@@ -80,7 +81,16 @@ export default class Module extends Component {
     // the async fn to invoke apiGateway to get the module
     this.setState({ loading: true });
     try {
-      const result = await (this.props.match.params.moduleType === 'toc' ? this.getCourse() : this.getModule());
+      let result = null;
+      if (this.props.match.params.moduleType === 'toc') {
+        result = await this.getCourse();
+      } else if (this.props.match.params.moduleType === 'progress') {
+        result = { title: 'Progress', description: 'Some description here' };
+      } else {
+        result = await this.getModule();
+      }
+      // const result = await
+      // (this.props.match.params.moduleType === 'toc' ? this.getCourse() : this.getModule());
       this.setState({ loading: false, module: result });
     } catch (e) {
       console.log('error getting module');
@@ -148,6 +158,10 @@ export default class Module extends Component {
       layout = (<Notice content="Module is loading ..." />);
     } else if (this.state.module === null) {
       layout = (<Notice content="Module has no content ..." />);
+    } else if (this.props.match.params.moduleType === 'toc') {
+      layout = <CourseTOC {...this.state} />;
+    } else if (this.props.match.params.moduleType === 'progress') {
+      layout = <CourseProgress {...this.state} />;
     } else if (module.moduleType === 'article') {
       layout = <Article {...this.state} triggerAttendance={this.triggerAttendance} />;
     } else if (module.moduleType === 'quiz') {
@@ -156,11 +170,9 @@ export default class Module extends Component {
       layout = <Doc {...this.state} triggerAttendance={this.triggerAttendance} />;
     } else if (module.moduleType === 'video') {
       layout = <Video {...this.state} triggerAttendance={this.triggerAttendance} />;
-    } else if (this.props.match.params.moduleType === 'toc') {
-      layout = <CourseTOC {...this.state} />;
     }
 
-    const moduleJumbotron = this.props.match.params.moduleType === 'toc' ? null : (
+    const moduleJumbotron = (this.props.match.params.moduleType === 'toc' || this.props.match.params.moduleType === 'progress') ? null : (
       <Jumbotron fluid>
         <Container>
           <h4 className="display-4">Chapter {module.order}: {module.title}</h4>
@@ -189,7 +201,11 @@ export default class Module extends Component {
         <Container className="mt-2">
           <Row>
             <Col>
-              <CourseBottomNav courseId={courseId} moduleId={moduleId} />
+              <CourseBottomNav
+                courseId={courseId}
+                moduleId={moduleId}
+                moduleType={this.props.match.params.moduleType}
+              />
             </Col>
           </Row>
         </Container>

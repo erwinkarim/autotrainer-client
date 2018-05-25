@@ -51,9 +51,14 @@ export default class CourseBottomNav extends Component {
     }
 
     // find current index then get the before/after module ids
-    const currentIndex = this.props.moduleId === null ?
-      -1 :
-      this.state.modules.findIndex(e => e.moduleId === this.props.moduleId);
+    let currentIndex = -1;
+    if (this.props.moduleType === 'toc') {
+      currentIndex = -1;
+    } else if (this.props.moduleType === 'progress') {
+      currentIndex = this.state.modules.length;
+    } else {
+      currentIndex = this.state.modules.findIndex(e => e.moduleId === this.props.moduleId);
+    }
 
     const prevModule = currentIndex === -1 || currentIndex === 0 ?
       null : this.state.modules[currentIndex - 1];
@@ -73,10 +78,18 @@ export default class CourseBottomNav extends Component {
 
     const nextModule = currentIndex === this.state.modules.length - 1 ?
       null : this.state.modules[currentIndex + 1];
-    const nextLink = nextModule === null || nextModule === undefined ?
-      '#' : `/courses/${nextModule.moduleType}/${this.props.courseId}/${nextModule.moduleId}`;
-    const nextLinkCaption = nextModule === null || nextModule === undefined ?
-      'At End' : <span>{`${nextModule.title} `}<FontAwesome name="angle-right" /></span>;
+    let nextLink = '#';
+    let nextLinkCaption = 'Current Progress';
+    if (currentIndex === this.state.modules.length - 1) {
+      nextLink = `/courses/progress/${this.props.courseId}`;
+      nextLinkCaption = <span>Course Progress <FontAwesome name="angle-right" /></span>;
+    } else if (currentIndex === this.state.modules.length) {
+      nextLink = '#';
+      nextLinkCaption = <span>Course Progress <FontAwesome name="check-circle" /></span>;
+    } else {
+      nextLink = `/courses/${nextModule.moduleType}/${this.props.courseId}/${nextModule.moduleId}`;
+      nextLinkCaption = <span>{`${nextModule.title} `}<FontAwesome name="angle-right" /></span>;
+    }
 
     return (
       <Pagination size="lg">
@@ -85,7 +98,7 @@ export default class CourseBottomNav extends Component {
             {prevLinkCaption}
           </PaginationLink>
         </PaginationItem>
-        <PaginationItem className="w-100 text-right" disabled={currentIndex === this.state.modules.length - 1}>
+        <PaginationItem className="w-100 text-right" disabled={currentIndex === this.state.modules.length}>
           <PaginationLink to={nextLink} tag={Link} href={nextLink} className="h-100">
             {nextLinkCaption}
           </PaginationLink>
