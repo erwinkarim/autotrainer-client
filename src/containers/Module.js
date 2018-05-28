@@ -64,6 +64,11 @@ export default class Module extends Component {
     path: `/modules/${this.props.match.params.moduleId}`,
     queryParams: { courseId: this.props.match.params.courseId },
   })
+  getModuleListings = () => invokeApig({
+    endpoint: config.apiGateway.MODULE_URL,
+    path: '/modules',
+    queryParams: { courseId: this.props.match.params.courseId },
+  })
   getCourse = () => invokeApig({
     path: `/courses/${this.props.match.params.courseId}`,
   })
@@ -85,7 +90,10 @@ export default class Module extends Component {
       if (this.props.match.params.moduleType === 'toc') {
         result = await this.getCourse();
       } else if (this.props.match.params.moduleType === 'progress') {
-        result = { title: 'Progress', description: 'Some description here' };
+        result = Object.assign(
+          { title: 'Progress', description: 'Some description here' },
+          { modules: (await this.getModuleListings()) },
+        );
       } else {
         result = await this.getModule();
       }
