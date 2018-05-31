@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PDF from 'react-pdf-js';
 import { Button, FormGroup, Col, Row, Input, Navbar, Nav, NavItem, Form } from 'reactstrap';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 
 export default class DocPreview extends Component {
   constructor(props){
@@ -38,8 +38,8 @@ export default class DocPreview extends Component {
   renderPagination = (page, pages) => {
     var disableLeft = page === 1;
     var disableRight = page === pages;
-    let previousButton = <Button onClick={this.handlePrevious} disabled={disableLeft}><FontAwesome name="arrow-left" /></Button>;
-    let nextButton = <Button onClick={this.handleNext} disabled={disableRight}><FontAwesome name="arrow-right" /></Button>;
+    let previousButton = <Button onClick={this.handlePrevious} disabled={disableLeft}><FontAwesomeIcon icon="arrow-left" /></Button>;
+    let nextButton = <Button onClick={this.handleNext} disabled={disableRight}><FontAwesomeIcon icon="arrow-right" /></Button>;
 
     return (
       <Navbar color="light" light className="justify-content-between">

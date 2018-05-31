@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { MegadraftEditor, editorStateFromRaw, editorStateToJSON } from 'megadraft';
 import { ContentState, EditorState, convertFromHTML } from 'draft-js';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import ImagePlugin from './EditorPlugins/ImagePlugin';
 import VideoPlugin from './EditorPlugins/VideoPlugin';
 import '../../node_modules/megadraft/dist/css/megadraft.css';
 import './Editor.css';
 
-const StrikethroughIcon = () => <FontAwesome name="strikethrough" />;
-const UnderlineIcon = () => <FontAwesome name="underline" />;
+const StrikethroughIcon = () => <FontAwesomeIcon icon="strikethrough" />;
+const UnderlineIcon = () => <FontAwesomeIcon icon="underline" />;
 
 /**
  * Editor

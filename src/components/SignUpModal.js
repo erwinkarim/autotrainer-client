@@ -3,7 +3,7 @@ import { Modal, ModalBody, ModalFooter, FormGroup, Col, Input, Button } from 're
 import PropTypes from 'prop-types';
 import EmailValidator from 'email-validator';
 import Waypoint from 'react-waypoint';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 
@@ -125,7 +125,7 @@ export default class SignUpModal extends Component {
                 this.validateFirstName() && this.validateLastName())
               || (this.state.signing_up)}
           >
-            { this.state.signing_up ? <FontAwesome name="asterisk" spin /> : null }
+            { this.state.signing_up ? <FontAwesomeIcon icon="asterisk" spin /> : null }
             Sign Up
           </Button>
         </ModalFooter>

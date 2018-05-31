@@ -4,7 +4,7 @@
 
 import React, { Component } from 'react';
 import { Navbar, NavbarBrand, NavbarToggler, Nav, NavItem, NavLink, Collapse } from 'reactstrap';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import './CourseMenu.css';
@@ -77,7 +77,7 @@ export default class CourseMenu extends Component {
     return (
       <Navbar className="px-0">
         <NavbarToggler onClick={this.toggleNavbar} className="">
-          <FontAwesome name="bars" />
+          <FontAwesomeIcon icon="bars" />
         </NavbarToggler>
         <NavbarBrand className="mr-auto brand-text">
           { this.props.buildMode ? 'Building ' : '' }

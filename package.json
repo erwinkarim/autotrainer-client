@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@fortawesome/fontawesome": "^1.1.8",
+    "@fortawesome/fontawesome-free-solid": "^5.0.13",
     "@fortawesome/react-fontawesome": "^0.0.20",
     "adyen-cse-web": "git+https://github.com/Adyen/adyen-cse-web.git#v0.1.21",
     "amazon-cognito-auth-js": "^1.1.0",
@@ -30,7 +31,6 @@
     "react": "^16.3.0",
     "react-async-script": "^0.9.1",
     "react-dom": "^16.1.1",
-    "react-fontawesome": "^1.6.1",
     "react-google-maps": "^9.4.2",
     "react-google-recaptcha": "^0.9.9",
     "react-helmet": "^5.2.0",

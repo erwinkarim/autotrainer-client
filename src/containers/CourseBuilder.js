@@ -6,7 +6,7 @@ import {
 } from 'reactstrap';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import { invokeApig, s3Upload, s3Delete } from '../libs/awsLibs';
@@ -217,7 +217,7 @@ const CourseForm = (props) => {
                         <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
                       </InputGroupAddon>
                     </InputGroup>
-                    <Button type="button" color="danger" data-position={i} onClick={props.deleteKeyPoint}><FontAwesome name="minus" /></Button>
+                    <Button type="button" color="danger" data-position={i} onClick={props.deleteKeyPoint}><FontAwesomeIcon icon="minus" /></Button>
                   </FormGroup>
                 </CardBody>
               </Card>

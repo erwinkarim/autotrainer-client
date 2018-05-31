@@ -4,13 +4,45 @@ import { Container, Alert, Button } from 'reactstrap';
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
-import FontAwesome from 'react-fontawesome';
 import randomInt from 'random-int';
+
+// font awesome
+import fontawesome from '@fortawesome/fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import faBars from '@fortawesome/fontawesome-free-solid/faBars';
+import faCheck from '@fortawesome/fontawesome-free-solid/faCheck';
+import faCertificate from '@fortawesome/fontawesome-free-solid/faCertificate';
+import faHome from '@fortawesome/fontawesome-free-solid/faHome';
+import faAngleLeft from '@fortawesome/fontawesome-free-solid/faAngleLeft';
+import faAngleRight from '@fortawesome/fontawesome-free-solid/faAngleRight';
+import faMinus from '@fortawesome/fontawesome-free-solid/faMinus';
+import faPlus from '@fortawesome/fontawesome-free-solid/faPlus';
+import faUnderline from '@fortawesome/fontawesome-free-solid/faUnderline';
+import faStrikethrough from '@fortawesome/fontawesome-free-solid/faStrikethrough';
+import faVideo from '@fortawesome/fontawesome-free-solid/faVideo';
+import faImage from '@fortawesome/fontawesome-free-solid/faImage';
+import faAsterisk from '@fortawesome/fontawesome-free-solid/faAsterisk';
+import faCog from '@fortawesome/fontawesome-free-solid/faCog';
+import faCheckCircle from '@fortawesome/fontawesome-free-solid/faCheckCircle';
+import faSquare from '@fortawesome/fontawesome-free-solid/faSquare';
+import faCheckSquare from '@fortawesome/fontawesome-free-solid/faCheckSquare';
+import faRedo from '@fortawesome/fontawesome-free-solid/faRedo';
+import faArrowLeft from '@fortawesome/fontawesome-free-solid/faArrowLeft';
+import faArrowRight from '@fortawesome/fontawesome-free-solid/faArrowRight';
+
 import Routes from './Routes';
 import MainNav from './containers/MainNav';
 import { getAwsCredentials, setAuth } from './libs/awsLibs';
 import config from './config';
 import './App.css';
+
+fontawesome.library.add(
+  faBars, faCheck, faCertificate, faHome,
+  faAngleLeft, faAngleRight, faMinus, faPlus,
+  faUnderline, faStrikethrough, faVideo, faAsterisk, faRedo,
+  faCog, faCheckCircle, faImage, faCheckCircle, faSquare, faCheckSquare,
+  faArrowLeft, faArrowRight,
+);
 
 /**
  * Main App Component
@@ -105,7 +137,7 @@ class App extends Component {
       notifications: this.state.notifications.add({
         message: `${message}`,
         key: id,
-        action: <FontAwesome name="times" />,
+        action: <FontAwesomeIcon icon="times" />,
         actionStyle: { color: 'white' },
         dismissAfter: 3412,
         className: `bg-${type}`,

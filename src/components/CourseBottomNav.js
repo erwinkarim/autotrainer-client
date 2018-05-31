@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import { invokeApig } from '../libs/awsLibs';
 import config from '../config';
@@ -63,17 +63,17 @@ export default class CourseBottomNav extends Component {
     const prevModule = currentIndex === -1 || currentIndex === 0 ?
       null : this.state.modules[currentIndex - 1];
     let prevLink = `/courses/toc/${this.props.courseId}`;
-    let prevLinkCaption = (<span><FontAwesome name="angle-left" /> Course Overview</span>);
+    let prevLinkCaption = (<span><FontAwesomeIcon icon="angle-left" /> Course Overview</span>);
 
     if (currentIndex === -1) {
       prevLink = '#';
-      prevLinkCaption = (<span><FontAwesome name="home" /> Course Overview</span>);
+      prevLinkCaption = (<span><FontAwesomeIcon icon="home" /> Course Overview</span>);
     } else if (currentIndex === 0) {
       prevLink = `/courses/toc/${this.props.courseId}`;
-      prevLinkCaption = (<span><FontAwesome name="angle-left" />{' Course Overview'}</span>);
+      prevLinkCaption = (<span><FontAwesomeIcon icon="angle-left" />{' Course Overview'}</span>);
     } else {
       prevLink = `/courses/${prevModule.moduleType}/${this.props.courseId}/${prevModule.moduleId}`;
-      prevLinkCaption = <span><FontAwesome name="angle-left" />{` ${prevModule.title}`}</span>;
+      prevLinkCaption = <span><FontAwesomeIcon icon="angle-left" />{` ${prevModule.title}`}</span>;
     }
 
     const nextModule = currentIndex === this.state.modules.length - 1 ?
@@ -82,13 +82,13 @@ export default class CourseBottomNav extends Component {
     let nextLinkCaption = 'Current Progress';
     if (currentIndex === this.state.modules.length - 1) {
       nextLink = `/courses/progress/${this.props.courseId}`;
-      nextLinkCaption = <span>Course Progress <FontAwesome name="angle-right" /></span>;
+      nextLinkCaption = <span>Course Progress <FontAwesomeIcon icon="angle-right" /></span>;
     } else if (currentIndex === this.state.modules.length) {
       nextLink = '#';
-      nextLinkCaption = <span>Course Progress <FontAwesome name="check-circle" /></span>;
+      nextLinkCaption = <span>Course Progress <FontAwesomeIcon icon="check-circle" /></span>;
     } else {
       nextLink = `/courses/${nextModule.moduleType}/${this.props.courseId}/${nextModule.moduleId}`;
-      nextLinkCaption = <span>{`${nextModule.title} `}<FontAwesome name="angle-right" /></span>;
+      nextLinkCaption = <span>{`${nextModule.title} `}<FontAwesomeIcon icon="angle-right" /></span>;
     }
 
     return (

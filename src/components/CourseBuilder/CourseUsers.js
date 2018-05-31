@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import { invokeApig } from '../../libs/awsLibs';
 import config from '../../config';
@@ -83,7 +83,7 @@ export default class CourseUsers extends Component {
       <Row>
         <Col xs="12" className="text-right">
           <Button color="secondary" onClick={this.handleRefreshStudents}>
-            <FontAwesome name="redo" />
+            <FontAwesomeIcon icon="redo" />
           </Button>
         </Col>
       </Row>

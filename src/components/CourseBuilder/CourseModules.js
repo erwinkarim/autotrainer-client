@@ -7,7 +7,7 @@ import {
 import { Link } from 'react-router-dom';
 import Sticky from 'react-sticky-el';
 import toTitleCase from 'titlecase';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
 import { invokeApig, s3Delete } from '../../libs/awsLibs';
 import config from '../../config';
@@ -230,7 +230,7 @@ export default class CourseModules extends Component {
             <UncontrolledDropdown>
               <DropdownToggle caret nav>Filter</DropdownToggle>
               <DropdownMenu>
-                <DropdownItem onClick={this.togglePublishStatus}><FontAwesome name={this.state.publish_status === 'all' ? 'square' : 'check-square'} />Published Only</DropdownItem>
+                <DropdownItem onClick={this.togglePublishStatus}><FontAwesomeIcon icon={this.state.publish_status === 'all' ? 'square' : 'check-square'} />Published Only</DropdownItem>
               </DropdownMenu>
             </UncontrolledDropdown>
           </Nav>

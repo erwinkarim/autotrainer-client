@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Button, Card, CardImg, CardBody, CardText, Input } from 'reactstrap';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { insertDataBlock } from 'megadraft';
 import PropTypes from 'prop-types';
 
@@ -42,7 +42,7 @@ class VideoButton extends Component {
   }
   render = () => (
     <Button type="button" onClick={this.onClick} title="video" className="rounded-circle p-0 sidebar-button">
-      <FontAwesome name="video" fixedWidth className="p-0" />
+      <FontAwesomeIcon icon="video" fixedWidth className="p-0" />
     </Button>
   )
 }

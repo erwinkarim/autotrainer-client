@@ -5,7 +5,7 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import { VerticalTimeline, VerticalTimelineElement } from 'react-vertical-timeline-component';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import 'react-vertical-timeline-component/style.min.css';
 
@@ -33,7 +33,7 @@ class CourseProgress extends Component {
                 <VerticalTimelineElement
                   key={e.moduleId}
                   iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-                  icon={<FontAwesome name="check" />}
+                  icon={<FontAwesomeIcon icon="check" />}
                 >
                   <h3 className="vertical-timeline-element-title">{e.title}</h3>
                   <p>{ this.props.enrolment.progress.includes(e.moduleId) ? 'Module Completed' : ''}</p>
@@ -45,7 +45,7 @@ class CourseProgress extends Component {
                   <VerticalTimelineElement
                     date={this.props.enrolment.certIssued}
                     iconStyle={{ background: 'rgb(33, 150, 243)', color: '#fff' }}
-                    icon={<FontAwesome name="certificate" />}
+                    icon={<FontAwesomeIcon icon="certificate" />}
                   >
                     <h3 className="vertical-timeline-element-title">Completion Certificate</h3>
                     <p>ID: {this.props.enrolment.certId}</p>

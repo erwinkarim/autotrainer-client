@@ -8,7 +8,7 @@ import { Row, Button, FormGroup, Input, Col } from 'reactstrap';
 import Helmet from 'react-helmet';
 import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 
 import ModuleRootEditor from '../components/ModuleRootEditor';
@@ -194,7 +194,7 @@ export default class ModuleBuilder extends Component {
         <Row>
           <FormGroup>
             <Button color="primary" className="mr-2" onClick={this.handleUpdate} disabled={!this.validateForm() || this.state.updating}>
-              { this.state.updating ? <span><FontAwesome spin name="cog" /> Updating</span> : 'Update'}
+              { this.state.updating ? <span><FontAwesomeIcon spin icon="cog" /> Updating</span> : 'Update'}
             </Button>
             <Button color="danger" tag={Link} to={`/user/builder/${this.state.module.courseId}`}>Cancel</Button>
           </FormGroup>

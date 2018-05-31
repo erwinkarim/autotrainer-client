@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Row, Col, FormGroup, Input, Button, Collapse } from 'reactstrap';
-import FontAwesome from 'react-fontawesome';
+import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import EmailValidator from 'email-validator';
 import PropTypes from 'prop-types';
 import { invokeApig } from '../../libs/awsLibs';
@@ -177,13 +177,13 @@ export default class InviteBox extends Component {
                 data-index={i}
                 disabled={this.state.inviteList.length <= 1}
               >
-                <FontAwesome name="minus" />
+                <FontAwesomeIcon icon="minus" />
               </Button>
             </Col>
           </FormGroup>
         ))
         }
-        <Col xs="12" className="px-0 mb-2"><Button color="primary" onClick={this.addInvite}><FontAwesome name="plus" /></Button></Col>
+        <Col xs="12" className="px-0 mb-2"><Button color="primary" onClick={this.addInvite}><FontAwesomeIcon icon="plus" /></Button></Col>
         <Col xs="12" className="px-0">
           <Button className="mb-2 mr-2" color="primary" onClick={this.handleSendInvite} disabled={!this.validateForm()}>Send Invite</Button>
           <Button className="mb-2 mr-2" color="danger" onClick={this.toggleMenu}>Cancel</Button>
