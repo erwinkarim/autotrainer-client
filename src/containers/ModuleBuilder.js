@@ -4,7 +4,7 @@
  */
 
 import React, { Component } from 'react';
-import { Row, Button, FormGroup } from 'reactstrap';
+import { Row, Button, FormGroup, Input, Col } from 'reactstrap';
 import Helmet from 'react-helmet';
 import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
@@ -23,6 +23,7 @@ const DocBuilder = asyncComponent(() => import('../modules/DocBuilder'));
 const QuizBuilder = asyncComponent(() => import('../modules/QuizBuilder'));
 
 const defaultModule = { title: '', description: '', moduleType: null };
+const defaultCountDown = 30;
 /**
  * Adds two numbers together.
  * @param {int} e Event Object
@@ -39,7 +40,7 @@ export default class ModuleBuilder extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      module: defaultModule, loading: false, updating: false,
+      module: defaultModule, loading: false, updating: false, countDown: 0,
     };
   }
   componentDidMount = () => {
@@ -179,6 +180,13 @@ export default class ModuleBuilder extends Component {
         <Helmet>
           <title>{`Building ${this.state.module.title} - ${config.site_name}`}</title>
         </Helmet>
+        <Row>
+          <Col xs="12" md="8">
+            <FormGroup>
+              <Input size="sm" type="text" disabled value={`Last saved on DD-MMM-YYYY HH:SSa. Save changes in ${this.state.countDown}`} />
+            </FormGroup>
+          </Col>
+        </Row>
         <Row>
           <ModuleRootEditor {...this.state} handleChange={this.handleChange} />
         </Row>
