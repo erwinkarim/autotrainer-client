@@ -162,7 +162,7 @@ class App extends Component {
       ...{ addNotification: this.addNotification, removeNotification: this.removeNotification },
     };
 
-    const topBanner = (
+    const topBanner = config.banner.showBanner ? (
       <Alert
         color="primary"
         className="text-left mb-0"
@@ -177,7 +177,7 @@ class App extends Component {
           ) : null
           }
       </Alert>
-    );
+    ) : null;
 
     return (
       <div className="App">

@@ -16,6 +16,7 @@ export default {
     APP_CLIENT_ID: 'YOUR_COGNITO_APP_CLIENT_ID',
   },
   banner: {
+    displayBanner: false,
     text: 'IFRS17 Series of Workshops, 23 – 25 April 2018, Istana Hotel, Kuala Lumpur',
     showButton: false,
     buttonText: 'Register Now !',
