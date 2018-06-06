@@ -118,15 +118,6 @@ export default class Quiz extends Component {
     return (
       <Container className="mt-2 text-left">
         <Row>
-          <Col xs="12" md="8" className="mb-3">
-            <Sticky style={{ zIndex: 100 }}>
-              <Navbar color="light" dark>
-                <Nav navbar>
-                  <NavItem>{ answeredQBlock }</NavItem>
-                </Nav>
-              </Navbar>
-            </Sticky>
-          </Col>
           <Col xs="12" md="8">
             {
             this.props.module.body.map((q, i) => {
@@ -172,6 +163,15 @@ export default class Quiz extends Component {
               );
             })
           }
+          </Col>
+          <Col xs="12" md="8" className="mb-3">
+            <Sticky style={{ zIndex: 100 }} mode="bottom">
+              <Navbar color="light" dark className="mb-2 border border-info">
+                <Nav navbar>
+                  <NavItem>{ answeredQBlock }</NavItem>
+                </Nav>
+              </Navbar>
+            </Sticky>
           </Col>
         </Row>
       </Container>
