@@ -23,7 +23,7 @@ const DocBuilder = asyncComponent(() => import('../modules/DocBuilder'));
 const QuizBuilder = asyncComponent(() => import('../modules/QuizBuilder'));
 
 const defaultModule = { title: '', description: '', moduleType: null };
-const defaultCountDown = 30;
+// const defaultCountDown = 30;
 /**
  * Adds two numbers together.
  * @param {int} e Event Object

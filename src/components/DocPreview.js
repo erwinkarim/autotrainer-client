@@ -42,7 +42,7 @@ export default class DocPreview extends Component {
     let nextButton = <Button onClick={this.handleNext} disabled={disableRight}><FontAwesomeIcon icon="arrow-right" /></Button>;
 
     return (
-      <Navbar color="light" light className="justify-content-between">
+      <Navbar color="light" light className="justify-content-between my-2">
         <Form inline>
           {previousButton}
         </Form>
@@ -78,6 +78,7 @@ export default class DocPreview extends Component {
               <FormGroup className="mt-2"><Input disabled={true} value={fileName} /></FormGroup> :
               null
           }
+          <div className="border">
           <PDF file={ this.props.file }
             onDocumentComplete={this.onDocumentComplete}
             onPageComplete={this.onPageComplete}
@@ -85,6 +86,7 @@ export default class DocPreview extends Component {
             pdf={ (input) => { this.pdf = input;}}
             fillWidth
           />
+          </div>
         </Col>
         <Col sm="12">
           { pagination }
