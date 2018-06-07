@@ -2,9 +2,10 @@ import React, { Component } from 'react';
 import { Container, Row, Col, FormGroup, Input, Button } from 'reactstrap';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
+import AWS from 'aws-sdk';
 import Notice from '../components/Notice';
 import config from '../config';
-import { invokeApig } from '../libs/awsLibs';
+import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
 import './CertCheck.css';
 
 const Cert = (props) => {
@@ -68,10 +69,20 @@ export default class CertCheck extends Component {
       found: false,
     };
   }
-  componentDidMount = () => {
-    if (this.props.isAuthenticated) {
+  componentDidMount = async () => {
+    try {
+      if (AWS.config.credentials === null) {
+        await getUnauthCredentials();
+      }
       this.retrieveCertFromUrl();
+    } catch (e) {
+      console.log('error getting credentials');
+      console.log(e);
     }
+    /*
+    if (this.props.isAuthenticated) {
+    }
+    */
   }
   componentDidUpdate = async (prevProps) => {
     /*
@@ -131,9 +142,11 @@ export default class CertCheck extends Component {
   enableBtn = () => (this.state.certNo.length > 0 || !this.state.checking)
   render = () => {
     // check if authenticated
+    /*
     if (this.props.currentUser === null) {
       return (<Notice title="Unauthenticated" content="Please log in to verify certificate" />);
     }
+    */
 
     let CheckingState = null;
     if (this.state.checking) {

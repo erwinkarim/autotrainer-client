@@ -4,6 +4,7 @@ import { Container, Alert, Button } from 'reactstrap';
 import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
+import { HotKeys } from 'react-hotkeys';
 import randomInt from 'random-int';
 
 // font awesome
@@ -43,6 +44,11 @@ fontawesome.library.add(
   faCog, faCheckCircle, faImage, faCheckCircle, faSquare, faCheckSquare,
   faArrowLeft, faArrowRight,
 );
+
+const map = {
+  'moveLeft': 'left',
+  'moveRight': 'right',
+};
 
 /**
  * Main App Component
@@ -85,6 +91,8 @@ class App extends Component {
     if (currentUser != null) {
       auth.getSession();
     }
+
+    console.log('attempt to focus');
   }
   dismissAnnouncement = () => { this.setState({ announceIsVisible: false }); }
   userHasAuthenticated = (authenticated) => {
@@ -180,31 +188,32 @@ class App extends Component {
     ) : null;
 
     return (
-      <div className="App">
-        { topBanner }
-        <MainNav {...this.state} />
-        <Routes childProps={childProps} />
-        <NotificationStack
-          notifications={this.state.notifications.toArray()}
-          onDismiss={
-            notification => this.setState({
-              notifications: this.state.notifications.delete(notification),
-            })
-          }
-        />
-        <footer className="footer text-muted">
-          <Container>
-            <p>
-              &copy; 2017-2018 learn@AP. All rights reserved &bull; {' '}
-              <Link href="/" to="/legal">Terms of Use and Privacy Policy</Link> &bull; {' '}
-              <Link href="/" to="/contact">Contact</Link> &bull; {' '}
-              <Link href="/" to="/verify_cert">Verify Certificate</Link> &bull; {' '}
-              <Link href="/" to="/about">About</Link> &bull; {' '}
-              <Link href="/" to="/team">Team</Link>
-            </p>
-          </Container>
-        </footer>
-      </div>
+      <HotKeys keyMap={map}>
+        <div className="App">
+          { topBanner }
+          <MainNav {...this.state} />
+          <Routes childProps={childProps} />
+          <NotificationStack
+            notifications={this.state.notifications.toArray()}
+            onDismiss={
+              notification => this.setState({
+                notifications: this.state.notifications.delete(notification),
+              })
+            } />
+          <footer className="footer text-muted">
+            <Container>
+              <p>
+                &copy; 2017-2018 learn@AP. All rights reserved &bull; {' '}
+                <Link href="/" to="/legal">Terms of Use and Privacy Policy</Link> &bull; {' '}
+                <Link href="/" to="/contact">Contact</Link> &bull; {' '}
+                <Link href="/" to="/verify_cert">Verify Certificate</Link> &bull; {' '}
+                <Link href="/" to="/about">About</Link> &bull; {' '}
+                <Link href="/" to="/team">Team</Link>
+              </p>
+            </Container>
+          </footer>
+        </div>
+      </HotKeys>
     );
   }
 }
