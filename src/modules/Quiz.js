@@ -11,7 +11,8 @@ import { invokeApig } from '../libs/awsLibs';
 
 /**
  * The Constructor
- * @param {json} e the props
+ * @param {json} currentAnswers current state of answers
+ * @param {json} e current state of answers
  * @returns {null} The sum of the two numbers.
  */
 export default class Quiz extends Component {
@@ -45,15 +46,20 @@ export default class Quiz extends Component {
           this.setState({ answers: currentAnswers });
 
           // if progress is complete, but attendance hasn't been record, mark attendance
-          if (currentAnswers.length === this.props.module.body.length &&
-            !this.props.enrolment.progress.includes(this.props.module.moduleId)) {
-            // mark attendance
-            this.props.triggerAttendance();
-          }
+          this.attendanceCheck(currentAnswers);
         } catch (e) {
           console.log('error parsing JSON');
         }
       }
+    }
+  }
+  attendanceCheck = (currentAnswers) => {
+    // check if current answers length matches questions and if attendance
+    // is not yet recorded, mark attendance
+    if (currentAnswers.length === this.props.module.body.length &&
+      !this.props.enrolment.progress.includes(this.props.module.moduleId)) {
+      // mark attendance
+      this.props.triggerAttendance();
     }
   }
   recordAnswer = async (e) => {
@@ -62,13 +68,7 @@ export default class Quiz extends Component {
     newAnswer[parseInt(e.target.dataset.qindex, 10)] = parseInt(e.target.dataset.aindex, 10);
     this.setState({ answers: newAnswer });
     // record attendance when all question are answered
-    if (
-      newAnswer.reduce((a, v) => {
-        const newA = a + v !== undefined ? 1 : 0; return newA;
-      }, 0) === this.props.module.body.length
-    ) {
-      this.props.triggerAttendance();
-    }
+    this.attendanceCheck(newAnswer);
 
     // update answer to the db
     try {

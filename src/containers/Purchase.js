@@ -3,9 +3,10 @@
   transaction volume, will revisit this later
  */
 import React from 'react';
-import { Container, Row, Col, Button } from 'reactstrap';
+import { Container, Row, Col } from 'reactstrap';
 import 'whatwg-fetch';
 
+/*
 const adyenEncrypt = require('adyen-cse-web');
 
 const key = process.env.REACT_APP_ADYEN_PUBLIC_KEY;
@@ -64,6 +65,15 @@ const Purchase = () => (
       </Col>
       <Col><Button onClick={handleClick}>Adyen Test!</Button></Col>
       <Col><Button>MOL Pay Test</Button></Col>
+    </Row>
+  </Container>
+);
+*/
+
+const Purchase = () => (
+  <Container className="mt-2">
+    <Row>
+      <Col xs={12}>Payment test of the future</Col>
     </Row>
   </Container>
 );
