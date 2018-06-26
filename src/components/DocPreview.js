@@ -103,7 +103,7 @@ export default class DocPreview extends Component {
       <HotKeys handlers={handler}>
         <Row style={{ minHeight: this.state.docHeight }}>
           <Col sm="12">
-            <h3>Preview</h3>
+            <h3>PDF Viewer</h3>
             <hr />
             { pagination }
             {
