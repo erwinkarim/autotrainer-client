@@ -46,8 +46,8 @@ fontawesome.library.add(
 );
 
 const map = {
-  'moveLeft': 'left',
-  'moveRight': 'right',
+  moveLeft: 'left',
+  moveRight: 'right',
 };
 
 /**

@@ -262,6 +262,42 @@ CourseForm.defaultProps = {
   bg_pic_data: {},
   bg_handle: {},
 };
+
+/*
+  forms to update the course options / publication status
+ */
+const CourseOptions = props => (
+  <div>
+    <FormGroup>
+      <Label>Publication Status</Label>
+      <Input type="select" id="status" value={props.course.status} onChange={props.handleChange}>
+        <option value="unpublished">Not Published</option>
+        <option value="published">Published</option>
+      </Input>
+    </FormGroup>
+    <FormGroup check>
+      <Label check>
+        <Input
+          type="checkbox"
+          id="courseOptions"
+          name="showOneByOne"
+          onChange={props.handleChange}
+          value={props.course.options ? props.course.options.showOneByOne : false}
+        />
+        Show chapters one-by-one
+        <small className="text-muted"> Students only see the current and next unread chapter in their TOC.</small>
+      </Label>
+    </FormGroup>
+    <Button className="mt-2" color="primary" onClick={props.handleUpdateCourse}>Update course options</Button>
+  </div>
+);
+
+CourseOptions.propTypes = {
+  course: PropTypes.shape().isRequired,
+  handleChange: PropTypes.func.isRequired,
+  handleUpdateCourse: PropTypes.func.isRequired,
+};
+
 /**
  * Adds two numbers together.
  * @param {shape} file event
@@ -389,10 +425,31 @@ export default class CourseBuilder extends Component {
   handleChange = (e) => {
     const newCourse = this.state.course;
     const handle = this;
+
+    console.log('e.target.id', e.target.id);
+    // either handle key points or others
     if (e.target.id === 'key_points') {
       newCourse[e.target.id][parseInt(e.target.dataset.position, 10)][e.target.dataset.key] =
         e.target.dataset.key === 'title' ? toTitleCase(e.target.value) :
           e.target.value;
+    } else if (e.target.id === 'courseOptions') {
+      // build courseOptions if there isn't one
+      if (!newCourse.courseOptions) {
+        newCourse.courseOptions = {};
+      }
+
+      if (e.target.type === 'checkbox') {
+        // build the course option default value if there isn't one
+        if (newCourse.courseOptions[e.target.name]) {
+          newCourse.courseOptions[e.target.name] = !newCourse.courseOptions[e.target.name];
+        } else {
+          newCourse.courseOptions[e.target.name] = true;
+        }
+      } else {
+        newCourse.courseOptions[e.target.name] = e.target.value;
+      }
+      console.log('e.target.type', e.target.type);
+      console.log('e.target.name', e.target.name);
     } else {
       newCourse[e.target.id] =
         e.target.id === 'name' ? toTitleCase(e.target.value) :
@@ -512,7 +569,7 @@ export default class CourseBuilder extends Component {
         <Helmet>
           <title>Course Builder for {this.state.course.name} - {config.site_name}</title>
         </Helmet>
-        <Row>
+        <Row className="mb-2">
           <Col xs="12">
             <h3>Course Settings</h3>
             <hr />
@@ -530,7 +587,7 @@ export default class CourseBuilder extends Component {
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'pub_status' })}
                   onClick={() => { this.toggle('pub_status'); }}
-                >Publication
+                >Options
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -555,14 +612,12 @@ export default class CourseBuilder extends Component {
                 />
               </TabPane>
               <TabPane tabId="pub_status">
-                <FormGroup>
-                  <Label>Publication Status</Label>
-                  <Input type="select" id="status" value={this.state.course.status} onChange={this.handleChange}>
-                    <option value="unpublished">Not Published</option>
-                    <option value="published">Published</option>
-                  </Input>
-                </FormGroup>
-                <Button color="primary" onClick={this.handleUpdateCourse}>Update publication status</Button>
+                <CourseOptions
+                  {...this.state}
+                  {...this.props}
+                  handleChange={this.handleChange}
+                  handleUpdateCourse={this.handleUpdateCourse}
+                />
               </TabPane>
               { /*
                 <TabPane tabId='stats' className="mb-2">
