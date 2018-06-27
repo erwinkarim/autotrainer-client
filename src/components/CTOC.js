@@ -58,21 +58,61 @@ export default class CTOC extends Component {
       return (<Notice content="This course has zero modules" />);
     }
 
+    // setting up const
+    const { course, enrolment } = this.props;
+    const enrolmentProgress = enrolment === null || enrolment === undefined ?
+      0 : enrolment.progress.length;
+    let { showOneByOne } = course.courseOptions;
+    showOneByOne = showOneByOne === undefined ? false : showOneByOne;
+
+    // setup completionNotice
     let completionNotice = null;
-    if (this.props.enrolment === null || this.props.enrolment === undefined) {
+    if (enrolment === null || enrolment === undefined) {
       completionNotice = null;
-    } else if (this.props.enrolment.progress.length === this.state.modules.length) {
+    } else if (enrolmentProgress === this.state.modules.length) {
       completionNotice = (
         <Card body className="border border-success mb-2">
-          <CardTitle className="mb-2">All modules attended</CardTitle>
+          <CardTitle>All modules attended</CardTitle>
         </Card>
       );
     }
+
+    // setup one by one notice
+    let oneByOneNotice = null;
+    if (
+      (showOneByOne) && (
+        this.props.enrolment === null || this.props.enrolment === undefined ||
+        this.props.enrolment.progress.length < this.state.modules.length
+      )
+    ) {
+      oneByOneNotice = (
+        <Card body className="mb-2">
+          <CardText>
+            There are {this.state.modules.length} published modules.
+            You will see them as you progress through the course
+          </CardText>
+        </Card>
+      );
+    }
+
+    // lsit modules based on course.courseOptions.showOneByOne value
+    // if showOneByOne = show read module and the next unread module only
+    let availableModules = this.state.modules;
+    if (showOneByOne) {
+      availableModules = this.state.modules.filter(e => enrolment.progress.includes(e.moduleId));
+      const firstUnread = this.state.modules.filter(e =>
+        !enrolment.progress.includes(e.moduleId))[0];
+      if (firstUnread) {
+        availableModules.push(firstUnread);
+      }
+    }
+
     return (
       <div className="w-100">
         { completionNotice }
+        { oneByOneNotice }
         <CardColumns>{
-          this.state.modules.map((m, i) => {
+          availableModules.map((m, i) => {
             const attended =
               this.props.enrolment === null || this.props.enrolment === undefined ?
                 false :

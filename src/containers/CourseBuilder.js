@@ -266,31 +266,39 @@ CourseForm.defaultProps = {
 /*
   forms to update the course options / publication status
  */
-const CourseOptions = props => (
-  <div>
-    <FormGroup>
-      <Label>Publication Status</Label>
-      <Input type="select" id="status" value={props.course.status} onChange={props.handleChange}>
-        <option value="unpublished">Not Published</option>
-        <option value="published">Published</option>
-      </Input>
-    </FormGroup>
-    <FormGroup check>
-      <Label check>
-        <Input
-          type="checkbox"
-          id="courseOptions"
-          name="showOneByOne"
-          onChange={props.handleChange}
-          value={props.course.options ? props.course.options.showOneByOne : false}
-        />
-        Show chapters one-by-one
-        <small className="text-muted"> Students only see the current and next unread chapter in their TOC.</small>
-      </Label>
-    </FormGroup>
-    <Button className="mt-2" color="primary" onClick={props.handleUpdateCourse}>Update course options</Button>
-  </div>
-);
+const CourseOptions = (props) => {
+  const { course } = props;
+  const courseOptions = course.courseOptions ? course.courseOptions : {
+    showOneByOne: false,
+  };
+
+  return (
+    <div>
+      <FormGroup>
+        <Label>Publication Status</Label>
+        <Input type="select" id="status" value={course.status} onChange={props.handleChange}>
+          <option value="unpublished">Not Published</option>
+          <option value="published">Published</option>
+        </Input>
+      </FormGroup>
+      <FormGroup check>
+        <Label check>
+          <Input
+            type="checkbox"
+            id="courseOptions"
+            name="showOneByOne"
+            onChange={props.handleChange}
+            value={courseOptions.showOneByOne}
+            checked={courseOptions.showOneByOne}
+          />
+          Show chapters one-by-one
+          <small className="text-muted"> Students only see the current and next unread chapter in their TOC.</small>
+        </Label>
+      </FormGroup>
+      <Button className="mt-2" color="primary" onClick={props.handleUpdateCourse}>Update course options</Button>
+    </div>
+  );
+};
 
 CourseOptions.propTypes = {
   course: PropTypes.shape().isRequired,
