@@ -69,10 +69,28 @@ export default class CourseMenu extends Component {
       return (<Navbar><NavbarBrand> Loading ... </NavbarBrand></Navbar>);
     }
 
-    const { courseId, moduleId } = this.props;
+    const { courseId, moduleId, enrolment } = this.props;
     const courseHomePath = this.props.buildMode ?
       `/user/builder/${courseId}` :
       `/courses/toc/${courseId}`;
+
+    // configure showOneByOne option;
+    let showOneByOne = false;
+    if (this.state.courseInfo.courseOptions) {
+      if (this.state.courseInfo.courseOptions.showOneByOne) {
+        showOneByOne = this.state.courseInfo.courseOptions.showOneByOne;
+      }
+    }
+
+    let availableModules = this.state.modules;
+    if (showOneByOne) {
+      availableModules = this.state.modules.filter(e => enrolment.progress.includes(e.moduleId));
+      const firstUnread = this.state.modules.filter(e =>
+        !enrolment.progress.includes(e.moduleId))[0];
+      if (firstUnread) {
+        availableModules.push(firstUnread);
+      }
+    }
 
     return (
       <Navbar className="px-0">
@@ -91,7 +109,7 @@ export default class CourseMenu extends Component {
               </NavLink>
             </NavItem>
             {
-              this.state.modules.map((m, i) => {
+              availableModules.map((m, i) => {
                 const path = this.props.buildMode ?
                   `/user/builder/${courseId}/${m.moduleId}` :
                   `/courses/${m.moduleType}/${courseId}/${m.moduleId}`;
@@ -125,6 +143,7 @@ CourseMenu.propTypes = {
   moduleId: PropTypes.string,
   buildMode: PropTypes.bool,
   history: PropTypes.shape().isRequired,
+  enrolment: PropTypes.shape().isRequired,
 };
 
 CourseMenu.defaultProps = {

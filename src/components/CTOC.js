@@ -33,12 +33,12 @@ export default class CTOC extends Component {
 
     // update the options
     const newOptions = Object.assign(this.props.defaultOptions, this.props.options);
-    handle.setState({ options: newOptions, loading: false });
+    handle.setState({ options: newOptions });
 
     // get the modules
     try {
       const results = await this.getModules();
-      handle.setState({ modules: results });
+      handle.setState({ modules: results, loading: false });
     } catch (e) {
       console.log('error getting modules');
       console.log(e);
@@ -51,7 +51,7 @@ export default class CTOC extends Component {
   })
   render = () => {
     if (this.state.loading) {
-      return <Notice content="Loading courses ...." />;
+      return <Notice content="Loading table of contents ...." />;
     }
 
     if (this.state.modules.length === 0) {
@@ -59,11 +59,15 @@ export default class CTOC extends Component {
     }
 
     // setting up const
-    const { course, enrolment } = this.props;
+    const { course, enrolment, promo } = this.props;
     const enrolmentProgress = enrolment === null || enrolment === undefined ?
       0 : enrolment.progress.length;
-    let { showOneByOne } = course.courseOptions;
-    showOneByOne = showOneByOne === undefined ? false : showOneByOne;
+    let showOneByOne = false;
+    if (course.courseOptions) {
+      if (course.courseOptions.showOneByOne) {
+        showOneByOne = course.courseOptions.showOneByOne;
+      }
+    }
 
     // setup completionNotice
     let completionNotice = null;
@@ -83,7 +87,7 @@ export default class CTOC extends Component {
       (showOneByOne) && (
         this.props.enrolment === null || this.props.enrolment === undefined ||
         this.props.enrolment.progress.length < this.state.modules.length
-      )
+      ) && !promo
     ) {
       oneByOneNotice = (
         <Card body className="mb-2">
@@ -98,7 +102,7 @@ export default class CTOC extends Component {
     // lsit modules based on course.courseOptions.showOneByOne value
     // if showOneByOne = show read module and the next unread module only
     let availableModules = this.state.modules;
-    if (showOneByOne) {
+    if (showOneByOne && !promo) {
       availableModules = this.state.modules.filter(e => enrolment.progress.includes(e.moduleId));
       const firstUnread = this.state.modules.filter(e =>
         !enrolment.progress.includes(e.moduleId))[0];
@@ -134,6 +138,13 @@ export default class CTOC extends Component {
             );
           })
         }
+          {
+            promo && enrolment ? (
+              <Card body>
+                <CardText>Click <Link to={`/courses/toc/${course.courseId}`} href={`/courses/toc/${course.courseId}`}>here</Link> to begin the course</CardText>
+              </Card>
+            ) : null
+          }
         </CardColumns>
       </div>
     );
@@ -144,17 +155,18 @@ CTOC.propTypes = {
   showLink: PropTypes.bool,
   enrolment: PropTypes.shape({
     progress: PropTypes.array,
-  }),
+  }).isRequired,
   defaultOptions: PropTypes.shape({}),
   options: PropTypes.shape({}),
   course: PropTypes.shape({
     courseId: PropTypes.string,
   }).isRequired,
+  promo: PropTypes.bool,
 };
 
 CTOC.defaultProps = {
   showLink: false,
-  enrolment: { progress: [] },
   defaultOptions: { showLink: true, enrolment: null },
   options: {},
+  promo: false,
 };

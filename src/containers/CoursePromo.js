@@ -237,7 +237,7 @@ export default class CoursePromo extends Component {
             <div className="col-12">
               <h4 className="display-4">Table of Contents</h4>
             </div>
-            <CTOC course={this.state.course} showLink={this.state.enrolment !== null} />
+            <CTOC course={this.state.course} enrolment={this.state.enrolment} promo />
           </Row>
         </Container>
         { clientList }

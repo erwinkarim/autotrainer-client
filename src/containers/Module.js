@@ -200,7 +200,7 @@ export default class Module extends Component {
         <Container>
           <Row>
             <Col>
-              <CourseMenu courseId={courseId} moduleId={moduleId} {...this.props} />
+              <CourseMenu courseId={courseId} moduleId={moduleId} {...this.state} {...this.props} />
             </Col>
           </Row>
         </Container>
