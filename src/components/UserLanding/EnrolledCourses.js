@@ -113,9 +113,7 @@ export default class EnrolledCourses extends Component {
               <Button color="primary" onClick={this.toggleModal}>OK</Button>
             </ModalFooter>
           </Modal>
-          <div className="col-12">
-            <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
-          </div>
+          <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
         </div>
       </Row>
     );

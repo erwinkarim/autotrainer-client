@@ -111,6 +111,7 @@ export default class CoursePromo extends Component {
       }
     } catch (e) {
       // throw new Error(e);
+      this.setState({ course: null, loading: false });
       console.log(e);
     }
 

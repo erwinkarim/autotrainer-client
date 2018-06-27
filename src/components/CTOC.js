@@ -115,29 +115,30 @@ export default class CTOC extends Component {
       <div className="w-100">
         { completionNotice }
         { oneByOneNotice }
-        <CardColumns>{
-          availableModules.map((m, i) => {
-            const attended =
-              this.props.enrolment === null || this.props.enrolment === undefined ?
-                false :
-                this.props.enrolment.progress.includes(m.moduleId);
-            return (
-              <Card key={m.moduleId} className={`${attended ? 'border border-success' : null}`}>
-                <CardBody>
-                  <CardTitle>
-                    { this.props.showLink ? (
-                      <Link href="/" to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{ i + 1 }: {m.title}</Link>
-                    ) : (
-                      <span>{i + 1}: {m.title}</span>
-                    )}
-                  </CardTitle>
-                  <CardText>{m.description}</CardText>
-                  { attended ? <CardText className="text-success">Module attended</CardText> : null }
-                </CardBody>
-              </Card>
-            );
-          })
-        }
+        <CardColumns>
+          {
+            availableModules.map((m, i) => {
+              const attended =
+                this.props.enrolment === null || this.props.enrolment === undefined ?
+                  false :
+                  this.props.enrolment.progress.includes(m.moduleId);
+              return (
+                <Card key={m.moduleId} className={`${attended ? 'border border-success' : null}`}>
+                  <CardBody>
+                    <CardTitle>
+                      { this.props.showLink ? (
+                        <Link href="/" to={`/courses/${m.moduleType}/${m.courseId}/${m.moduleId}`}>{ i + 1 }: {m.title}</Link>
+                      ) : (
+                        <span>{i + 1}: {m.title}</span>
+                      )}
+                    </CardTitle>
+                    <CardText>{m.description}</CardText>
+                    { attended ? <CardText className="text-success">Module attended</CardText> : null }
+                  </CardBody>
+                </Card>
+              );
+            })
+          }
           {
             promo && enrolment ? (
               <Card body>

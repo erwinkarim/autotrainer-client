@@ -69,7 +69,9 @@ export default class CourseMenu extends Component {
       return (<Navbar><NavbarBrand> Loading ... </NavbarBrand></Navbar>);
     }
 
-    const { courseId, moduleId, enrolment } = this.props;
+    const {
+      courseId, moduleId, enrolment, buildMode,
+    } = this.props;
     const courseHomePath = this.props.buildMode ?
       `/user/builder/${courseId}` :
       `/courses/toc/${courseId}`;
@@ -83,7 +85,7 @@ export default class CourseMenu extends Component {
     }
 
     let availableModules = this.state.modules;
-    if (showOneByOne) {
+    if (showOneByOne && !buildMode) {
       availableModules = this.state.modules.filter(e => enrolment.progress.includes(e.moduleId));
       const firstUnread = this.state.modules.filter(e =>
         !enrolment.progress.includes(e.moduleId))[0];
