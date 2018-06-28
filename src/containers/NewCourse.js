@@ -40,7 +40,7 @@ export default class NewCourse extends Component {
         name: this.state.title,
         description: this.state.description,
       });
-      this.props.history.push(`/user/course_builder/${result.courseId}`);
+      this.props.history.push(`/user/builder/${result.courseId}`);
     } catch (err) {
       console.log('error creating course');
       console.log(err);
