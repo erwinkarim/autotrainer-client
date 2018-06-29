@@ -1,18 +1,21 @@
 import React from 'react';
+import { Container, Row, Col, Jumbotron, Button } from 'reactstrap';
 
 const Tutorial = () => (
-  <div>
-    <p>tutorial here</p>
-    <ul>
-      <li>welcome</li>
-      <li>you have attended / unattended </li>
-      <li>show how to enroll courses</li>
-      <li>show course toc page - course menu / course bottom nav</li>
-      <li>show the article</li>
-      <li>show the quiz</li>
-      <li>show the video</li>
-      <li>show the pdf</li>
-    </ul>
+  <div className="mb-2">
+    <Jumbotron fluid>
+      <Container>
+        <h4>Tutorial</h4>
+      </Container>
+    </Jumbotron>
+    <Container>
+      <Row>
+        <Col>
+          <p>Talk about tutorial here and expect what you will get from this tutorial</p>
+          <Button>Start Tutorial</Button>
+        </Col>
+      </Row>
+    </Container>
   </div>
 );
 
