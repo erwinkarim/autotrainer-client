@@ -123,6 +123,7 @@ export default class Legal extends Component {
   toggleTab = (tab) => { if (this.state.activeTab !== tab) { this.setState({ activeTab: tab }); } }
   render = () => (
     <Container className="mt-2">
+
       <Row>
         <div className="col-12">
           <Nav tabs>
