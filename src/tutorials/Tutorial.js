@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Row, Col, Jumbotron, Button } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 const Tutorial = () => (
   <div className="mb-2">
@@ -12,7 +13,7 @@ const Tutorial = () => (
       <Row>
         <Col>
           <p>Talk about tutorial here and expect what you will get from this tutorial</p>
-          <Button>Start Tutorial</Button>
+          <Button color="primary" tag={Link} to="/tutorials/user_landing">Start Tutorial</Button>
         </Col>
       </Row>
     </Container>

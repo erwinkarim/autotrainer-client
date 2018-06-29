@@ -31,6 +31,11 @@ const AsyncDocBuilder = asyncComponent(() => import('./modules/DocBuilder'));
 const AsyncVideoBuilder = asyncComponent(() => import('./modules/VideoBuilder'));
 
 const AsyncTutorial = asyncComponent(() => import('./tutorials/Tutorial'));
+const AsyncTutorialUL = asyncComponent(() => import('./tutorials/TutorialUserLanding'));
+const AsyncTutorialCoursePromo = asyncComponent(() => import('./tutorials/TutorialCoursePromo'));
+const AsyncTutorialCourseTOC = asyncComponent(() => import('./tutorials/TutorialCourseTOC'));
+const AsyncTutorialQuiz = asyncComponent(() => import('./tutorials/TutorialQuiz'));
+const AsyncTutorialDoc = asyncComponent(() => import('./tutorials/TutorialDoc'));
 
 const Routes = ({ childProps }) =>
   (
@@ -65,6 +70,11 @@ const Routes = ({ childProps }) =>
 
       {/* tutorial pages */}
       <AppliedRoute path="/tutorials" exact component={AsyncTutorial} props={childProps} />
+      <AppliedRoute path="/tutorials/user_landing" exact component={AsyncTutorialUL} props={childProps} />
+      <AppliedRoute path="/tutorials/course_promo" exact component={AsyncTutorialCoursePromo} props={childProps} />
+      <AppliedRoute path="/tutorials/course_toc" exact component={AsyncTutorialCourseTOC} props={childProps} />
+      <AppliedRoute path="/tutorials/quiz" exact component={AsyncTutorialQuiz} props={childProps} />
+      <AppliedRoute path="/tutorials/doc" exact component={AsyncTutorialDoc} props={childProps} />
 
       {/* misc pages */}
       <Route path="/legal" exact component={AsyncLegal} />
