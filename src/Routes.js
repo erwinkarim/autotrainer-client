@@ -30,6 +30,7 @@ const AsyncQuizBuilder = asyncComponent(() => import('./modules/QuizBuilder'));
 const AsyncDocBuilder = asyncComponent(() => import('./modules/DocBuilder'));
 const AsyncVideoBuilder = asyncComponent(() => import('./modules/VideoBuilder'));
 
+const AsyncTutorial = asyncComponent(() => import('./tutorials/Tutorial'));
 
 const Routes = ({ childProps }) =>
   (
@@ -61,6 +62,9 @@ const Routes = ({ childProps }) =>
       <AppliedRoute path="/user/quiz_builder/:courseId/:moduleId" exact component={AsyncQuizBuilder} props={childProps} />
       <AppliedRoute path="/user/doc_builder/:courseId/:moduleId" exact component={AsyncDocBuilder} props={childProps} />
       <AppliedRoute path="/user/video_builder/:courseId/:moduleId" exact component={AsyncVideoBuilder} props={childProps} />
+
+      {/* tutorial pages */}
+      <AppliedRoute path="/tutorials" exact component={AsyncTutorial} props={childProps} />
 
       {/* misc pages */}
       <Route path="/legal" exact component={AsyncLegal} />
