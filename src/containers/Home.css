@@ -13,12 +13,70 @@
 }
 
 #jumbotron-1 {
-  background-image: url('/videos/learn.gif');
   background-repeat: no-repeat;
   background-size: cover;
-  height: 90vh;
+  width:100vw;
+  min-height: 90vh;
 }
 
 #panel-1 {
-  background-color: rgba(100,100,100,0.3);
+  background-color: rgba(100,100,100,0.5);
+  top:0;
+  left:0;
+  width:100%;
+  min-height:90vh;
+  z-index:100;
+}
+
+#panel-2 {
+  z-index:101;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+#video-1 {
+  height:90vh;
+  width:100vw;
+  z-index:-100;
+  overflow: hidden;
+}
+
+#video-1 video{
+  object-fit: cover;
+  height:90vh;
+  width:100vw;
+
+}
+
+/* phones */
+@media (max-width: 575.25px){
+  .video-container {
+    height:56.25vh;
+    width:100vw;
+  }
+}
+
+/* phone landscape mode */
+@media (min-width: 576px ) {
+  .video-container {
+    height:100vh;
+    width:100vw;
+  }
+}
+
+/* tablet portrait */
+@media (min-width: 768px){
+  .video-container {
+    width:100vw;
+    height:56.25vh;
+  }
+}
+
+/* tablet landscape + desktop */
+@media (min-width: 992px) {
+  .video-container {
+    height:75vh;
+    width: 100vw;
+  }
 }

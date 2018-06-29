@@ -34,3 +34,7 @@
     -ms-filter: grayscale(100%);
         filter: grayscale(100%);
 }
+
+.alert-dismissible{
+  padding-right: '4rem';
+}

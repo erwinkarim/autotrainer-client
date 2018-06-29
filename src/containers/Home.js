@@ -1,77 +1,170 @@
-import React, { Component } from "react";
-import {Jumbotron, Button, Container} from 'reactstrap';
-import {Row, CardDeck,Card, CardBody, CardTitle, CardText, CardFooter} from 'reactstrap';
-import { Link } from "react-router-dom";
-import "./Home.css";
-import loremIpsum from 'lorem-ipsum';
-import randomInt from 'random-int';
+import React from 'react';
+import { Jumbotron, Container, Row, Col, CardDeck, Card, CardBody, CardText, CardTitle, CardFooter, Button } from 'reactstrap';
+// import { Link } from "react-router-dom";
+import { HashLink as Link } from 'react-router-hash-link';
+import Helmet from 'react-helmet';
+import PropTypes from 'prop-types';
+import SignUpModal from '../components/SignUpModal';
+import config from '../config';
+import './Home.css';
 
-export default class Home extends Component {
-  constructor(props){
-
-    super(props);
-    //console.log( fs.readdir(process.env.PUBLIC_URL));
-    console.log(process.env.PUBLIC_URL);
-  }
-  render() {
-    return (
-      <div className="Home">
-        <Jumbotron fluid className="mb-0" id="jumbotron-1">
-          <Container className="text-white pb-3" id="panel-1">
-            <h1 className="display-3">A Point is Made</h1>
-            <p className="lead">{loremIpsum()}</p>
-            <div className="">
-              <Link className="btn btn-primary mr-2" to='/'>Learn More</Link>
-              <Button tag="a" href="#video">Watch Video</Button>
+/**
+ * Home
+ * @param {int} props The first number.
+ * @param {int} num2 The second number.
+ * @returns {int} The sum of the two numbers.
+ */
+const Home = props =>
+  (
+    <div className="Home">
+      <Helmet>
+        <title>
+          {config.site_name} - We Provide Actuarial, Insurance and Financial Training Programs
+        </title>
+      </Helmet>
+      <Jumbotron fluid className="mb-0 position-relative py-0" id="jumbotron-1">
+        <div id="video-1" className="video-container">
+          <video playsInline autoPlay muted loop>
+            <track kind="captions" />
+            <source src="//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
+          </video>
+        </div>
+        <div id="panel-1" className="position-absolute" />
+        <Container id="panel-2" className="text-white position-absolute">
+          <h3 className="display-4">We Provide Actuarial, Insurance and Financial Training Programs</h3>
+          <div className="">
+            {
+              props.currentUser === null ? (
+                <Button
+                  color="primary"
+                  className="mr-2"
+                  onClick={() => { props.addNotification('Logging in ...', 'info'); props.auth.getSession(); }}
+                >
+                  REGISTER NOW
+                </Button>
+              ) : <Link href="/" to="/courses" className="btn btn-primary mr-2">EXPLORE</Link>
+            }
+            <Link href="/" className="btn btn-secondary" to="/#video">WATCH VIDEO</Link>
+          </div>
+        </Container>
+      </Jumbotron>
+      <Container className="mt-2">
+        <Row>
+          { ['256x256 BKR-rd.png', '256x256 IIT-rd.png', '256x256 KN-rd.png', '256x256 TI-rd.png',
+          '256x256 TMIG-rd.png', '256x256 WBG-rd.png'].map(e => (
+            <div className="col-4 col-md-2 mb-2" key={e}>
+              <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
             </div>
-          </Container>
-        </Jumbotron>
-        <Container className="mt-2">
+          ))}
+        </Row>
+      </Container>
+      <Container className="text-left">
+        <h1 className="display-3">Learn. Experince. Succeed.</h1>
+        <h4 className="text-muted">Experienced practitioners providing you with real world knowledge.</h4>
+        <p className="lead">learn@AP is the learning and development business of Actuarial Partners Consulting</p>
+        <p>
+          Since 2015, we have trained more than 500 people through our public workshops, in-house
+          training programs and conferences on various technical subjects relating to actuarial,
+          insurance and finance. These programs has assisted our clients and partners in developing
+          their actuarial human capital.
+        </p>
+        <p>
+          Our courses are delivered by highly experienced and qualified practicineers who posses
+          both the depth of knowledge as well as the practical experience in the relevant
+          subject matter.
+        </p>
+        <p>
+          We seek to deliver the most effective (and fun) learning experience for our clients by
+          incorporating new and innovative learning method
+        </p>
+      </Container>
+      {
+        /*
+      <Jumbotron className="mb-0">
+        <Container>
+          <h3 className="display-4 text-center">Another Point is Made</h3>
           <Row>
-           { ['bnm.png', 'hsbc_amanah.gif', 'takaful_ikhlas.png', 'etiqa.png', 'liberty_insurance.png',
-             '7a603d_6d305286957b485db4d1148c7d4fcc02-mv2.webp', '7a603d_70c9ffa2ba1545eeb266efcf1c12ffda-mv2.webp',
-             '7a603d_816d303f34f04c5392ea492d67d756a3-mv2.webp', '7a603d_8640671a7acd4d56be7107289af6eb3b-mv2.webp',
-             'rhb.png', 'axa.png', '7a603d_61665b71f69e472d8cc57952922f0617-mv2.webp'].map( (e,i) => {
-               return (
-                <div className="col-3 col-md-2 mb-2" key={i}>
-                 <img alt={e} className="img-fluid img-grayscale" src={`${process.env.PUBLIC_URL}/logos/${e}`} />
-                </div>
-               );
-             })}
+            <CardDeck>{
+              [1,2,3].map( (e,i) => {
+                return (
+                  <Card key={i} className="mb-3">
+                    <CardBody>
+                      <CardTitle>Course {e}</CardTitle>
+                      <CardText>{ loremIpsum()}</CardText>
+                    </CardBody>
+                  </Card>
+                )
+              })
+            }</CardDeck>
+            <div className="col-12 d-flex">
+              <Button color="primary" className="mx-auto" to="/login" tag={Link}>
+                Register Now
+              </Button>
+            </div>
           </Row>
         </Container>
-        <Jumbotron className="mb-0">
-          <Container>
-            <h3 className="display-4 text-center">Another Point is Made</h3>
-            <Row>
-              <CardDeck>{
-                [1,2,3].map( (e,i) => {
-                  return (
-                    <Card className="mb-3">
-                      <CardBody>
-                        <CardTitle>Course {e}</CardTitle>
-                        <CardText>{ loremIpsum()}</CardText>
-                      </CardBody>
-                    </Card>
-                  )
-                })
-              }</CardDeck>
-              <div className="col-12 d-flex">
-                <Button color="primary" className="mx-auto" href="/login" tag="a">Register Now</Button>
-              </div>
-            </Row>
-          </Container>
-        </Jumbotron>
-        <Jumbotron fluid className="mb-0">
-          <div id="video" className="embed-responsive embed-responsive-16-by-9" style={{height:'80vh', width:'100vw'}}>
-            <iframe src="https://www.youtube.com/embed/pk6BhWxlWXc" width="1600"></iframe>
-          </div>
-          <Container>
-            <h1 className="display-3">Final Points</h1>
-            <p className="lead text-left">{loremIpsum({count:randomInt(2,4), unit:'sentances'})}</p>
-          </Container>
-        </Jumbotron>
-      </div>
-    );
-  }
-}
+      </Jumbotron>
+        */
+      }
+      <Jumbotron fluid className="mb-0 py-0">
+        <div id="video" className="embed-responsive embed-responsive-16-by-9 video-container">
+          <video controls className="" poster="/images/home-keynote-image.jpg">
+            <track kind="captions" />
+            <source src="//d1kb8zqkhtl5kk.cloudfront.net/learn.mp4" />
+          </video>
+        </div>
+        {
+          /*
+        <Container>
+          <h1 className="display-3">Final Points</h1>
+          <p className="lead text-left">{loremIpsum({count:randomInt(2,4), unit:'sentances'})}</p>
+        </Container>
+          */
+        }
+      </Jumbotron>
+      <Container className="mt-2">
+        <Row>
+          <Col>
+            <CardDeck>
+              <Card>
+                <CardBody>
+                  <CardTitle>About Actuarial Partners</CardTitle>
+                  <CardText>
+                    With nearly 100 years of combined consulting experience,
+                    our partners are not only leaders in their field but are
+                    progressive and forward-thinking innovators.
+                  </CardText>
+                </CardBody>
+                <CardFooter>
+                  <Button tag={Link} to="/about" color="info" outline>Learn More</Button>
+                </CardFooter>
+              </Card>
+              <Card>
+                <CardBody>
+                  <CardTitle>Keep in Touch</CardTitle>
+                  <CardText>
+                    Join our newsletter to stay inform of the latest from learn@AP
+                  </CardText>
+                </CardBody>
+                <CardFooter>
+                  <SignUpModal {...props} />
+                </CardFooter>
+              </Card>
+            </CardDeck>
+          </Col>
+        </Row>
+      </Container>
+    </div>
+  );
+
+Home.propTypes = {
+  addNotification: PropTypes.func.isRequired,
+  auth: PropTypes.shape().isRequired,
+  currentUser: PropTypes.shape(),
+};
+
+Home.defaultProps = {
+  currentUser: null,
+};
+
+export default Home;

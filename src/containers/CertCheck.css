@@ -1,0 +1,47 @@
+@font-face {
+  font-family: 'LeagueSpartanBold';
+  font-style: normal;
+  font-weight: bold;
+  src: url('/fonts/LeagueSpartan-Bold.otf');
+}
+
+.cert {
+  font-family: 'LeagueSpartanBold';
+  color: #FCF5DF;
+  background-color: #385A73;
+  letter-spacing: 4px;
+  border-radius: 0.25rem;
+}
+
+
+@media (min-width:992px){
+  .cert-background {
+    width:792px;
+    height:612px;
+    margin: 0px auto;
+    background-image: url('/images/cert_outline.svg');
+  }
+}
+
+.cert-text{
+  font-family: "Helvetica", "Consolas", sans-serif;
+  letter-spacing: 2px;
+}
+
+.cert-text a{
+  color: #FCF5DF;
+  font-family: inherit;
+  letter-spacing: inherit;
+}
+
+.cert-text-border{
+  border-top: 4px #FCF5DF solid;
+}
+
+.w-80{
+  width: 80% !important;
+}
+
+.cert-logo{
+  max-width: 8rem;
+}
