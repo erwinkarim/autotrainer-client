@@ -62,8 +62,10 @@ export default CourseTOC;
 CourseTOC.propTypes = {
   match: PropTypes.shape(),
   module: PropTypes.shape().isRequired,
+  demoMode: PropTypes.bool,
 };
 
 CourseTOC.defaultProps = {
   match: {},
+  demoMode: false,
 };
