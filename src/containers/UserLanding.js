@@ -118,8 +118,10 @@ UserLanding.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
   isAuthenticating: PropTypes.bool.isRequired,
   currentUser: PropTypes.shape(),
+  demoMode: PropTypes.bool,
 };
 
 UserLanding.defaultProps = {
   currentUser: {},
+  demoMode: false,
 };

@@ -274,8 +274,10 @@ CoursePromo.propTypes = {
   currentUser: PropTypes.shape(),
   auth: PropTypes.shape().isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+  demoMode: PropTypes.bool,
 };
 
 CoursePromo.defaultProps = {
   currentUser: {},
+  demoMode: false,
 };

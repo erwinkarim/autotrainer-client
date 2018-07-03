@@ -1,5 +1,5 @@
 import React from 'react';
-import { Container, Row, Col, Jumbotron, Button } from 'reactstrap';
+import { Container, Row, Col, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 
 const TutorialCoursePromo = () => (
@@ -9,6 +9,8 @@ const TutorialCoursePromo = () => (
         <h2>Step 2 of the tutorial</h2>
         <p>perhaps some content about a typical course page and how to enrol ??</p>
       </Col>
+    </Row>
+    <Row>
     </Row>
     <Row>
       <Col>

@@ -49,7 +49,7 @@ export default class InvitedCourses extends Component {
     return (
       <Row>
         <Col xs="12">
-          <h3 id="invited">Invited Courses</h3>
+          <h3 id="invited"><span className="invited-courses">Invited Courses</span></h3>
           <hr />
         </Col>
         <Col xs="12">{
