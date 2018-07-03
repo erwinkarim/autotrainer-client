@@ -6,6 +6,49 @@ import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import UserLanding from '../containers/UserLanding';
 
+const tutorialSteps = [
+  {
+    target: '.user-landing-welcome',
+    content: 'This is your landing page. The first page after you logged in',
+    placement: 'center',
+  },
+  {
+    target: '.user-landing',
+    content: 'You can access this page anytime by clicking  "You" in the navigation bar',
+    placement: 'bottom',
+  },
+  {
+    target: '.enrolled-courses-main-title',
+    content: 'This is your enrolled courses!',
+    placement: 'bottom',
+    placementBeacon: 'left',
+    styles: {
+      options: {
+        zIndex: 10000,
+      },
+    },
+  },
+  {
+    target: '.enrolled-courses-title',
+    content: 'Click here to view the course',
+    placement: 'right',
+  },
+  {
+    target: '.enrolled-courses-cert',
+    content: 'Click here to view the completition certificate',
+    placement: 'right',
+  },
+  {
+    target: '.invited-courses',
+    content: 'If you are invited to a course, it will show up here',
+    placement: 'bottom',
+  },
+  {
+    target: '.next-tutorial',
+    content: 'Conitnue to next tutorial when you are ready',
+    placement: 'top',
+  },
+];
 /**
  * The Constructor
  * @param {json} props the props
@@ -21,39 +64,6 @@ class TutorialUserLanding extends Component {
     super(props);
     this.state = {
       run: false,
-      steps: [
-        {
-          target: '.enrolled-courses-main-title',
-          content: 'This is your enrolled courses!',
-          placement: 'bottom',
-          placementBeacon: 'left',
-          styles: {
-            options: {
-              zIndex: 10000,
-            },
-          },
-        },
-        {
-          target: '.enrolled-courses-title',
-          content: 'Click here to view the course',
-          placement: 'right',
-        },
-        {
-          target: '.enrolled-courses-cert',
-          content: 'Click here to view the completition certificate',
-          placement: 'right',
-        },
-        {
-          target: '.invited-courses',
-          content: 'If you are invited to a course, it will show up here',
-          placement: 'bottom',
-        },
-        {
-          target: '.next-tutorial',
-          content: 'Conitnue to next tutorial when you are ready',
-          placement: 'top',
-        },
-      ],
     };
   }
   startTutorial = () => {
@@ -62,7 +72,7 @@ class TutorialUserLanding extends Component {
   joyrideCallBack = (data) => {
   }
   render = () => {
-    const { steps, run } = this.state;
+    const { run } = this.state;
 
     return (
       <Container className="my-2">
@@ -74,7 +84,7 @@ class TutorialUserLanding extends Component {
           continuous
           showProgress
           scrollToFirstStep
-          steps={steps}
+          steps={tutorialSteps}
           run={run}
         />
         <Row>

@@ -22,4 +22,11 @@ export default {
     buttonText: 'Register Now !',
     buttonLink: '/courses',
   },
+  tutorial: {
+    // default ids for course, docs, etc ...
+    course: '89ebe1d0-7aa5-11e8-8792-63f412a9d068',
+    article: 'a77f2400-7aa5-11e8-b1bf-71d0e417bcc2',
+    doc: 'cce5fad0-7e69-11e8-91a3-0983c401d897',
+    quiz: '1fa1d720-7aa6-11e8-b1bf-71d0e417bcc2',
+  },
 };

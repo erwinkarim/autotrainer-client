@@ -51,7 +51,7 @@ export default class MainNav extends Component {
             <Nav className="flex-scroll" navbar>
               <NavItem><NavLink tag={Link} to="/">Home</NavLink></NavItem>
               <NavItem><NavLink tag={Link} to="/courses">Courses</NavLink></NavItem>
-              <NavItem><NavLink tag={Link} to="/welcome">You</NavLink></NavItem>
+              <NavItem><NavLink tag={Link} to="/welcome" className="user-landing">You</NavLink></NavItem>
               <NavItem className="pl-4"><Button outline color="danger" onClick={this.signOutUser}>Logout</Button> </NavItem>
             </Nav>
           :

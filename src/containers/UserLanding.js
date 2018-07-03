@@ -75,7 +75,7 @@ export default class UserLanding extends Component {
     return (
       <Container className="text-left mt-2">
         <Helmet>
-          <title>{`Welcome, ${handle.props.currentUser.name}`} - {config.site_name}</title>
+          <title className="user-landing-welcome">{`Welcome, ${handle.props.currentUser.name}`} - {config.site_name}</title>
         </Helmet>
         <Row>
           <div className="col-12">
