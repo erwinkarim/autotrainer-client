@@ -65,18 +65,20 @@ export default class DocPreview extends Component {
 
     return (
       <div>
-        <Navbar color="light" light className="justify-content-between my-2">
+        <Navbar color="light" light className="justify-content-between my-2 doc-nav">
           <Form inline>
             {previousButton}
           </Form>
           <Nav navbar>
-            <NavItem>Page {page} of {pages}</NavItem>
+            <NavItem className="doc-current-page">Page {page} of {pages}</NavItem>
           </Nav>
           <Form inline>
             {nextButton}
           </Form>
         </Navbar>
-        <span className="text-muted"><small>Hint: use arrow keys to navigate page</small></span>
+        <span className="text-muted">
+          <small className="doc-nav-hint">Hint: use arrow keys to navigate page</small>
+        </span>
       </div>
     );
   }
@@ -103,7 +105,7 @@ export default class DocPreview extends Component {
       <HotKeys handlers={handler}>
         <Row style={{ minHeight: this.state.docHeight }}>
           <Col sm="12">
-            <h3>PDF Viewer</h3>
+            <h3 className="doc-title">PDF Viewer</h3>
             <hr />
             { pagination }
             {

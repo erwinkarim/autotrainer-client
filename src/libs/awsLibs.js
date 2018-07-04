@@ -227,6 +227,10 @@ export async function s3Delete(file) {
     throw new Error('User is not logged in');
   }
 
+  if (file === '') {
+    throw new Error('Empty file');
+  }
+
   console.log(`attempt to delete ${file}`);
 
   const s3 = new S3({
