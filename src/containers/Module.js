@@ -107,8 +107,6 @@ export default class Module extends Component {
     const moduleType = this.props.demoMode ?
       this.props.moduleType : this.props.match.params.moduleType;
 
-    console.log(`loading moduleType ${moduleType}`);
-
     // the async fn to invoke apiGateway to get the module
     this.setState({ loading: true });
     try {
@@ -134,6 +132,7 @@ export default class Module extends Component {
   loadEnrolment = async () => {
     if (this.props.demoMode) {
       // skip if demo mode
+      this.setState({ enrolment: { progress: [] } });
       return;
     }
 
@@ -178,17 +177,8 @@ export default class Module extends Component {
     }
   }
   render = () => {
-    // check if the user is logged in
-    if (this.props.currentUser === null) {
-      return (<Notice title="Unauthorized" content="You have not logged in yet ..." />);
-    }
-
-    // check of enrolment status
-    if (this.state.enrolment === null && !this.props.demoMode) {
-      return (<Notice content="You are not enrolled in this course ..." />);
-    }
-
-    const { module } = this.state;
+    const { module, enrolment, loading } = this.state;
+    const { demoMode, currentUser } = this.props;
     const courseId = this.props.demoMode ?
       this.props.courseId :
       this.props.match.params.courseId;
@@ -200,10 +190,20 @@ export default class Module extends Component {
       this.props.match.params.moduleType;
     let layout = null;
 
+    // check of enrolment status
+    if (enrolment === null && !demoMode) {
+      return (<Notice content="You are not enrolled in this course ..." />);
+    }
+
+    // check if the user is logged in
+    if (currentUser === null) {
+      return (<Notice title="Unauthorized" content="You have not logged in yet ..." />);
+    }
+
     // render the layout based on the moduleType / loading state ...
-    if (this.state.loading) {
+    if (loading) {
       layout = (<Notice content="Module is loading ..." />);
-    } else if (this.state.module === null) {
+    } else if (module === null) {
       layout = (<Notice content="Module has no content ..." />);
     } else if (moduleType === 'toc') {
       layout = <CourseTOC {...this.state} />;
@@ -228,8 +228,7 @@ export default class Module extends Component {
       </Jumbotron>
     );
 
-    const pageTitle = this.state.module.title || this.state.module.name;
-
+    const pageTitle = module.title || module.name;
 
     return (
       <div className="text-left">
@@ -252,7 +251,7 @@ export default class Module extends Component {
                 courseId={courseId}
                 moduleId={moduleId}
                 moduleType={moduleType}
-                demoMode={this.props.demoMode}
+                demoMode={demoMode}
               />
             </Col>
           </Row>
@@ -273,9 +272,13 @@ Module.propTypes = {
     }),
   }).isRequired,
   demoMode: PropTypes.bool,
+  courseId: PropTypes.string, // to be used w/ demoMode
+  moduleId: PropTypes.string, // to be used w/ demoMode
+  moduleType: PropTypes.string, // to be used w/ demoMode
 };
 
 Module.defaultProps = {
   currentUser: null,
   demoMode: false,
+  moduleType: '',
 };
