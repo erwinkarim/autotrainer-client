@@ -60,7 +60,7 @@ export default class CTOC extends Component {
 
     // setting up const
     const {
-      course, enrolment, promo, className, ...otherProps
+      course, enrolment, promo, className,
     } = this.props;
     const enrolmentProgress = enrolment === null || enrolment === undefined ?
       0 : enrolment.progress.length;

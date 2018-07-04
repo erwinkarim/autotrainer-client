@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import Joyride from 'react-joyride';
-import PropTypes from 'prop-types';
 import CoursePromo from '../containers/CoursePromo';
 import config from '../config';
 
@@ -37,7 +36,8 @@ const tutorialSteps = [
     content: 'Conitnue to next tutorial when you are ready',
     placement: 'top',
   },
-]
+];
+
 /**
  * The Constructor
  * @param {json} props the props

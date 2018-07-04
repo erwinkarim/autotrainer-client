@@ -72,7 +72,9 @@ export default class DocBuilder extends Component {
         const oldKey = handle.props.module.body.key;
 
         console.log('upload new file ...');
+        handle.props.setUpdatingState(true);
         const newFile = await s3Upload(handle.state.file);
+        handle.props.setUpdatingState(false);
         this.props.handleBodyUpdate({ location: newFile.Location, key: newFile.key });
         handle.setState({ file: newFile.Location });
 
@@ -127,17 +129,6 @@ export default class DocBuilder extends Component {
             (<span>No file detected</span>) :
             <DocPreview file={this.state.file} showPath />
         }
-        <Row className="text-left">
-          <Col>
-            <ul>Issues to address
-              <li>Deleting old files when replace a file</li>
-              <li>Button doesn&apos;t properly work in view mode</li>
-              <li>Showing progress / loading when uploading file</li>
-              <li>Key bind left/right arrows to page change</li>
-            </ul>
-
-          </Col>
-        </Row>
       </div>
     );
   }
