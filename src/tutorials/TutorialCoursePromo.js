@@ -1,9 +1,7 @@
-import React, { Component } from 'react';
-import { Container, Row, Col, Button } from 'reactstrap';
-import { Link } from 'react-router-dom';
-import Joyride from 'react-joyride';
+import React from 'react';
 import CoursePromo from '../containers/CoursePromo';
 import config from '../config';
+import TutorialBase from './TutorialBase';
 
 const tutorialSteps = [
   {
@@ -39,59 +37,15 @@ const tutorialSteps = [
   },
 ];
 
-/**
- * The Constructor
- * @param {json} props the props
- * @returns {null} The sum of the two numbers.
- */
-class TutorialCoursePromo extends Component {
-  /**
-   * The Constructor
-   * @param {json} props the props
-   * @returns {null} The sum of the two numbers.
-   */
-  constructor(props) {
-    super(props);
 
-    this.state = {
-      run: false,
-    };
-  }
-  startTutorial = () => {
-    console.log('will start tutorial');
-    this.setState({ run: true });
-  }
-  render = props => (
-    <div>
-      <Joyride
-        ref={(jr) => { this.joyride = jr; }}
-        continuous
-        showProgress
-        scrollToFirstStep
-        steps={tutorialSteps}
-        run={this.state.run}
-      />
-      <Container className="my-2">
-        <Row>
-          <Col>
-            <h2>Step 2 of the tutorial</h2>
-            <p>perhaps some content about a typical course page and how to enrol ??</p>
-            <Button color="primary" onClick={this.startTutorial}>Begin Tutorial</Button>
-            <hr />
-          </Col>
-        </Row>
-      </Container>
-      <CoursePromo courseId={config.tutorial.course} {...props} demoMode />
-      <Container>
-        <Row>
-          <Col>
-            <Button className="mr-2">Start Again</Button>
-            <Button color="primary" tag={Link} to="/tutorials/course_toc" className="next-tutorial">Continue ...</Button>
-          </Col>
-        </Row>
-      </Container>
-    </div>
-  )
-}
+const TutorialCoursePromo = props => (
+  <TutorialBase
+    tutorialSteps={tutorialSteps}
+    nextTutorial="/tutorials/course_toc"
+    component={<CoursePromo courseId={config.tutorial.course} {...props} demoMode />}
+    step={2}
+    openingStatement="perhaps some content about a typical course page and how to enrol ??"
+  />
+);
 
 export default TutorialCoursePromo;
