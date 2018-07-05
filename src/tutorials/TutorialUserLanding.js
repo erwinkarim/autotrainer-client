@@ -10,6 +10,7 @@ const tutorialSteps = [
   {
     target: '.user-landing-welcome',
     content: 'This is your landing page. The first page after you logged in',
+    disableBeacon: true,
     placement: 'center',
   },
   {
@@ -39,7 +40,7 @@ const tutorialSteps = [
     placement: 'right',
   },
   {
-    target: '.invited-courses',
+    target: '.invited-courses-card-demo',
     content: 'If you are invited to a course, it will show up here',
     placement: 'bottom',
   },

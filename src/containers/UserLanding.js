@@ -98,7 +98,7 @@ export default class UserLanding extends Component {
           </div>
         </Row>
         <EnrolledCourses {...this.props} />
-        <InvitedCourses email={this.props.currentUser.email} />
+        <InvitedCourses email={this.props.currentUser.email} {...this.props} />
         {
           /*
           -- to be implemented then you have more than 30 courses

@@ -10,6 +10,7 @@ const tutorialSteps = [
     target: '.course-promo-title',
     content: 'This is a course promotion page where you can view description and eventually enrol in the course',
     placement: 'bottom',
+    disableBeacon: true,
   },
   {
     target: '.course-promo-description',
