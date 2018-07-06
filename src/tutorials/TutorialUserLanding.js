@@ -50,7 +50,7 @@ const tutorialSteps = [
 const TutorialUserLanding = props => (
   <TutorialBase
     tutorialSteps={tutorialSteps}
-    nextTutorial="/tutorials/course_toc"
+    nextTutorial="/tutorials/course_promo"
     component={<UserLanding demoMode {...props} />}
     step={1}
     openingStatement="Talk about welcome page. The first page that you see."
