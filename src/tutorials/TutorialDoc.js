@@ -32,13 +32,18 @@ const tutorialSteps = [
   },
 ];
 
+const desc = `Some of the modules are in pdf form and presented using our display system.
+  This tutorial will show you how to navigate through the document and some shortcuts to
+  help you read the documents better.`;
+
 const TutorialDoc = props => (
   <TutorialBase
     tutorialSteps={tutorialSteps}
     nextTutorial="/tutorials"
     component={<Module courseId={config.tutorial.course} moduleId={config.tutorial.doc} moduleType="doc" {...props} demoMode />}
+    title="Document Viewer Tutorial"
     step={5}
-    openingStatement="Tutorial about course TOC"
+    openingStatement={desc}
   />
 )
 

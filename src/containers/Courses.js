@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Container, Row, Col, CardColumns, Card, Form, FormGroup, Label, Input } from 'reactstrap';
 import Helmet from 'react-helmet';
 import AWS from 'aws-sdk';
+import PropTypes from 'prop-types';
 import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import config from '../config';
@@ -86,32 +87,44 @@ export default class Courses extends Component {
     }
 
     const isAdmin = this.props.currentUser === null ? false : this.props.currentUser['cognito:groups'].includes('admin');
+    const adminBar = isAdmin ? (
+      <Col xs="12" className="mb-2">
+        <Card body>
+          <Form inline>
+            <FormGroup>
+              <Label className="mr-2">Admin options: Status mode</Label>
+              <Input type="select" value={this.state.show_mode} onChange={this.handleAdminChange}>
+                <option value="all">Show all courses</option>
+                <option value="published_only">Show published only</option>
+              </Input>
+            </FormGroup>
+          </Form>
+        </Card>
+      </Col>
+    ) : null;
+    const demoCourseCard = this.props.demoMode ? (
+      <CourseCard
+        className="course-demo-card"
+        enrolments={this.state.enrolments}
+        course={{
+          name: 'Demo title',
+          description: 'A demo description for a demo course.',
+          tagline: 'A demo course to rule them all',
+        }}
+        {...this.props}
+      />
+    ) : null;
 
     return (
-      <Container className="mt-2">
+      <Container className="mt-2 courses-title">
         <Helmet>
           <title>Courses - {config.site_name}</title>
         </Helmet>
         <Row>
-          {
-            isAdmin ?
-              <Col xs="12" className="mb-2">
-                <Card body>
-                  <Form inline>
-                    <FormGroup>
-                      <Label className="mr-2">Admin options: Status mode</Label>
-                      <Input type="select" value={this.state.show_mode} onChange={this.handleAdminChange}>
-                        <option value="all">Show all courses</option>
-                        <option value="published_only">Show published only</option>
-                      </Input>
-                    </FormGroup>
-                  </Form>
-                </Card>
-              </Col>
-            : null
-          }
+          { adminBar }
           <div className="col-12">
             <CardColumns>
+              { demoCourseCard }
               {
                 this.state.courses.map(c => (<CourseCard
                   key={c.courseId}
@@ -128,3 +141,11 @@ export default class Courses extends Component {
     );
   }
 }
+
+Courses.propTypes = {
+  demoMode: PropTypes.bool,
+};
+
+Courses.defaultProps = {
+  demoMode: false,
+};

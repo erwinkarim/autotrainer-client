@@ -65,7 +65,7 @@ export default class EnrolledCourses extends Component {
       <CardColumns>
         {
           this.props.demoMode ? (
-            <Card body className="border border-success">
+            <Card body className="border border-success enrolled-demo-card">
               <CardTitle className="enrolled-courses-title">
                 <a href="/">Demo Title</a>
               </CardTitle>
@@ -107,7 +107,7 @@ export default class EnrolledCourses extends Component {
     const courseName = this.state.certContents.name ?
       this.state.certContents.name.toUpperCase() : null;
     return (
-      <Row>
+      <Row className="enrolled-courses">
         <div className="col-12">
           <h3><span className="enrolled-courses-main-title">Enrolled Courses</span></h3>
           <hr />
@@ -134,7 +134,7 @@ export default class EnrolledCourses extends Component {
               <Button color="primary" onClick={this.toggleModal}>OK</Button>
             </ModalFooter>
           </Modal>
-          <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
+          <p><Button color="primary" to="/courses" tag={Link} className="courses-button">Explore Courses</Button></p>
         </div>
       </Row>
     );
@@ -143,4 +143,9 @@ export default class EnrolledCourses extends Component {
 
 EnrolledCourses.propTypes = {
   currentUser: PropTypes.shape().isRequired,
+  demoMode: PropTypes.bool,
+};
+
+EnrolledCourses.defaultProps = {
+  demoMode: false,
 };

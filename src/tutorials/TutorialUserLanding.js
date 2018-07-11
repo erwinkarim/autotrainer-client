@@ -15,7 +15,7 @@ const tutorialSteps = [
     placement: 'bottom',
   },
   {
-    target: '.enrolled-courses-main-title',
+    target: '.enrolled-courses',
     content: 'This is your enrolled courses!',
     placement: 'bottom',
     placementBeacon: 'left',
@@ -26,6 +26,11 @@ const tutorialSteps = [
     },
   },
   {
+    target: '.enrolled-demo-card',
+    content: 'Each card represents an enrolled course',
+    placement: 'right',
+  },
+  {
     target: '.enrolled-courses-title',
     content: 'Click here to view the course',
     placement: 'right',
@@ -33,6 +38,11 @@ const tutorialSteps = [
   {
     target: '.enrolled-courses-cert',
     content: 'Click here to view the completition certificate',
+    placement: 'right',
+  },
+  {
+    target: '.courses-button',
+    content: 'Click here to explore learn@AP courses',
     placement: 'right',
   },
   {
@@ -47,13 +57,18 @@ const tutorialSteps = [
   },
 ];
 
+const desc = `The welcome page is the first page that you will visit when you log on
+  to learn@AP. It contains an overview on the courses that you are currently enrolled
+  and also courses that you are invited.`;
+
 const TutorialUserLanding = props => (
   <TutorialBase
     tutorialSteps={tutorialSteps}
-    nextTutorial="/tutorials/course_promo"
+    nextTutorial="/tutorials/courses"
     component={<UserLanding demoMode {...props} />}
     step={1}
-    openingStatement="Talk about welcome page. The first page that you see."
+    title="Welcome Page"
+    openingStatement={desc}
   />
 );
 

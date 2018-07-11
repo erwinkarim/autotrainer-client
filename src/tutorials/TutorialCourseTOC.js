@@ -32,13 +32,18 @@ const tutorialSteps = [
   },
 ];
 
+const desc = `Once you have enrolled in the course, you will gain access to the main
+  course page. Each course is divided into modules to cover a topic in the course.
+  You will receive an attendance certificate once you have complete your course.`;
+
 const TutorialCourseTOC = props => (
   <TutorialBase
     tutorialSteps={tutorialSteps}
     nextTutorial="/tutorials/quiz"
     component={<Module courseId={config.tutorial.course} moduleType="toc" {...props} demoMode />}
     step={4}
-    openingStatement="Tutorial about course TOC"
+    title="Course Main Page"
+    openingStatement={desc}
   />
 );
 

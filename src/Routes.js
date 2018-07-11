@@ -32,6 +32,7 @@ const AsyncVideoBuilder = asyncComponent(() => import('./modules/VideoBuilder'))
 
 const AsyncTutorial = asyncComponent(() => import('./tutorials/Tutorial'));
 const AsyncTutorialUL = asyncComponent(() => import('./tutorials/TutorialUserLanding'));
+const AsyncTutorialCourses = asyncComponent(() => import('./tutorials/TutorialCourses'));
 const AsyncTutorialCoursePromo = asyncComponent(() => import('./tutorials/TutorialCoursePromo'));
 const AsyncTutorialCourseTOC = asyncComponent(() => import('./tutorials/TutorialCourseTOC'));
 const AsyncTutorialQuiz = asyncComponent(() => import('./tutorials/TutorialQuiz'));
@@ -71,6 +72,7 @@ const Routes = ({ childProps }) =>
       {/* tutorial pages */}
       <AppliedRoute path="/tutorials" exact component={AsyncTutorial} props={childProps} />
       <AppliedRoute path="/tutorials/user_landing" exact component={AsyncTutorialUL} props={childProps} />
+      <AppliedRoute path="/tutorials/courses" exact component={AsyncTutorialCourses} props={childProps} />
       <AppliedRoute path="/tutorials/course_promo" exact component={AsyncTutorialCoursePromo} props={childProps} />
       <AppliedRoute path="/tutorials/course_toc" exact component={AsyncTutorialCourseTOC} props={childProps} />
       <AppliedRoute path="/tutorials/quiz" exact component={AsyncTutorialQuiz} props={childProps} />

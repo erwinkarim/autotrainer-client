@@ -12,6 +12,7 @@ import AWS from 'aws-sdk';
  */
 const CourseCard = (props) => {
   const identityId = AWS.config.credentials._identityId;
+  const { className } = props;
   let footer;
 
   if (props.course.userId === identityId) {
@@ -25,13 +26,13 @@ const CourseCard = (props) => {
   }
 
   return (
-    <Card>
+    <Card className={className}>
       <CardBody>
-        <CardTitle><Link href="/" to={`/courses/promo/${props.course.courseId}`}>{props.course.name}</Link></CardTitle>
+        <CardTitle className="course-card-title"><Link href="/" to={`/courses/promo/${props.course.courseId}`}>{props.course.name}</Link></CardTitle>
         <CardText className="lead">{props.course.tagline}</CardText>
         <CardText className="text-justify">{props.course.description.split('\n')[0]}</CardText>
       </CardBody>
-      <CardFooter>{ footer }</CardFooter>
+      <CardFooter className="course-card-footer">{ footer }</CardFooter>
     </Card>
   );
 };
@@ -44,6 +45,7 @@ CourseCard.propTypes = {
     name: PropTypes.string,
     userId: PropTypes.string,
   }),
+  className: PropTypes.string,
   enrolments: PropTypes.arrayOf(PropTypes.shape({ courseId: PropTypes.string })).isRequired,
 };
 
@@ -53,6 +55,7 @@ CourseCard.defaultProps = {
     tagline: 'Testing',
     description: 'Test description',
   },
+  className: '',
 };
 
 export default CourseCard;

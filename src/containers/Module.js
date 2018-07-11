@@ -179,13 +179,13 @@ export default class Module extends Component {
   render = () => {
     const { module, enrolment, loading } = this.state;
     const { demoMode, currentUser } = this.props;
-    const courseId = this.props.demoMode ?
+    const courseId = demoMode ?
       this.props.courseId :
       this.props.match.params.courseId;
-    const moduleId = this.props.demoMode ?
+    const moduleId = demoMode ?
       this.props.moduleId :
       this.props.match.params.moduleId;
-    const moduleType = this.props.demoMode ?
+    const moduleType = demoMode ?
       this.props.moduleType :
       this.props.match.params.moduleType;
     let layout = null;
@@ -228,6 +228,21 @@ export default class Module extends Component {
       </Jumbotron>
     );
 
+    const bottomNav = (
+      <Container className="mt-2">
+        <Row>
+          <Col>
+            <CourseBottomNav
+              courseId={courseId}
+              moduleId={moduleId}
+              moduleType={moduleType}
+              demoMode={demoMode}
+            />
+          </Col>
+        </Row>
+      </Container>
+    );
+
     const pageTitle = module.title || module.name;
 
     return (
@@ -244,18 +259,7 @@ export default class Module extends Component {
         </Container>
         { moduleJumbotron }
         { layout }
-        <Container className="mt-2">
-          <Row>
-            <Col>
-              <CourseBottomNav
-                courseId={courseId}
-                moduleId={moduleId}
-                moduleType={moduleType}
-                demoMode={demoMode}
-              />
-            </Col>
-          </Row>
-        </Container>
+        { bottomNav }
       </div>
     );
   }

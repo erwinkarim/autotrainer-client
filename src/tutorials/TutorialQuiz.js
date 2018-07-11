@@ -32,13 +32,16 @@ const tutorialSteps = [
   },
 ];
 
+const desc = `One of the modules in a course is the quiz module. This tutorial will show how
+  to go through the quiz module, check your answers and save your answers.`;
 const TutorialQuiz = props => (
   <TutorialBase
     tutorialSteps={tutorialSteps}
     nextTutorial="/tutorials/doc"
     component={<Module courseId={config.tutorial.course} moduleId={config.tutorial.quiz} moduleType="quiz" {...props} demoMode />}
     step={5}
-    openingStatement="Tutorial about course TOC"
+    title="Quiz Example"
+    openingStatement={desc}
   />
 );
 

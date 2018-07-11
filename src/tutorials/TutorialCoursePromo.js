@@ -37,14 +37,19 @@ const tutorialSteps = [
   },
 ];
 
+const desc = `When you go shopping for courses. Each author will have their own
+  promotion page such as this. This page will give a brief description about the
+  course and shows the topic for that courses. When you are ready and interested,
+  you may enrol in the course.`;
 
 const TutorialCoursePromo = props => (
   <TutorialBase
     tutorialSteps={tutorialSteps}
     nextTutorial="/tutorials/course_toc"
     component={<CoursePromo courseId={config.tutorial.course} {...props} demoMode />}
-    step={2}
-    openingStatement="perhaps some content about a typical course page and how to enrol ??"
+    step={3}
+    title="Course Promotion Page"
+    openingStatement={desc}
   />
 );
 

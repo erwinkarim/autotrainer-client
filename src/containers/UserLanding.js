@@ -86,6 +86,11 @@ export default class UserLanding extends Component {
           </div>
           <div className="col-12 col-md-8 mb-3">
             <ul>
+              {
+                this.props.demoMode ? null : (
+                  <li><Link href="/" to="/tutorials">Tutorial</Link></li>
+                )
+              }
               <li><Link href="/" to="#enrolled">Enrolled Courses</Link></li>
               <li><Link href="/" to="#invited">Invited Courses</Link></li>
               {
