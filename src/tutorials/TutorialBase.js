@@ -50,6 +50,12 @@ export default class TutorialBase extends Component {
       tutorialSteps, nextTutorial, component, step, title, openingStatement,
     } = this.props;
 
+    const componentStyle = this.state.run ? null : {
+      filter: 'blur(2px)',
+      '-webkit-filter': 'blue(2px)',
+      pointerEvents: 'none',
+    };
+
     return (
       <div className="mb-2">
         <div key={this.state.key}>
@@ -75,7 +81,9 @@ export default class TutorialBase extends Component {
             </Col>
           </Row>
         </Container>
-        { component }
+        <div style={componentStyle}>
+          { component }
+        </div>
         <Container>
           <Row>
             <Col>
