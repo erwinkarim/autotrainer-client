@@ -95,9 +95,9 @@ export default class CourseMenu extends Component {
     }
 
     return (
-      <Navbar className="px-0">
+      <Navbar className="px-0 course-menu">
         <NavbarToggler onClick={this.toggleNavbar} className="">
-          <FontAwesomeIcon icon="bars" />
+          <FontAwesomeIcon icon="bars" className="course-menu-hamburger" style={{ zIndex: 1000 }} />
         </NavbarToggler>
         <NavbarBrand className="mr-auto brand-text">
           { this.props.buildMode ? 'Building ' : '' }

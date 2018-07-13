@@ -116,7 +116,7 @@ export default class Quiz extends Component {
     }
 
     return (
-      <Container className="mt-2 text-left">
+      <Container className="mt-2 text-left quiz-body">
         <Row>
           <Col xs="12" md="8">
             {
@@ -129,7 +129,7 @@ export default class Quiz extends Component {
                 borderColor = (answerCorrectly ? 'border border-success' : 'border border-danger');
               }
               return (
-                <Card key={parseInt(Math.random() * 1000, 10)} className={`mb-3 ${borderColor}`}>
+                <Card key={parseInt(Math.random() * 1000, 10)} className={`mb-3 quiz-card ${borderColor}`}>
                   <CardBody>
                     <CardText>Question {i + 1}:</CardText>
                     <CardText className="lead">{ q.question}</CardText>
@@ -166,7 +166,7 @@ export default class Quiz extends Component {
           </Col>
           <Col xs="12" md="8" className="mb-3">
             <Sticky style={{ zIndex: 100 }} mode="bottom">
-              <Navbar color="light" dark className="mb-2 border border-info">
+              <Navbar color="light" dark className="mb-2 border border-info quiz-progress">
                 <Nav navbar>
                   <NavItem>{ answeredQBlock }</NavItem>
                 </Nav>

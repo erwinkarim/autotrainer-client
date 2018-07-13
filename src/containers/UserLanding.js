@@ -75,7 +75,7 @@ export default class UserLanding extends Component {
     return (
       <Container className="text-left mt-2">
         <Helmet>
-          <title>{`Welcome, ${handle.props.currentUser.name}`} - {config.site_name}</title>
+          <title className="user-landing-welcome">{`Welcome, ${handle.props.currentUser.name}`} - {config.site_name}</title>
         </Helmet>
         <Row>
           <div className="col-12">
@@ -86,6 +86,11 @@ export default class UserLanding extends Component {
           </div>
           <div className="col-12 col-md-8 mb-3">
             <ul>
+              {
+                this.props.demoMode ? null : (
+                  <li><Link href="/" to="/tutorials">Tutorial</Link></li>
+                )
+              }
               <li><Link href="/" to="#enrolled">Enrolled Courses</Link></li>
               <li><Link href="/" to="#invited">Invited Courses</Link></li>
               {
@@ -98,7 +103,7 @@ export default class UserLanding extends Component {
           </div>
         </Row>
         <EnrolledCourses {...this.props} />
-        <InvitedCourses email={this.props.currentUser.email} />
+        <InvitedCourses email={this.props.currentUser.email} {...this.props} />
         {
           /*
           -- to be implemented then you have more than 30 courses
@@ -118,8 +123,10 @@ UserLanding.propTypes = {
   isAuthenticated: PropTypes.bool.isRequired,
   isAuthenticating: PropTypes.bool.isRequired,
   currentUser: PropTypes.shape(),
+  demoMode: PropTypes.bool,
 };
 
 UserLanding.defaultProps = {
   currentUser: {},
+  demoMode: false,
 };

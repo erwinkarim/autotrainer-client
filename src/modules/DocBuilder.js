@@ -70,12 +70,18 @@ export default class DocBuilder extends Component {
       // upload if the file state becomes a file object
       if (handle.state.file instanceof Object) {
         const oldKey = handle.props.module.body.key;
+
+        console.log('upload new file ...');
+        handle.props.setUpdatingState(true);
         const newFile = await s3Upload(handle.state.file);
+        handle.props.setUpdatingState(false);
         this.props.handleBodyUpdate({ location: newFile.Location, key: newFile.key });
         handle.setState({ file: newFile.Location });
 
         // should delete the old file unless the old key is null
-        if (oldKey !== null && oldKey !== newFile.key) {
+        if (oldKey !== null && oldKey !== '' && oldKey !== newFile.key) {
+          console.log(`compare oldKey: ${oldKey} and newKey: ${newFile.key}`);
+          console.log(`deleting file with key ${oldKey}`);
           await s3Delete(oldKey);
         }
       }
@@ -89,8 +95,19 @@ export default class DocBuilder extends Component {
     return false;
   }
   render = () => {
+    const { module } = this.props;
+    const { file } = this.state;
+
+    let fileName = '';
+    if (module.body) {
+      if (module.body.location) {
+        fileName = module.body.location;
+      }
+    }
+    /*
     const fileName =
-      this.props.module.body === null ? '' : this.props.module.body.location;
+      module.body === null ? '' : this.props.module.body.location;
+      */
     return (
       <div className="my-3">
         <Row>
@@ -108,21 +125,10 @@ export default class DocBuilder extends Component {
           </Col>
         </Row>
         {
-          this.state.file === null || this.state.file === undefined || this.state.file === '' ?
+          file === null || file === undefined || file === '' ?
             (<span>No file detected</span>) :
             <DocPreview file={this.state.file} showPath />
         }
-        <Row className="text-left">
-          <Col>
-            <ul>Issues to address
-              <li>Deleting old files when replace a file</li>
-              <li>Button doesn&apos;t properly work in view mode</li>
-              <li>Showing progress / loading when uploading file</li>
-              <li>Key bind left/right arrows to page change</li>
-            </ul>
-
-          </Col>
-        </Row>
       </div>
     );
   }

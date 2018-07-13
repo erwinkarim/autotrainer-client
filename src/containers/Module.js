@@ -53,25 +53,46 @@ export default class Module extends Component {
    * @returns {null} The sum of the two numbers.
    */
   componentDidUpdate = (prevProps) => {
+    const prevModuleId = this.props.demoMode ?
+      prevProps.moduleId :
+      prevProps.match.params.moduleId;
+    const currentModuleId = this.props.demoMode ?
+      this.props.moduleId :
+      this.props.match.params.moduleId;
     // compare previous state w/ current state, and if the address changes
     // reload the module
-    if (prevProps.match.params.moduleId !== this.props.match.params.moduleId) {
+    if (prevModuleId !== currentModuleId) {
       this.loadModule();
     }
   }
-  getModule = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: `/modules/${this.props.match.params.moduleId}`,
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
+  getModule = () => {
+    const moduleId = this.props.demoMode ?
+      this.props.moduleId :
+      this.props.match.params.moduleId;
+    const courseId = this.props.demoMode ?
+      this.props.courseId :
+      this.props.match.params.courseId;
+
+    return invokeApig({
+      endpoint: config.apiGateway.MODULE_URL,
+      path: `/modules/${moduleId}`,
+      queryParams: { courseId },
+    });
+  }
   getModuleListings = () => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,
     path: '/modules',
     queryParams: { courseId: this.props.match.params.courseId },
   })
-  getCourse = () => invokeApig({
-    path: `/courses/${this.props.match.params.courseId}`,
-  })
+  getCourse = () => {
+    const courseId = this.props.demoMode ?
+      this.props.courseId :
+      this.props.match.params.courseId;
+
+    return invokeApig({
+      path: `/courses/${courseId}`,
+    });
+  }
   getEnrolment = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.courseId}`,
@@ -83,13 +104,16 @@ export default class Module extends Component {
     body: {},
   })
   loadModule = async () => {
+    const moduleType = this.props.demoMode ?
+      this.props.moduleType : this.props.match.params.moduleType;
+
     // the async fn to invoke apiGateway to get the module
     this.setState({ loading: true });
     try {
       let result = null;
-      if (this.props.match.params.moduleType === 'toc') {
+      if (moduleType === 'toc') {
         result = await this.getCourse();
-      } else if (this.props.match.params.moduleType === 'progress') {
+      } else if (moduleType === 'progress') {
         result = Object.assign(
           { title: 'Progress', description: 'Some description here' },
           { modules: (await this.getModuleListings()) },
@@ -106,6 +130,12 @@ export default class Module extends Component {
     }
   }
   loadEnrolment = async () => {
+    if (this.props.demoMode) {
+      // skip if demo mode
+      this.setState({ enrolment: { progress: [] } });
+      return;
+    }
+
     try {
       const result = await this.getEnrolment();
       this.setState({ enrolment: result });
@@ -147,40 +177,49 @@ export default class Module extends Component {
     }
   }
   render = () => {
-    // check if the user is logged in
-    if (this.props.currentUser === null) {
-      return (<Notice title="Unauthorized" content="You have not logged in yet ..." />);
-    }
+    const { module, enrolment, loading } = this.state;
+    const { demoMode, currentUser } = this.props;
+    const courseId = demoMode ?
+      this.props.courseId :
+      this.props.match.params.courseId;
+    const moduleId = demoMode ?
+      this.props.moduleId :
+      this.props.match.params.moduleId;
+    const moduleType = demoMode ?
+      this.props.moduleType :
+      this.props.match.params.moduleType;
+    let layout = null;
 
     // check of enrolment status
-    if (this.state.enrolment === null) {
+    if (enrolment === null && !demoMode) {
       return (<Notice content="You are not enrolled in this course ..." />);
     }
 
-    const { module } = this.state;
-    const { courseId, moduleId } = this.props.match.params;
-    let layout = null;
+    // check if the user is logged in
+    if (currentUser === null) {
+      return (<Notice title="Unauthorized" content="You have not logged in yet ..." />);
+    }
 
     // render the layout based on the moduleType / loading state ...
-    if (this.state.loading) {
+    if (loading) {
       layout = (<Notice content="Module is loading ..." />);
-    } else if (this.state.module === null) {
+    } else if (module === null) {
       layout = (<Notice content="Module has no content ..." />);
-    } else if (this.props.match.params.moduleType === 'toc') {
+    } else if (moduleType === 'toc') {
       layout = <CourseTOC {...this.state} />;
-    } else if (this.props.match.params.moduleType === 'progress') {
+    } else if (moduleType === 'progress') {
       layout = <CourseProgress {...this.state} />;
-    } else if (module.moduleType === 'article') {
+    } else if (moduleType === 'article') {
       layout = <Article {...this.state} triggerAttendance={this.triggerAttendance} />;
-    } else if (module.moduleType === 'quiz') {
+    } else if (moduleType === 'quiz') {
       layout = <Quiz {...this.state} triggerAttendance={this.triggerAttendance} />;
-    } else if (module.moduleType === 'doc') {
+    } else if (moduleType === 'doc') {
       layout = <Doc {...this.state} triggerAttendance={this.triggerAttendance} />;
-    } else if (module.moduleType === 'video') {
+    } else if (moduleType === 'video') {
       layout = <Video {...this.state} triggerAttendance={this.triggerAttendance} />;
     }
 
-    const moduleJumbotron = (this.props.match.params.moduleType === 'toc' || this.props.match.params.moduleType === 'progress') ? null : (
+    const moduleJumbotron = (moduleType === 'toc' || moduleType === 'progress') ? null : (
       <Jumbotron fluid>
         <Container>
           <h4 className="display-4">Chapter {module.order}: {module.title}</h4>
@@ -189,8 +228,22 @@ export default class Module extends Component {
       </Jumbotron>
     );
 
-    const pageTitle = this.state.module.title || this.state.module.name;
+    const bottomNav = (
+      <Container className="mt-2">
+        <Row>
+          <Col>
+            <CourseBottomNav
+              courseId={courseId}
+              moduleId={moduleId}
+              moduleType={moduleType}
+              demoMode={demoMode}
+            />
+          </Col>
+        </Row>
+      </Container>
+    );
 
+    const pageTitle = module.title || module.name;
 
     return (
       <div className="text-left">
@@ -206,17 +259,7 @@ export default class Module extends Component {
         </Container>
         { moduleJumbotron }
         { layout }
-        <Container className="mt-2">
-          <Row>
-            <Col>
-              <CourseBottomNav
-                courseId={courseId}
-                moduleId={moduleId}
-                moduleType={this.props.match.params.moduleType}
-              />
-            </Col>
-          </Row>
-        </Container>
+        { bottomNav }
       </div>
     );
   }
@@ -232,8 +275,14 @@ Module.propTypes = {
       courseId: PropTypes.string,
     }),
   }).isRequired,
+  demoMode: PropTypes.bool,
+  courseId: PropTypes.string, // to be used w/ demoMode
+  moduleId: PropTypes.string, // to be used w/ demoMode
+  moduleType: PropTypes.string, // to be used w/ demoMode
 };
 
 Module.defaultProps = {
   currentUser: null,
+  demoMode: false,
+  moduleType: '',
 };

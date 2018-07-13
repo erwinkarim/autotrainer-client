@@ -59,7 +59,9 @@ export default class CTOC extends Component {
     }
 
     // setting up const
-    const { course, enrolment, promo } = this.props;
+    const {
+      course, enrolment, promo, className,
+    } = this.props;
     const enrolmentProgress = enrolment === null || enrolment === undefined ?
       0 : enrolment.progress.length;
     let showOneByOne = false;
@@ -112,7 +114,7 @@ export default class CTOC extends Component {
     }
 
     return (
-      <div className="w-100">
+      <div className={`w-100 ${className}`}>
         { completionNotice }
         { oneByOneNotice }
         <CardColumns>

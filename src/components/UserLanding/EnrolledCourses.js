@@ -62,23 +62,44 @@ export default class EnrolledCourses extends Component {
     const enrolledCourses = this.state.courses.length === 0 ? (
       <div>You haven&amp;t enrolled in any courses yet.</div>
     ) : (
-      <CardColumns>{ this.state.courses.map((c, i) => {
-        const courseComplete = c.progress.length >= c.publishedModuleCount;
-        return (
-          <Card key={c.courseId} className={`${courseComplete ? 'border border-success' : ''}`}>
-            <CardBody>
-              <CardTitle><Link href="/" to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
+      <CardColumns>
+        {
+          this.props.demoMode ? (
+            <Card body className="border border-success enrolled-demo-card">
+              <CardTitle className="enrolled-courses-title">
+                <a href="/">Demo Title</a>
+              </CardTitle>
               <CardText><strong>Progress</strong></CardText>
-              <CardText>{c.progress.length} of {c.publishedModuleCount} modules attended</CardText>
-              {
-                courseComplete ?
-                  <CardText className="text-success">
-                    Course Completed <Button color="info" size="small" onClick={this.toggleModal} data-course={i}>View Cert</Button>
-                  </CardText> : null
-              }
-            </CardBody>
-          </Card>);
-      })}
+              <CardText>
+                5 of 5 modules attended
+              </CardText>
+              <CardText className="text-success enrolled-courses-cert">
+                Course Completed <Button color="info" size="small">View Cert</Button>
+              </CardText>
+            </Card>
+          ) : null
+        }
+        {
+          this.state.courses.map((c, i) => {
+          const courseComplete = c.progress.length >= c.publishedModuleCount;
+          return (
+            <Card key={c.courseId} className={`${courseComplete ? 'border border-success' : ''}`}>
+              <CardBody>
+                <CardTitle><Link href="/" to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
+                <CardText><strong>Progress</strong></CardText>
+                <CardText>
+                  {c.progress.length} of {c.publishedModuleCount} modules attended
+                </CardText>
+                {
+                  courseComplete ?
+                    <CardText className="text-success">
+                      Course Completed <Button color="info" size="small" onClick={this.toggleModal} data-course={i}>View Cert</Button>
+                    </CardText> : null
+                }
+              </CardBody>
+            </Card>);
+          })
+        }
       </CardColumns>
     );
 
@@ -86,9 +107,9 @@ export default class EnrolledCourses extends Component {
     const courseName = this.state.certContents.name ?
       this.state.certContents.name.toUpperCase() : null;
     return (
-      <Row>
+      <Row className="enrolled-courses">
         <div className="col-12">
-          <h3>Enrolled Courses</h3>
+          <h3><span className="enrolled-courses-main-title">Enrolled Courses</span></h3>
           <hr />
           { enrolledCourses }
           <Modal isOpen={this.state.modal} onOpened={this.handleModalOpen} size="lg" >
@@ -113,7 +134,7 @@ export default class EnrolledCourses extends Component {
               <Button color="primary" onClick={this.toggleModal}>OK</Button>
             </ModalFooter>
           </Modal>
-          <p><Button color="primary" to="/courses" tag={Link}>Explore Courses</Button></p>
+          <p><Button color="primary" to="/courses" tag={Link} className="courses-button">Explore Courses</Button></p>
         </div>
       </Row>
     );
@@ -122,4 +143,9 @@ export default class EnrolledCourses extends Component {
 
 EnrolledCourses.propTypes = {
   currentUser: PropTypes.shape().isRequired,
+  demoMode: PropTypes.bool,
+};
+
+EnrolledCourses.defaultProps = {
+  demoMode: false,
 };

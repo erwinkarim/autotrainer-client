@@ -92,7 +92,7 @@ export default class CourseBottomNav extends Component {
     }
 
     return (
-      <Pagination size="lg">
+      <Pagination size="lg" className="course-bottom-nav">
         <PaginationItem className="w-100" disabled={currentIndex === -1}>
           <PaginationLink to={prevLink} tag={Link} href={prevLink} className="h-100">
             {prevLinkCaption}

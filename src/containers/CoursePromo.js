@@ -15,19 +15,25 @@ const EnrolButton = (props) => {
   const {
     enrolText,
     enrolledText,
+    enrolment,
+    isAuthenticated,
+    handleEnrolCourse,
+    addNotification,
+    auth,
+    ...otherProps
   } = props;
 
   const getSession = () => {
-    props.addNotification('Attempt to login ...', 'info');
-    props.auth.getSession();
+    addNotification('Attempt to login ...', 'info');
+    auth.getSession();
   };
 
   // handle betweehn Unauthenticated and authenticated fn
-  const handleEnrolFn = props.isAuthenticated ? props.handleEnrolCourse : getSession;
+  const handleEnrolFn = isAuthenticated ? handleEnrolCourse : getSession;
 
   // check enrolment status
-  return props.enrolment === null ?
-    (<Button type="button" color="primary" onClick={handleEnrolFn} data-course={props.course.courseId}>{enrolText}</Button>) :
+  return enrolment === null ?
+    (<Button type="button" color="primary" onClick={handleEnrolFn} data-course={props.course.courseId} {...otherProps}>{enrolText}</Button>) :
     (<Button tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);
 };
 
@@ -120,6 +126,11 @@ export default class CoursePromo extends Component {
       return;
     }
 
+    if (this.props.demoMode) {
+      // no enrolment for demo mode
+      return;
+    }
+
     try {
       const enrolmentStatus = await this.getEnrolmentStatus();
       this.setState({ enrolment: enrolmentStatus });
@@ -130,13 +141,24 @@ export default class CoursePromo extends Component {
       }
     }
   }
-  getCourse = () => invokeApig({ path: `/courses/${this.props.match.params.id}` })
+  getCourse = () => {
+    const courseId = this.props.demoMode ?
+      this.props.courseId :
+      this.props.match.params.id;
+    console.log(`requesting courseId ${courseId}`);
+    return invokeApig({ path: `/courses/${courseId}` });
+  }
   getEnrolmentStatus = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.id}`,
   })
   handleEnrolCourse = async (e) => {
-    console.log('should enrol for course');
+    if (this.props.demoMode) {
+      // do nothing in demo mode
+      return;
+    }
+
+    // console.log('should enrol for course');
     try {
       const result = await this.enrolCourse(e.target.dataset.course);
       this.setState({ enrolment: result });
@@ -183,10 +205,11 @@ export default class CoursePromo extends Component {
         </Helmet>
         <Jumbotron fluid style={styling}>
           <Container>
-            <h1 className="display-3 text-center">{this.state.course.name}</h1>
+            <h1 className="display-3 text-center course-promo-title">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
             <p>
               <EnrolButton
+                id="course-enrol-button-1"
                 outline
                 {...this.state}
                 {...{ enrolText: `Enrol for RM${this.state.course.price}`, handleEnrolCourse: this.handleEnrolCourse }}
@@ -225,7 +248,7 @@ export default class CoursePromo extends Component {
         </Container>
         <Container>
           <Row>
-            <div className="col-12 text-center">
+            <div className="col-12 text-center course-promo-description">
               {
                 this.state.course.description.split('\n').map(e => (
                   <p className="lead" key={parseInt(Math.random() * 1000, 10)}>{e}</p>
@@ -238,7 +261,7 @@ export default class CoursePromo extends Component {
             <div className="col-12">
               <h4 className="display-4">Table of Contents</h4>
             </div>
-            <CTOC course={this.state.course} enrolment={this.state.enrolment} promo />
+            <CTOC course={this.state.course} enrolment={this.state.enrolment} promo className="course-toc" />
           </Row>
         </Container>
         { clientList }
@@ -248,6 +271,7 @@ export default class CoursePromo extends Component {
             <p className="lead">RM{this.state.course.price}</p>
             <div className="text-center">
               <EnrolButton
+                id="course-enrol-button-2"
                 {...this.state}
                 {...{
                   auth: this.props.auth,
@@ -274,8 +298,12 @@ CoursePromo.propTypes = {
   currentUser: PropTypes.shape(),
   auth: PropTypes.shape().isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
+  demoMode: PropTypes.bool,
+  courseId: PropTypes.string,
 };
 
 CoursePromo.defaultProps = {
   currentUser: {},
+  demoMode: false,
+  courseId: '', // should be supplied when in demoMode
 };

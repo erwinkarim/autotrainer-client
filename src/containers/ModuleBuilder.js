@@ -58,6 +58,11 @@ export default class ModuleBuilder extends Component {
     path: `/modules/${this.props.match.params.moduleId}`,
     queryParams: { courseId: this.props.match.params.courseId },
   })
+  setUpdatingState = (updatingState) => {
+    // use this to allow modules to set updating state
+    // useful if the module is updating files (which can take a while)
+    this.setState({ updating: updatingState });
+  }
   updateModule = () => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,
     method: 'PUT',
@@ -165,6 +170,7 @@ export default class ModuleBuilder extends Component {
           ref={(input) => { this.moduleHandle = input; }}
           module={this.state.module}
           handleBodyUpdate={this.handleBodyUpdate}
+          setUpdatingState={this.setUpdatingState}
         />);
     } else if (moduleType === 'quiz') {
       layout = (

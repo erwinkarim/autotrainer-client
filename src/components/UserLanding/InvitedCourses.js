@@ -49,16 +49,28 @@ export default class InvitedCourses extends Component {
     return (
       <Row>
         <Col xs="12">
-          <h3 id="invited">Invited Courses</h3>
+          <h3 id="invited"><span className="invited-courses">Invited Courses</span></h3>
           <hr />
         </Col>
-        <Col xs="12">{
-          this.state.courses.length === 0 ? (
-            <Row><Col><p>You haven&apos;t been invited to any courses yet ...</p></Col></Row>
-          ) : (
-            <Row>
-              <Col>
-                <CardColumns>{ this.state.courses.map(course => (
+        <Col xs="12">
+          <CardColumns>
+            {
+              this.props.demoMode ? (
+                <Card body className="invited-courses-card-demo">
+                  <CardTitle tag="h2">Sample Course Name</CardTitle>
+                  <CardText className="lead">This is a sample of a course for demonstration purpose</CardText>
+                  <CardText>...</CardText>
+                  <Button className="mr-2 mb-2" color="info">View</Button>
+                </Card>
+              ) : null
+            }
+            {
+              this.state.courses.length === 0 ? (
+                <Card body>
+                  <CardText>You have not been invited to any courses yet ...</CardText>
+                </Card>
+              ) : (
+                <div>{ this.state.courses.map(course => (
                   <Card key={course.courseId}>
                     <div style={{ overflow: 'hidden', height: '3em' }}>
                       <CardImg top src={course.bg_pic} />
@@ -70,11 +82,10 @@ export default class InvitedCourses extends Component {
                       <Button className="mr-2 mb-2" color="info" tag={Link} to={`/courses/promo/${course.courseId}`} >View</Button>
                     </CardBody>
                   </Card>))}
-                </CardColumns>
-              </Col>
-            </Row>
-          )
-        }
+                </div>
+              )
+            }
+          </CardColumns>
         </Col>
       </Row>
     );
@@ -83,4 +94,9 @@ export default class InvitedCourses extends Component {
 
 InvitedCourses.propTypes = {
   email: PropTypes.string.isRequired,
+  demoMode: PropTypes.bool,
+};
+
+InvitedCourses.defaultProps = {
+  demoMode: false,
 };
