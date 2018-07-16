@@ -58,7 +58,7 @@ export default class UserLanding extends Component {
   checkIdent = () => invokeApig({
     endpoint: config.apiGateway.IDENT_URL,
     method: 'POST',
-    path: '/check',
+    path: '/ident/check',
     queryParams: { username: this.props.currentUser['cognito:username'] },
   })
   render = () => {
