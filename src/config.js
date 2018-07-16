@@ -2,7 +2,8 @@ export default {
   site_name: 'learn@AP',
   MAX_ATTACHMENT_SIZE: 5000000,
   apiGateway: {
-    URL: 'https://iuwoyhr5oi.execute-api.ap-southeast-1.amazonaws.com/prod',
+    // URL: 'https://iuwoyhr5oi.execute-api.ap-southeast-1.amazonaws.com/prod',
+    URL: 'https://api.learn.actuarialpartners.com',
     MODULE_URL: 'https://ltqs221b5i.execute-api.ap-southeast-1.amazonaws.com/prod',
     ENROLMENT_URL: 'https://cq7fci2enb.execute-api.ap-southeast-1.amazonaws.com/prod',
     IDENT_URL: 'https://6k3c85iy66.execute-api.ap-southeast-1.amazonaws.com/prod',
