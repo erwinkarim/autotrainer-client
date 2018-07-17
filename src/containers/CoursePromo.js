@@ -13,49 +13,30 @@ import './CoursePromo.css';
 /* button to enrol or show TOC */
 const EnrolButton = (props) => {
   const {
+    course,
     enrolText,
     enrolledText,
     enrolment,
-    isAuthenticated,
-    handleEnrolCourse,
-    addNotification,
-    auth,
-    ...otherProps
   } = props;
 
-  const getSession = () => {
-    addNotification('Attempt to login ...', 'info');
-    auth.getSession();
-  };
-
-  // handle betweehn Unauthenticated and authenticated fn
-  const handleEnrolFn = isAuthenticated ? handleEnrolCourse : getSession;
-
   // check enrolment status
+  // point to enrolment payment page if no enrolment yet
   return enrolment === null ?
-    (<Button type="button" color="primary" onClick={handleEnrolFn} data-course={props.course.courseId} {...otherProps}>{enrolText}</Button>) :
+    (<Button color="primary" tag={Link} to={`/courses/enrol/${course.courseId}`}>{enrolText}</Button>) :
     (<Button tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);
 };
 
 EnrolButton.propTypes = {
-  handleEnrolCourse: PropTypes.func,
   enrolText: PropTypes.string,
   enrolledText: PropTypes.string,
   enrolment: PropTypes.shape(),
   course: PropTypes.shape().isRequired,
-  addNotification: PropTypes.func.isRequired,
-  auth: PropTypes.shape({
-    getSession: PropTypes.func.isRequired,
-  }).isRequired,
-  isAuthenticated: PropTypes.bool.isRequired,
 };
 
 EnrolButton.defaultProps = {
-  handleEnrolCourse: () => 0,
   enrolText: 'Enrol',
   enrolledText: 'Table of Contents',
   enrolment: {},
-  loading: false,
 };
 
 const RecentCustomers = props => (
