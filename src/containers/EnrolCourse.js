@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Container, Row, Col, Card, CardTitle, CardText, Jumbotron, Button,
-  FormGroup, Input,
+  FormGroup, Input, Label, Form
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -33,7 +33,7 @@ const CouponCard = () => (
       <CardTitle>Coupon</CardTitle>
       <CardText>Enrol using coupon code</CardText>
       <FormGroup>
-        <Input />
+        <Input placeholder="Enter Coupon Code" />
       </FormGroup>
       <Button color="primary">Send Code</Button>
     </Card>
@@ -48,9 +48,26 @@ const CreditCard = () => (
       <FormGroup>
         <Input className="mb-2" placeholder="Name on Credit Card" />
         <Input className="mb-2" placeholder="Credit Card Number" />
-        <Input className="mb-2" placeholder="CCV" />
-        <Input className="mb-2" placeholder="expiration date" />
       </FormGroup>
+      <Form inline>
+        <FormGroup className="mr-2 mb-2 w-100">
+          <Label className="mr-2">CCV</Label>
+          <Input className="mb-2" placeholder="CCV" />
+        </FormGroup>
+        <FormGroup className="mr-2 mb-2">
+          <Label className="mr-2">Expiration Date</Label>
+          <Input type="select" className="mr-2">
+            {
+              [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(e => <option key={e}>{e}</option>)
+            }
+          </Input>
+          <Input type="select" className="mr-2">
+            {
+              [2018, 2019, 2020, 2021, 2022, 2023].map(e => <option key={e}>{e}</option>)
+            }
+          </Input>
+        </FormGroup>
+      </Form>
       <Button color="primary">Purchase</Button>
     </Card>
   </Col>
