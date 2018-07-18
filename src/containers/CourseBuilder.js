@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import {
   Container, Row, Col, Nav, NavItem, NavLink, TabContent,
   TabPane, Jumbotron, FormGroup, Label, InputGroup, Input, InputGroupAddon,
-  InputGroupText, Button, FormText, CardDeck, Card, CardBody, CardText
+  InputGroupText, Button, FormText, CardDeck, Card, CardBody, CardText,
 } from 'reactstrap';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
@@ -177,7 +177,13 @@ const CourseForm = (props) => {
       </FormGroup>
       <FormGroup>
         <Label>Coupon Code</Label>
-        <Input className="mb-2" placeholder="Type in your coupon code" id="couponCode" onChange={props.handleChange} value={props.course.couponCode} />
+        <Input
+          className="mb-2"
+          placeholder="Type in your coupon code"
+          id="coupons"
+          onChange={props.handleChange}
+          value={props.course.coupons[0].code}
+        />
         <Button onClick={props.autoGenCouponCode}>Auto Generate</Button>
         <br />
         <small>
@@ -364,6 +370,8 @@ export default class CourseBuilder extends Component {
       result.bg_key = result.bg_key === undefined || result.bg_key === null ? '' : result.bg_key;
       result.clientList =
         result.clientList === undefined || result.clientList === null ? [] : result.clientList;
+      result.coupons =
+        result.coupons === undefined || result.coupons === null ? [{ code: '', discount: 100.0 }] : result.coupons;
 
       if (result != null) {
         handle.setState({ course: result, loading: false });
@@ -409,7 +417,7 @@ export default class CourseBuilder extends Component {
   autoGenCouponCode = () => {
     console.log('auto generate coupon code');
     const newCourse = this.state.course;
-    newCourse.couponCode = couponCodeFilter(uuid.v4());
+    newCourse.coupons = [{ code: couponCodeFilter(uuid.v4()), discount: 100.0 }];
 
     this.setState({ course: newCourse });
   }
@@ -487,10 +495,10 @@ export default class CourseBuilder extends Component {
       }
       console.log('e.target.type', e.target.type);
       console.log('e.target.name', e.target.name);
-    } else if (e.target.id === 'couponCode') {
+    } else if (e.target.id === 'coupons') {
       // coupon code must be alphanumric capital letters
       // newCourse[e.target.id] = (e.target.value).toUpperCase();
-      newCourse[e.target.id] = couponCodeFilter(e.target.value);
+      newCourse[e.target.id] = [{ code: couponCodeFilter(e.target.value), discount: 100.0 }];
     } else {
       // all others
       newCourse[e.target.id] =
