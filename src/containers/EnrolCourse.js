@@ -35,7 +35,13 @@ const CouponCard = props => (
       <FormGroup>
         <Input placeholder="Enter Coupon Code" id="couponCode" value={props.paymentInfo.couponCode} onChange={props.hadndleFormChange} />
       </FormGroup>
-      <Button color="primary" onClick={props.handleCouponPurchase} disabled={props.paymentInfo.couponCode.length === 0}>Send Code</Button>
+      <Button
+        color="primary"
+        onClick={props.handleCouponPurchase}
+        disabled={props.paymentInfo.couponCode.length === 0}
+      >
+        Send Code
+      </Button>
     </Card>
   </Col>
 );
@@ -155,9 +161,13 @@ export default class EnrolCourse extends Component {
     try {
       const result = await this.purchaseCourse({
         method: 'coupon',
-        code: this.state.couponCode,
+        code: this.state.paymentInfo.couponCode,
       });
-      console.log(result);
+
+      // a successful result will give an enrolment obj
+      this.setState({
+        enrolment: result,
+      });
       // if successful, update enrolment ,etc hahaha
     } catch (e) {
       console.log('error when buying a course through coupon');
