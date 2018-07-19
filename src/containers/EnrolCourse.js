@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Container, Row, Col, Card, CardTitle, CardText, Jumbotron, Button,
-  FormGroup, Input, Label, Form,
+  FormGroup, Input, Label,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -52,41 +52,50 @@ CouponCard.propTypes = {
   paymentInfo: PropTypes.shape().isRequired,
 };
 
+/*
+  present but disable for now to provide future direction.
+  Implement this when you have a payment gateway solution.
+*/
 const CreditCard = () => (
   <Col xs="12" md="6" className="mb-2">
     <Card body>
       <CardTitle>Credit Card</CardTitle>
       <CardText>Enrol using CC</CardText>
       <FormGroup>
-        <Input className="mb-2" placeholder="Name on Credit Card" />
-        <Input className="mb-2" placeholder="Credit Card Number" />
+        <Input disabled className="mb-2" placeholder="Name on Credit Card" />
+        <Input disabled className="mb-2" placeholder="Credit Card Number" />
       </FormGroup>
-      <Form inline>
-        <FormGroup className="mr-2 mb-2 w-100">
-          <Label className="mr-2">CCV</Label>
-          <Input className="mb-2" placeholder="CCV" />
-        </FormGroup>
-        <FormGroup className="mr-2 mb-2">
-          <Label className="mr-2">Expiration Date</Label>
-          <Input type="select" className="mr-2">
+      <FormGroup row className="mb-2">
+        <Label sm={6}>CCV</Label>
+        <Col sm={6}>
+          <Input disabled className="mb-2" placeholder="CCV" />
+        </Col>
+      </FormGroup>
+      <FormGroup row className="mb-2">
+        <Label sm={6}>Expiration Date</Label>
+        <Col sm={3}>
+          <Input disabled type="select">
             {
               [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12].map(e => <option key={e}>{e}</option>)
             }
           </Input>
-          <Input type="select" className="mr-2">
+        </Col>
+        <Col sm={3}>
+          <Input disabled type="select">
             {
               [2018, 2019, 2020, 2021, 2022, 2023].map(e => <option key={e}>{e}</option>)
             }
           </Input>
-        </FormGroup>
-      </Form>
-      <Button color="primary">Purchase</Button>
+        </Col>
+      </FormGroup>
+      <Button color="primary" disabled>Purchase</Button>
     </Card>
   </Col>
 );
 
 /**
  * Adds two numbers together.
+ * @param {int} body The first number.
  * @param {int} e The first number.
  * @param {int} courseId The first number.
  * @returns {int} The sum of the two numbers.
@@ -111,7 +120,7 @@ export default class EnrolCourse extends Component {
         cardCCV: '',
         cardExpMonth: 1,
         cardExpYear: 2018,
-      }
+      },
     };
   }
   componentDidMount = async () => {
@@ -184,6 +193,10 @@ export default class EnrolCourse extends Component {
 
     if (isLoading) {
       return <Notice content="Loading ..." />;
+    }
+
+    if (!course.published) {
+      return <Notice content="Course not yet published" />;
     }
 
     const body = (enrolment === undefined || enrolment === null) ? (
