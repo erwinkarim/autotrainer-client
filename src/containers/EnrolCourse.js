@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
   Container, Row, Col, Card, CardTitle, CardText, Jumbotron, Button,
-  FormGroup, Input, Label, Form
+  FormGroup, Input, Label, Form,
 } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -27,18 +27,24 @@ import Notice from '../components/Notice';
   * 3. contact author: maybe later
   */
 
-const CouponCard = () => (
+const CouponCard = props => (
   <Col xs="12" md="6" className="mb-2">
     <Card body>
       <CardTitle>Coupon</CardTitle>
       <CardText>Enrol using coupon code</CardText>
       <FormGroup>
-        <Input placeholder="Enter Coupon Code" />
+        <Input placeholder="Enter Coupon Code" id="couponCode" value={props.paymentInfo.couponCode} onChange={props.hadndleFormChange} />
       </FormGroup>
-      <Button color="primary">Send Code</Button>
+      <Button color="primary" onClick={props.handleCouponPurchase} disabled={props.paymentInfo.couponCode.length === 0}>Send Code</Button>
     </Card>
   </Col>
 );
+
+CouponCard.propTypes = {
+  handleCouponPurchase: PropTypes.func.isRequired,
+  hadndleFormChange: PropTypes.func.isRequired,
+  paymentInfo: PropTypes.shape().isRequired,
+};
 
 const CreditCard = () => (
   <Col xs="12" md="6" className="mb-2">
@@ -92,6 +98,14 @@ export default class EnrolCourse extends Component {
       isLoading: true,
       course: null,
       enrolment: null,
+      paymentInfo: {
+        couponCode: '',
+        nameOnCard: '',
+        cardNumber: '',
+        cardCCV: '',
+        cardExpMonth: 1,
+        cardExpYear: 2018,
+      }
     };
   }
   componentDidMount = async () => {
@@ -122,6 +136,34 @@ export default class EnrolCourse extends Component {
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.id}`,
   })
+  purchaseCourse = body => invokeApig({
+    method: 'POST',
+    path: `/courses/${this.props.match.params.id}/purchase`,
+    body,
+  })
+  hadndleFormChange = (e) => {
+    const newPaymentInfo = this.state.paymentInfo;
+    if (e.target.id === 'couponCode') {
+      newPaymentInfo[e.target.id] = e.target.value.toUpperCase();
+    } else {
+      newPaymentInfo[e.target.id] = e.target.value;
+    }
+    this.setState({ paymentInfo: newPaymentInfo });
+  }
+  handleCouponPurchase = async () => {
+    console.log('should handle coupon purchase');
+    try {
+      const result = await this.purchaseCourse({
+        method: 'coupon',
+        code: this.state.couponCode,
+      });
+      console.log(result);
+      // if successful, update enrolment ,etc hahaha
+    } catch (e) {
+      console.log('error when buying a course through coupon');
+      console.log(e);
+    }
+  }
   render = () => {
     const { isAuthenticated } = this.props;
     const { isLoading, course, enrolment } = this.state;
@@ -139,7 +181,12 @@ export default class EnrolCourse extends Component {
         <Col xs="12">
           <p>You may enrol into {course.name} via those two methods :-</p>
         </Col>
-        <CouponCard {...this.props} />
+        <CouponCard
+          {...this.props}
+          {...this.state}
+          handleCouponPurchase={this.handleCouponPurchase}
+          hadndleFormChange={this.hadndleFormChange}
+        />
         <CreditCard {...this.props} />
       </Row>
     ) : (
