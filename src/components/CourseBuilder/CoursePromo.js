@@ -13,7 +13,14 @@ const CoursePromo = props => (
       {window.location.protocol}{'//'}{window.location.host}/courses/promo/{props.course.courseId}
     </small>
     <FormGroup>
-      <Input type="textarea" rows="30" placeholder="Type in the things that you wanted to see in the promo page" />
+      <Input
+        type="textarea"
+        rows="30"
+        id="promoContent"
+        value={props.course.promoContent}
+        onChange={props.handleChange}
+        placeholder="Type in the things that you wanted to see in the promo page"
+      />
     </FormGroup>
   </div>
 );
@@ -21,7 +28,9 @@ const CoursePromo = props => (
 CoursePromo.propTypes = {
   course: PropTypes.shape({
     courseId: PropTypes.string.isRequired,
+    promoContent: PropTypes.string.isRequired,
   }).isRequired,
+  handleChange: PropTypes.func.isRequired,
 };
 
 export default CoursePromo;
