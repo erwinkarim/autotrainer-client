@@ -2,11 +2,11 @@ export default {
   site_name: 'learn@AP',
   MAX_ATTACHMENT_SIZE: 5000000,
   apiGateway: {
-    URL: 'https://api.learn.actuarialpartners.com',
-    MODULE_URL: 'https://api.learn.actuarialpartners.com',
-    ENROLMENT_URL: 'https://api.learn.actuarialpartners.com',
-    IDENT_URL: 'https://api.learn.actuarialpartners.com',
-    MISC_URL: 'https://api.learn.actuarialpartners.com',
+    URL: 'https://apilearn.actuarialpartners.com',
+    MODULE_URL: 'https://apilearn.actuarialpartners.com',
+    ENROLMENT_URL: 'https://apilearn.actuarialpartners.com',
+    IDENT_URL: 'https://apilearn.actuarialpartners.com',
+    MISC_URL: 'https://apilearn.actuarialpartners.com',
     REGION: 'ap-southeast-1',
   },
   cognito: {

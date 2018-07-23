@@ -2,13 +2,14 @@ import React, { Component } from 'react';
 import {
   Container, Row, Col, Nav, NavItem, NavLink, TabContent,
   TabPane, Jumbotron, FormGroup, Label, InputGroup, Input, InputGroupAddon,
-  InputGroupText, Button, FormText, CardDeck, Card, CardBody,
+  InputGroupText, Button, FormText, CardDeck, Card, CardBody, CardText,
 } from 'reactstrap';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
+import uuid from 'uuid';
 import { invokeApig, s3Upload, s3Delete } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import './CourseBuilder.css';
@@ -16,6 +17,9 @@ import config from '../config';
 import CourseUsers from '../components/CourseBuilder/CourseUsers';
 import CourseModules from '../components/CourseBuilder/CourseModules';
 
+/*
+ * shows which clientst that attended your course
+ */
 const ClientTestimonials = props => (
   <Col>
     <Row>
@@ -71,9 +75,8 @@ ClientTestimonials.defaultProps = {
 
 
 /*
-  handle send invitation to potential students, also check if students exists or not
+  course form detaling the course info (name, modules, etc ..)
 */
-
 const CourseForm = (props) => {
   if (props.course === undefined) {
     return (<div>Course not loaded yet ... </div>);
@@ -173,11 +176,27 @@ const CourseForm = (props) => {
         </InputGroup>
       </FormGroup>
       <FormGroup>
+        <Label>Coupon Code</Label>
+        <Input
+          className="mb-2"
+          placeholder="Type in your coupon code"
+          id="coupons"
+          onChange={props.handleChange}
+          value={props.course.coupons[0].code}
+        />
+        <Button onClick={props.autoGenCouponCode}>Auto Generate</Button>
+        <br />
+        <small>
+          Students can use the coupon code to instantly purchase the course.
+          Restrictions: 0 or 8 to 16 alphanumeric characters only.
+        </small>
+      </FormGroup>
+      <FormGroup>
         <Label>Key Points</Label>
         <CardDeck>
           {
             (props.course.key_points === undefined || props.course.key_points.length === 0) ?
-            (<p>No key points configured.</p>) :
+            (<Card body><CardText>No key points configured.</CardText></Card>) :
             props.course.key_points.map((e, i) => (
               <Card key={i}>
                 <CardBody>
@@ -225,7 +244,7 @@ const CourseForm = (props) => {
           }
           {
             props.enableAddKeyPoint() ?
-              <Button type="button" color="primary" onClick={props.newKeyPoint} disabled={!props.enableAddKeyPoint()}>New Key Points</Button> :
+              <Button type="button" onClick={props.newKeyPoint} disabled={!props.enableAddKeyPoint()}>New Key Points</Button> :
               null
           }
         </CardDeck>
@@ -256,6 +275,7 @@ CourseForm.propTypes = {
   handleChange: PropTypes.func.isRequired,
   deleteKeyPoint: PropTypes.func.isRequired,
   validateGeneralForm: PropTypes.func.isRequired,
+  autoGenCouponCode: PropTypes.func.isRequired,
 };
 
 CourseForm.defaultProps = {
@@ -306,6 +326,14 @@ CourseOptions.propTypes = {
   handleUpdateCourse: PropTypes.func.isRequired,
 };
 
+// filter coupon code
+const couponCodeFilter = code => code
+  .toUpperCase()
+  .split('')
+  .filter(c => c.match(/[A-Z0-9]/))
+  .join('')
+  .substring(0, 16);
+
 /**
  * Adds two numbers together.
  * @param {shape} file event
@@ -342,6 +370,8 @@ export default class CourseBuilder extends Component {
       result.bg_key = result.bg_key === undefined || result.bg_key === null ? '' : result.bg_key;
       result.clientList =
         result.clientList === undefined || result.clientList === null ? [] : result.clientList;
+      result.coupons =
+        result.coupons === undefined || result.coupons === null ? [{ code: '', discount: 100.0 }] : result.coupons;
 
       if (result != null) {
         handle.setState({ course: result, loading: false });
@@ -383,6 +413,13 @@ export default class CourseBuilder extends Component {
     if (this.state.settingActiveTab !== tab) {
       this.setState({ settingActiveTab: tab });
     }
+  }
+  autoGenCouponCode = () => {
+    console.log('auto generate coupon code');
+    const newCourse = this.state.course;
+    newCourse.coupons = [{ code: couponCodeFilter(uuid.v4()), discount: 100.0 }];
+
+    this.setState({ course: newCourse });
   }
   handleUpdateCourse = async (e) => {
     e.preventDefault();
@@ -458,7 +495,12 @@ export default class CourseBuilder extends Component {
       }
       console.log('e.target.type', e.target.type);
       console.log('e.target.name', e.target.name);
+    } else if (e.target.id === 'coupons') {
+      // coupon code must be alphanumric capital letters
+      // newCourse[e.target.id] = (e.target.value).toUpperCase();
+      newCourse[e.target.id] = [{ code: couponCodeFilter(e.target.value), discount: 100.0 }];
     } else {
+      // all others
       newCourse[e.target.id] =
         e.target.id === 'name' ? toTitleCase(e.target.value) :
           e.target.value;
@@ -617,6 +659,7 @@ export default class CourseBuilder extends Component {
                   deleteKeyPoint={this.deleteKeyPoint}
                   validateGeneralForm={this.validateGeneralForm}
                   toggleCompany={this.toggleCompany}
+                  autoGenCouponCode={this.autoGenCouponCode}
                 />
               </TabPane>
               <TabPane tabId="pub_status">

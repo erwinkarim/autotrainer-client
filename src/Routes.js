@@ -11,6 +11,7 @@ const AsyncNewCourse = asyncComponent(() => import('./containers/NewCourse'));
 const AsyncCourses = asyncComponent(() => import('./containers/Courses'));
 const AsyncCoursePromo = asyncComponent(() => import('./containers/CoursePromo'));
 const AsyncCoursePurchase = asyncComponent(() => import('./containers/Purchase'));
+const AsyncCourseEnrol = asyncComponent(() => import('./containers/EnrolCourse'));
 
 const AsyncModule = asyncComponent(() => import('./containers/Module'));
 
@@ -50,6 +51,7 @@ const Routes = ({ childProps }) =>
       {/* public course page */}
       <AppliedRoute path="/courses" exact component={AsyncCourses} props={childProps} />
       <AppliedRoute path="/courses/promo/:id" exact component={AsyncCoursePromo} props={childProps} />
+      <AppliedRoute path="/courses/enrol/:id" exact component={AsyncCourseEnrol} props={childProps} />
       {/* course pages that is valid for people who enrolled */}
       <AppliedRoute path="/courses/:moduleType/:courseId" exact component={AsyncModule} props={childProps} />
       <AppliedRoute path="/courses/:moduleType/:courseId/:moduleId" exact component={AsyncModule} props={childProps} />
