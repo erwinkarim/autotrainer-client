@@ -14,6 +14,7 @@ import { invokeApig, s3Upload, s3Delete } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import './CourseBuilder.css';
 import config from '../config';
+import CoursePromo from '../components/CourseBuilder/CoursePromo';
 import CourseUsers from '../components/CourseBuilder/CourseUsers';
 import CourseModules from '../components/CourseBuilder/CourseModules';
 
@@ -635,6 +636,13 @@ export default class CourseBuilder extends Component {
               </NavItem>
               <NavItem>
                 <NavLink
+                  className={classnames({ active: this.state.settingActiveTab === 'promo_page' })}
+                  onClick={() => { this.toggle('promo_page'); }}
+                >Promo Page
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'pub_status' })}
                   onClick={() => { this.toggle('pub_status'); }}
                 >Options
@@ -660,6 +668,14 @@ export default class CourseBuilder extends Component {
                   validateGeneralForm={this.validateGeneralForm}
                   toggleCompany={this.toggleCompany}
                   autoGenCouponCode={this.autoGenCouponCode}
+                />
+              </TabPane>
+              <TabPane tabId="promo_page">
+                <CoursePromo
+                  {...this.state}
+                  {...this.props}
+                  handleChange={this.handleChange}
+                  handleUpdateCourse={this.handleUpdateCourse}
                 />
               </TabPane>
               <TabPane tabId="pub_status">
