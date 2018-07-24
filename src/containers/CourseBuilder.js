@@ -13,6 +13,7 @@ import Notice from '../components/Notice';
 import './CourseBuilder.css';
 import config from '../config';
 import CourseForm from '../components/CourseBuilder/CourseForm';
+import CourseTOCForm from '../components/CourseBuilder/CourseTOCForm';
 import CoursePromo from '../components/CourseBuilder/CoursePromo';
 import CourseUsers from '../components/CourseBuilder/CourseUsers';
 import CourseModules from '../components/CourseBuilder/CourseModules';
@@ -27,7 +28,7 @@ const CourseOptions = (props) => {
   };
 
   return (
-    <div>
+    <div className="mt-2">
       <FormGroup>
         <Label>Publication Status</Label>
         <Input type="select" id="status" value={course.status} onChange={props.handleChange}>
@@ -375,6 +376,13 @@ export default class CourseBuilder extends Component {
               </NavItem>
               <NavItem>
                 <NavLink
+                  className={classnames({ active: this.state.settingActiveTab === 'toc_page' })}
+                  onClick={() => { this.toggle('toc_page'); }}
+                >TOC Page
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'pub_status' })}
                   onClick={() => { this.toggle('pub_status'); }}
                 >Options
@@ -393,13 +401,8 @@ export default class CourseBuilder extends Component {
                 <CourseForm
                   {...this.state}
                   handleChange={this.handleChange}
-                  enableAddKeyPoint={this.enableAddKeyPoint}
-                  newKeyPoint={this.newKeyPoint}
                   handleUpdateCourse={this.handleUpdateCourse}
-                  deleteKeyPoint={this.deleteKeyPoint}
                   validateGeneralForm={this.validateGeneralForm}
-                  toggleCompany={this.toggleCompany}
-                  autoGenCouponCode={this.autoGenCouponCode}
                 />
               </TabPane>
               <TabPane tabId="promo_page">
@@ -408,6 +411,21 @@ export default class CourseBuilder extends Component {
                   {...this.props}
                   handleChange={this.handleChange}
                   handleUpdateCourse={this.handleUpdateCourse}
+                  enableAddKeyPoint={this.enableAddKeyPoint}
+                  newKeyPoint={this.newKeyPoint}
+                  deleteKeyPoint={this.deleteKeyPoint}
+                  toggleCompany={this.toggleCompany}
+                  autoGenCouponCode={this.autoGenCouponCode}
+                  validateGeneralForm={this.validateGeneralForm}
+                />
+              </TabPane>
+              <TabPane tabId="toc_page">
+                <CourseTOCForm
+                  {...this.state}
+                  {...this.props}
+                  handleChange={this.handleChange}
+                  handleUpdateCourse={this.handleUpdateCourse}
+                  validateGeneralForm={this.validateGeneralForm}
                 />
               </TabPane>
               <TabPane tabId="pub_status">
