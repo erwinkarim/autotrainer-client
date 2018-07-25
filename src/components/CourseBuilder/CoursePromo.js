@@ -1,10 +1,11 @@
-import React from 'react';
+import React, { Component } from 'react';
 import {
   Col, Row, FormGroup, Input, Label, InputGroup, InputGroupAddon,
   Button, Card, CardBody, InputGroupText, CardText, FormText, CardDeck,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
+import Editor from '../Editor';
 
 /*
  * shows which clientst that attended your course
@@ -22,7 +23,7 @@ const ClientTestimonials = props => (
     </Row>
     <FormGroup check className="row p-2">
       {
-        props.companyList.sort((ca, cb) => ca.name > cb.name).map(c => (
+        props.companyList.map(c => (
           <Label key={c.name} check className="col-6 col-md-3">
             <Input
               type="checkbox"
@@ -66,134 +67,160 @@ ClientTestimonials.defaultProps = {
 /*
   handles course promo things
  */
-const CoursePromo = props => (
-  <div className="mt-2">
-    <p>
-      This will appear in your course promotion page. Which can viewed at{' '}
-      {window.location.protocol}{'//'}{window.location.host}/courses/promo/{props.course.courseId}
-    </p>
-    <div className="pricing">
-      <h4>Pricing</h4>
-      <hr />
-      <FormGroup>
-        <Label>Pricing</Label>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">RM</InputGroupAddon>
-          <Input type="number" id="price" onChange={props.handleChange} value={props.course.price} />
-        </InputGroup>
-      </FormGroup>
-      <FormGroup>
-        <Label>Coupon Code</Label>
-        <Input
-          className="mb-2"
-          placeholder="Type in your coupon code"
-          id="coupons"
-          onChange={props.handleChange}
-          value={props.course.coupons[0].code}
-        />
-        <Button onClick={props.autoGenCouponCode}>Auto Generate</Button>
-        <br />
-        <small>
-          Students can use the coupon code to instantly purchase the course.
-          Restrictions: 0 or 8 to 16 alphanumeric characters only.
-        </small>
-      </FormGroup>
-    </div>
-    <div className="keypoints">
-      <h4>Key Points</h4>
-      <hr />
-      <FormGroup>
-        <Label>Key Points</Label>
-        <CardDeck>
-          {
-            (props.course.key_points === undefined || props.course.key_points.length === 0) ?
-            (<Card body><CardText>No key points configured.</CardText></Card>) :
-            props.course.key_points.map((e, i) => (
-              <Card key={i}>
-                <CardBody>
-                  <FormGroup>
-                    <h4>
-                      <InputGroup className="mb-2">
-                        <Input
-                          type="text"
-                          placeholder={`Title for Point ${i + 1}. Should be less than 70 characters`}
-                          style={{ fontSize: 'inherit' }}
-                          className="card-title text-center"
-                          maxLength="70"
-                          id="key_points"
-                          data-position={i}
-                          data-key="title"
-                          value={e.title}
-                          onChange={props.handleChange}
-                        />
-                        <InputGroupAddon addonType="append" className="text-muted">
-                          <InputGroupText>{ 70 - e.title.length }</InputGroupText>
-                        </InputGroupAddon>
-                      </InputGroup>
-                    </h4>
-                    <InputGroup className="mb-2">
-                      <Input
-                        type="textarea"
-                        placeholder={`Subtext for Point ${i + 1}. Should be less than 140 characters`}
-                        rows="4"
-                        maxLength="140"
-                        id="key_points"
-                        data-position={i}
-                        data-key="subtext"
-                        value={e.subtext}
-                        onChange={props.handleChange}
-                      />
-                      <InputGroupAddon addonType="append" className="text-muted">
-                        <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
-                      </InputGroupAddon>
-                    </InputGroup>
-                    <Button type="button" color="danger" data-position={i} onClick={props.deleteKeyPoint}><FontAwesomeIcon icon="minus" /></Button>
-                  </FormGroup>
-                </CardBody>
-              </Card>
-            ))
-          }
-          {
-            props.enableAddKeyPoint() ?
-              <Button type="button" onClick={props.newKeyPoint} disabled={!props.enableAddKeyPoint()}>New Key Points</Button> :
-              null
-          }
-        </CardDeck>
-      </FormGroup>
-    </div>
-    <div className="promocontent">
-      <h4>Promotional Content</h4>
-      <hr />
-      <FormGroup>
-        <Label>Main Promotional Content</Label>
-        <Input
-          type="textarea"
-          rows="30"
-          id="promoContent"
-          value={props.course.promoContent}
-          onChange={props.handleChange}
-          placeholder="Type in the things that you wanted to see in the promo page"
-        />
-      </FormGroup>
-    </div>
-    <div className="testimonials">
-      <h4>Clients and Testimonails</h4>
-      <hr />
-      <div>
-        <Label>Client attendees</Label>
-        <FormText>
-          Select upto 6 companies that have attended this course.
-          WARNING: We are not liable if you give out false information
-        </FormText>
-        <ClientTestimonials
-          toggleCompany={props.toggleCompany}
-          clientList={props.course.clientList}
-        />
+/**
+ * Adds two numbers together.
+ * @param {shape} file event
+ * @param {shape} tab event
+ * @param {shape} e event
+ * @returns {JSX} the common builder
+ */
+class CoursePromo extends Component {
+  componentDidMount = () => {
+    this.editor.setEditorStateFromRaw(this.props.course.promoContent);
+  }
+  render = () => {
+    const { props } = this;
+
+    return (
+      <div className="mt-2">
+        <p>
+          This will appear in your course promotion page. Which can viewed at{' '}
+          {window.location.protocol}{'//'}{window.location.host}/courses/promo/{props.course.courseId}
+        </p>
+        <div className="pricing">
+          <h4>Pricing</h4>
+          <hr />
+          <FormGroup>
+            <Label>Pricing</Label>
+            <InputGroup>
+              <InputGroupAddon addonType="prepend">RM</InputGroupAddon>
+              <Input type="number" id="price" onChange={props.handleChange} value={props.course.price} />
+            </InputGroup>
+          </FormGroup>
+          <FormGroup>
+            <Label>Coupon Code</Label>
+            <Input
+              className="mb-2"
+              placeholder="Type in your coupon code"
+              id="coupons"
+              onChange={props.handleChange}
+              value={props.course.coupons[0].code}
+            />
+            <Button onClick={props.autoGenCouponCode}>Auto Generate</Button>
+            <br />
+            <small>
+              Students can use the coupon code to instantly purchase the course.
+              Restrictions: 0 or 8 to 16 alphanumeric characters only.
+            </small>
+          </FormGroup>
+        </div>
+        <div className="keypoints">
+          <h4>Key Points</h4>
+          <hr />
+          <small>
+            Key points that will appear at the begining of the course promo page.
+            Should use this oppurnity to hook your potential customers into reading further.
+            Hence why the wordings need to be consice but catchy. If this space is empty,
+            we will use the content from your TOC description for your promotional content.
+          </small>
+          <FormGroup>
+            <CardDeck>
+              {
+                (props.course.key_points === undefined || props.course.key_points.length === 0) ?
+                (<Card body><CardText>No key points configured.</CardText></Card>) :
+                props.course.key_points.map((e, i) => (
+                  <Card key={i}>
+                    <CardBody>
+                      <FormGroup>
+                        <h4>
+                          <InputGroup className="mb-2">
+                            <Input
+                              type="text"
+                              placeholder={`Title for Point ${i + 1}. Should be less than 70 characters`}
+                              style={{ fontSize: 'inherit' }}
+                              className="card-title text-center"
+                              maxLength="70"
+                              id="key_points"
+                              data-position={i}
+                              data-key="title"
+                              value={e.title}
+                              onChange={props.handleChange}
+                            />
+                            <InputGroupAddon addonType="append" className="text-muted">
+                              <InputGroupText>{ 70 - e.title.length }</InputGroupText>
+                            </InputGroupAddon>
+                          </InputGroup>
+                        </h4>
+                        <InputGroup className="mb-2">
+                          <Input
+                            type="textarea"
+                            placeholder={`Subtext for Point ${i + 1}. Should be less than 140 characters`}
+                            rows="4"
+                            maxLength="140"
+                            id="key_points"
+                            data-position={i}
+                            data-key="subtext"
+                            value={e.subtext}
+                            onChange={props.handleChange}
+                          />
+                          <InputGroupAddon addonType="append" className="text-muted">
+                            <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
+                          </InputGroupAddon>
+                        </InputGroup>
+                        <Button type="button" color="danger" data-position={i} onClick={props.deleteKeyPoint}><FontAwesomeIcon icon="minus" /></Button>
+                      </FormGroup>
+                    </CardBody>
+                  </Card>
+                ))
+              }
+              {
+                props.enableAddKeyPoint() ?
+                  <Button type="button" onClick={props.newKeyPoint} disabled={!props.enableAddKeyPoint()}>New Key Points</Button> :
+                  null
+              }
+            </CardDeck>
+          </FormGroup>
+        </div>
+        <div className="promocontent">
+          <h4>Promotional Content</h4>
+          <hr />
+          <small>
+            Main body of the promotional content that you want to see in the page.
+            Should be detailed, but direct points telling what one will gain from the course,
+            how the course is structured and expectation for potential students that will
+            take this course.
+          </small>
+          <FormGroup>
+            <Editor
+              ref={(editor) => { this.editor = editor; }}
+              type="textarea"
+              id="promoContent"
+              value={props.course.promoContent}
+              handleBodyUpdate={props.handlePromoChange}
+              placeholder="Type in the things that you wanted to see in the promo page"
+            />
+          </FormGroup>
+        </div>
+        <div className="testimonials">
+          <h4>Clients and Testimonails</h4>
+          <hr />
+          <div>
+            <Label>Client attendees</Label>
+            <FormText>
+              Select upto 6 companies that have attended this course.
+              WARNING: We are not liable if you give out false information
+            </FormText>
+            <ClientTestimonials
+              toggleCompany={props.toggleCompany}
+              clientList={props.course.clientList}
+            />
+          </div>
+        </div>
+        <Button color="primary" onClick={props.handleUpdateCourse} disabled={!props.validateGeneralForm()}>Update Course Setting</Button>
       </div>
-    </div>
-    <Button color="primary" onClick={props.handleUpdateCourse} disabled={!props.validateGeneralForm()}>Update Course Setting</Button>
-  </div>
-);
+    );
+  }
+}
 
 CoursePromo.propTypes = {
   course: PropTypes.shape({

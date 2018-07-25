@@ -9,6 +9,7 @@ import config from '../config';
 import CTOC from '../components/CTOC';
 import Notice from '../components/Notice';
 import './CoursePromo.css';
+import Editor from '../components/Editor';
 
 /* button to enrol or show TOC */
 const EnrolButton = (props) => {
@@ -121,6 +122,12 @@ export default class CoursePromo extends Component {
         console.log('item not found');
       }
     }
+
+    // display the promo content or description depending on availability
+    if (this.editor) {
+      this.editor
+        .setEditorStateFromRaw(this.state.course.promoContent || this.state.course.description);
+    }
   }
   getCourse = () => {
     const courseId = this.props.demoMode ?
@@ -229,14 +236,24 @@ export default class CoursePromo extends Component {
         </Container>
         <Container>
           <Row>
-            <div className="col-12 text-center course-promo-description">
-              {
-                this.state.course.description.split('\n').map(e => (
-                  <p className="lead" key={parseInt(Math.random() * 1000, 10)}>{e}</p>
-                ))
-              }
-              { /* Show put tag here */ }
-            </div>
+            {
+              this.state.course.promoContent ? (
+                <Editor
+                  className="course-promo-description col-12"
+                  ref={(editor) => { this.editor = editor; }}
+                  readOnly
+                />
+              ) : (
+                <div className="col-12 text-center course-promo-description">
+                  {
+                    this.state.course.description.split('\n').map(e => (
+                      <p className="lead" key={parseInt(Math.random() * 1000, 10)}>{e}</p>
+                    ))
+                  }
+                  { /* Show put tag here */ }
+                </div>
+            )
+          }
           </Row>
           <Row>
             <div className="col-12">

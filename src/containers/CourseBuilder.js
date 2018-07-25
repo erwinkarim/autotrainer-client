@@ -87,7 +87,9 @@ export default class CourseBuilder extends Component {
     this.state = {
       settingActiveTab: 'general',
       userDropdownOpen: false,
-      course: null,
+      course: {
+        courseId: '',
+      },
       loading: true,
       bg_handle: null,
       bg_pic_data: null,
@@ -97,6 +99,7 @@ export default class CourseBuilder extends Component {
     // load the course
     const handle = this;
     try {
+      /*
       const result = await this.getCourse();
       result.tagline = result.tagline === undefined || result.tagline === null ? '' : result.tagline;
       result.key_points =
@@ -107,6 +110,17 @@ export default class CourseBuilder extends Component {
         result.clientList === undefined || result.clientList === null ? [] : result.clientList;
       result.coupons =
         result.coupons === undefined || result.coupons === null ? [{ code: '', discount: 100.0 }] : result.coupons;
+      */
+
+      const result = Object.assign({
+        tagline: '',
+        key_points: [],
+        bg_pic: '',
+        bg_key: '',
+        clientList: [],
+        coupons: [{ code: null, discount: 100.0 }],
+        promoContent: '',
+      }, await this.getCourse());
 
       if (result != null) {
         handle.setState({ course: result, loading: false });
@@ -267,6 +281,11 @@ export default class CourseBuilder extends Component {
 
     this.setState({ course: newCourse });
   }
+  handlePromoChange = (content) => {
+    const newCourse = this.state.course;
+    newCourse.promoContent = content;
+    this.setState({ course: newCourse });
+  }
   updatePicture = (file) => {
     const handle = this;
     if (file instanceof Object) {
@@ -410,13 +429,14 @@ export default class CourseBuilder extends Component {
                   {...this.state}
                   {...this.props}
                   handleChange={this.handleChange}
-                  handleUpdateCourse={this.handleUpdateCourse}
                   enableAddKeyPoint={this.enableAddKeyPoint}
                   newKeyPoint={this.newKeyPoint}
                   deleteKeyPoint={this.deleteKeyPoint}
                   toggleCompany={this.toggleCompany}
                   autoGenCouponCode={this.autoGenCouponCode}
+                  handlePromoChange={this.handlePromoChange}
                   validateGeneralForm={this.validateGeneralForm}
+                  handleUpdateCourse={this.handleUpdateCourse}
                 />
               </TabPane>
               <TabPane tabId="toc_page">

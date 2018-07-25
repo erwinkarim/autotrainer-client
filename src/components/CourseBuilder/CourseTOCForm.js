@@ -6,7 +6,7 @@ const CourseTOCForm = props => (
   <div className="mt-2">
     <p>
       This will appear in your TOC page
-      Which can be viewed in {window.location.protocol}{'//'}course/toc{props.course.courseId}
+      Which can be viewed in {window.location.protocol}{'//'}courses/toc/{props.course.courseId}
     </p>
     <FormGroup>
       <Label>Description / Final Thoughts</Label>
