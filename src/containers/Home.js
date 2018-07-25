@@ -22,7 +22,7 @@ const Home = props =>
           {config.site_name} - We Provide Actuarial, Insurance and Financial Training Programs
         </title>
       </Helmet>
-      <Jumbotron fluid className="mb-0 position-relative py-0" id="jumbotron-1">
+      <Jumbotron fluid className="mb-0 position-relative py-0 text-center" id="jumbotron-1">
         <div id="video-1" className="video-container">
           <video playsInline autoPlay muted loop>
             <track kind="captions" />

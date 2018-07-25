@@ -191,7 +191,7 @@ export default class CoursePromo extends Component {
         <Helmet>
           <title>{this.state.course.name} - {config.site_name}</title>
         </Helmet>
-        <Jumbotron fluid style={styling}>
+        <Jumbotron fluid style={styling} className="text-center">
           <Container>
             <h1 className="display-3 text-center course-promo-title">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
@@ -255,7 +255,7 @@ export default class CoursePromo extends Component {
             )
           }
           </Row>
-          <Row>
+          <Row className="text-center">
             <div className="col-12">
               <h4 className="display-4">Table of Contents</h4>
             </div>
@@ -263,7 +263,7 @@ export default class CoursePromo extends Component {
           </Row>
         </Container>
         { clientList }
-        <Jumbotron fluid>
+        <Jumbotron fluid className="text-center">
           <Container>
             <h1 className="display-3">Pricing</h1>
             <p className="lead">RM{this.state.course.price}</p>
