@@ -10,7 +10,7 @@ import PropTypes from 'prop-types';
   course form detaling the course info (name, modules, etc ..)
 */
 const CourseForm = (props) => {
-  if (props.course === undefined) {
+  if (props.course === undefined || props.course === null) {
     return (<div>Course not loaded yet ... </div>);
   }
 

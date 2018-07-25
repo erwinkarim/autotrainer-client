@@ -99,18 +99,11 @@ export default class CourseBuilder extends Component {
     // load the course
     const handle = this;
     try {
-      /*
-      const result = await this.getCourse();
-      result.tagline = result.tagline === undefined || result.tagline === null ? '' : result.tagline;
-      result.key_points =
-        result.key_points === undefined || result.key_points === null ? [] : result.key_points;
-      result.bg_pic = result.bg_pic === undefined || result.bg_pic === null ? '' : result.bg_pic;
-      result.bg_key = result.bg_key === undefined || result.bg_key === null ? '' : result.bg_key;
-      result.clientList =
-        result.clientList === undefined || result.clientList === null ? [] : result.clientList;
-      result.coupons =
-        result.coupons === undefined || result.coupons === null ? [{ code: '', discount: 100.0 }] : result.coupons;
-      */
+      const newCourse = await this.getCourse();
+      // take out null entries before reassign default values
+      Object.entries(newCourse).forEach(([k, v]) => {
+        if (v === null) { delete newCourse[k]; }
+      });
 
       const result = Object.assign({
         tagline: '',
@@ -120,7 +113,7 @@ export default class CourseBuilder extends Component {
         clientList: [],
         coupons: [{ code: null, discount: 100.0 }],
         promoContent: '',
-      }, await this.getCourse());
+      }, newCourse);
 
       if (result != null) {
         handle.setState({ course: result, loading: false });
@@ -133,7 +126,8 @@ export default class CourseBuilder extends Component {
         this.updatePicture(this.state.course.bg_pic);
       }
     } catch (e) {
-      console.log(e);
+      console.error('Error loading course');
+      console.error(e);
     }
   }
   getCourse = () => invokeApig({ path: `/courses/${this.props.match.params.courseId}` })

@@ -79,13 +79,17 @@ class CoursePromo extends Component {
     this.editor.setEditorStateFromRaw(this.props.course.promoContent);
   }
   render = () => {
-    const { props } = this;
+    const {
+      course, handleChange, toggleCompany, enableAddKeyPoint,
+      newKeyPoint, deleteKeyPoint, autoGenCouponCode, handleUpdateCourse,
+      validateGeneralForm, handlePromoChange,
+    } = this.props;
 
     return (
       <div className="mt-2">
         <p>
           This will appear in your course promotion page. Which can viewed at{' '}
-          {window.location.protocol}{'//'}{window.location.host}/courses/promo/{props.course.courseId}
+          {window.location.protocol}{'//'}{window.location.host}/courses/promo/{course.courseId}
         </p>
         <div className="pricing">
           <h4>Pricing</h4>
@@ -94,7 +98,7 @@ class CoursePromo extends Component {
             <Label>Pricing</Label>
             <InputGroup>
               <InputGroupAddon addonType="prepend">RM</InputGroupAddon>
-              <Input type="number" id="price" onChange={props.handleChange} value={props.course.price} />
+              <Input type="number" id="price" onChange={handleChange} value={course.price} />
             </InputGroup>
           </FormGroup>
           <FormGroup>
@@ -103,10 +107,10 @@ class CoursePromo extends Component {
               className="mb-2"
               placeholder="Type in your coupon code"
               id="coupons"
-              onChange={props.handleChange}
-              value={props.course.coupons[0].code}
+              onChange={handleChange}
+              value={course.coupons[0].code}
             />
-            <Button onClick={props.autoGenCouponCode}>Auto Generate</Button>
+            <Button onClick={autoGenCouponCode}>Auto Generate</Button>
             <br />
             <small>
               Students can use the coupon code to instantly purchase the course.
@@ -126,9 +130,9 @@ class CoursePromo extends Component {
           <FormGroup>
             <CardDeck>
               {
-                (props.course.key_points === undefined || props.course.key_points.length === 0) ?
+                (course.key_points === undefined || course.key_points.length === 0) ?
                 (<Card body><CardText>No key points configured.</CardText></Card>) :
-                props.course.key_points.map((e, i) => (
+                course.key_points.map((e, i) => (
                   <Card key={i}>
                     <CardBody>
                       <FormGroup>
@@ -144,7 +148,7 @@ class CoursePromo extends Component {
                               data-position={i}
                               data-key="title"
                               value={e.title}
-                              onChange={props.handleChange}
+                              onChange={handleChange}
                             />
                             <InputGroupAddon addonType="append" className="text-muted">
                               <InputGroupText>{ 70 - e.title.length }</InputGroupText>
@@ -161,21 +165,21 @@ class CoursePromo extends Component {
                             data-position={i}
                             data-key="subtext"
                             value={e.subtext}
-                            onChange={props.handleChange}
+                            onChange={handleChange}
                           />
                           <InputGroupAddon addonType="append" className="text-muted">
                             <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
                           </InputGroupAddon>
                         </InputGroup>
-                        <Button type="button" color="danger" data-position={i} onClick={props.deleteKeyPoint}><FontAwesomeIcon icon="minus" /></Button>
+                        <Button type="button" color="danger" data-position={i} onClick={deleteKeyPoint}><FontAwesomeIcon icon="minus" /></Button>
                       </FormGroup>
                     </CardBody>
                   </Card>
                 ))
               }
               {
-                props.enableAddKeyPoint() ?
-                  <Button type="button" onClick={props.newKeyPoint} disabled={!props.enableAddKeyPoint()}>New Key Points</Button> :
+                enableAddKeyPoint() ?
+                  <Button type="button" onClick={newKeyPoint} disabled={!enableAddKeyPoint()}>New Key Points</Button> :
                   null
               }
             </CardDeck>
@@ -195,8 +199,8 @@ class CoursePromo extends Component {
               ref={(editor) => { this.editor = editor; }}
               type="textarea"
               id="promoContent"
-              value={props.course.promoContent}
-              handleBodyUpdate={props.handlePromoChange}
+              value={course.promoContent}
+              handleBodyUpdate={handlePromoChange}
               placeholder="Type in the things that you wanted to see in the promo page"
             />
           </FormGroup>
@@ -211,12 +215,12 @@ class CoursePromo extends Component {
               WARNING: We are not liable if you give out false information
             </FormText>
             <ClientTestimonials
-              toggleCompany={props.toggleCompany}
-              clientList={props.course.clientList}
+              toggleCompany={toggleCompany}
+              clientList={course.clientList}
             />
           </div>
         </div>
-        <Button color="primary" onClick={props.handleUpdateCourse} disabled={!props.validateGeneralForm()}>Update Course Setting</Button>
+        <Button color="primary" onClick={handleUpdateCourse} disabled={!validateGeneralForm()}>Update Course Setting</Button>
       </div>
     );
   }
@@ -228,7 +232,7 @@ CoursePromo.propTypes = {
     promoContent: PropTypes.string.isRequired,
     clientList: PropTypes.arrayOf(PropTypes.string).isRequired,
     key_points: PropTypes.arrayOf(PropTypes.shape()).isRequired,
-    price: PropTypes.number.isRequired,
+    price: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
     coupons: PropTypes.arrayOf(PropTypes.shape()).isRequired,
   }).isRequired,
   handleChange: PropTypes.func.isRequired,
@@ -239,6 +243,7 @@ CoursePromo.propTypes = {
   autoGenCouponCode: PropTypes.func.isRequired,
   handleUpdateCourse: PropTypes.func.isRequired,
   validateGeneralForm: PropTypes.func.isRequired,
+  handlePromoChange: PropTypes.func.isRequired,
 };
 
 export default CoursePromo;

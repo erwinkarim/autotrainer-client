@@ -127,5 +127,5 @@ CourseUser.propTypes = {
   student: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape().isRequired,
   course: PropTypes.shape().isRequired,
-  modules: PropTypes.shape().isRequired,
+  modules: PropTypes.arrayOf(PropTypes.shape()).isRequired,
 };
