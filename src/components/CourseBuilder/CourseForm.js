@@ -4,6 +4,7 @@ import {
   FormText, Jumbotron, Container, Button,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
+import { titleNotEmpty } from './formValidation';
 
 
 /*
@@ -50,6 +51,7 @@ const CourseForm = (props) => {
               id="name"
               value={props.course.name}
               onChange={props.handleChange}
+              invalid={!titleNotEmpty(props.course)}
             />
             <InputGroupAddon addonType="append" className="text-muted"><InputGroupText>{ 140 - props.course.name.length}</InputGroupText></InputGroupAddon>
           </InputGroup>

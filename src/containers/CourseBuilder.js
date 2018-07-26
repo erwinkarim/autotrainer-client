@@ -12,11 +12,18 @@ import { invokeApig, s3Upload, s3Delete } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import './CourseBuilder.css';
 import config from '../config';
-import CourseForm from '../components/CourseBuilder/CourseForm';
-import CourseTOCForm from '../components/CourseBuilder/CourseTOCForm';
-import CoursePromo from '../components/CourseBuilder/CoursePromo';
-import CourseUsers from '../components/CourseBuilder/CourseUsers';
-import CourseModules from '../components/CourseBuilder/CourseModules';
+import asyncComponent from '../components/AsyncComponent';
+import {
+  titleNotEmpty, descriptionNotEmpty, priceNotEmpty,
+  keyPointsNotEmpty, validCouponCode,
+} from '../components/CourseBuilder/formValidation';
+
+// asych load each form components
+const CourseForm = asyncComponent(() => import('../components/CourseBuilder/CourseForm'));
+const CourseTOCForm = asyncComponent(() => import('../components/CourseBuilder/CourseTOCForm'));
+const CoursePromo = asyncComponent(() => import('../components/CourseBuilder/CoursePromo'));
+const CourseUsers = asyncComponent(() => import('../components/CourseBuilder/CourseUsers'));
+const CourseModules = asyncComponent(() => import('../components/CourseBuilder/CourseModules'));
 
 /*
   forms to update the course options / publication status
@@ -295,18 +302,13 @@ export default class CourseBuilder extends Component {
     handle.setState({ bg_pic_data: file });
   }
   validateGeneralForm = () => {
-    // validate the general form
-    const titleNotEmpty = this.state.course.name.length > 0;
-    const descriptionNotEmpty = this.state.course.description.length > 0;
-    const priceNotEmpty = this.state.course.price !== '';
-    const keyPointsNotEmpty =
-      (this.state.course.key_points === undefined || this.state.course.key_points === null ?
-        true : (
-          this.state.course.key_points.reduce((v, e) =>
-            v && (e.title.length > 0 && e.subtext.length > 0), true)
-        ));
+    const { course } = this.state;
 
-    return titleNotEmpty && descriptionNotEmpty && priceNotEmpty && keyPointsNotEmpty;
+    return titleNotEmpty(course) &&
+      descriptionNotEmpty(course) &&
+      priceNotEmpty(course) &&
+      keyPointsNotEmpty(course) &&
+      validCouponCode(course);
   }
   newKeyPoint = () => {
     const newCourse = this.state.course;
@@ -377,21 +379,24 @@ export default class CourseBuilder extends Component {
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'general' })}
                   onClick={() => { this.toggle('general'); }}
-                >General
+                >General { !titleNotEmpty(this.state.course) ? <span className="text-danger">*</span> : null }
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'promo_page' })}
                   onClick={() => { this.toggle('promo_page'); }}
-                >Promo Page
+                >Promo Page {
+                  !keyPointsNotEmpty(this.state.course) || !validCouponCode(this.state.course) ?
+                    <span className="text-danger">*</span> : null
+                }
                 </NavLink>
               </NavItem>
               <NavItem>
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'toc_page' })}
                   onClick={() => { this.toggle('toc_page'); }}
-                >TOC Page
+                >TOC Page { !descriptionNotEmpty(this.state.course) ? <span className="text-danger">*</span> : null }
                 </NavLink>
               </NavItem>
               <NavItem>

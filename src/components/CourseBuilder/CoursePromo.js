@@ -6,6 +6,7 @@ import {
 import PropTypes from 'prop-types';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import Editor from '../Editor';
+import { validCouponCode } from './formValidation';
 
 /*
  * shows which clientst that attended your course
@@ -109,6 +110,7 @@ class CoursePromo extends Component {
               id="coupons"
               onChange={handleChange}
               value={course.coupons[0].code}
+              invalid={!validCouponCode(course)}
             />
             <Button onClick={autoGenCouponCode}>Auto Generate</Button>
             <br />
@@ -149,6 +151,7 @@ class CoursePromo extends Component {
                               data-key="title"
                               value={e.title}
                               onChange={handleChange}
+                              invalid={e.title.length === 0}
                             />
                             <InputGroupAddon addonType="append" className="text-muted">
                               <InputGroupText>{ 70 - e.title.length }</InputGroupText>
@@ -166,6 +169,7 @@ class CoursePromo extends Component {
                             data-key="subtext"
                             value={e.subtext}
                             onChange={handleChange}
+                            invalid={e.subtext.length === 0}
                           />
                           <InputGroupAddon addonType="append" className="text-muted">
                             <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
