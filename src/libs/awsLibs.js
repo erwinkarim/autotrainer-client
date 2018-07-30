@@ -27,7 +27,7 @@ export async function getUnauthCredentials() {
 
   const getIdPromise = new Promise((resolve) => {
     cognitoIdent.getId(params, (err, data) => {
-      console.log('ident', data);
+      // console.log('ident', data);
       ident = data;
       resolve();
     });

@@ -158,7 +158,7 @@ CTOC.propTypes = {
   showLink: PropTypes.bool,
   enrolment: PropTypes.shape({
     progress: PropTypes.array,
-  }).isRequired,
+  }),
   defaultOptions: PropTypes.shape({}),
   options: PropTypes.shape({}),
   course: PropTypes.shape({
@@ -172,4 +172,5 @@ CTOC.defaultProps = {
   defaultOptions: { showLink: true, enrolment: null },
   options: {},
   promo: false,
+  enrolment: null,
 };

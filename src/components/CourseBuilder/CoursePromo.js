@@ -128,6 +128,8 @@ class CoursePromo extends Component {
             Should use this oppurnity to hook your potential customers into reading further.
             Hence why the wordings need to be consice but catchy. If this space is empty,
             we will use the content from your TOC description for your promotional content.
+            If you leave this field blank, we will use the description field in the Table of
+            Contents form as your promotonal content.
           </small>
           <FormGroup>
             <CardDeck>
