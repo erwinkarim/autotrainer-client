@@ -1,12 +1,10 @@
 import React, { Component } from 'react';
 import {
-  Container, Row, Col, Nav, NavItem, NavLink, TabContent,
-  TabPane, Jumbotron, FormGroup, Label, InputGroup, Input, InputGroupAddon,
-  InputGroupText, Button, FormText, CardDeck, Card, CardBody, CardText,
+  Row, Col, Nav, NavItem, NavLink, TabContent,
+  TabPane, FormGroup, Label, Input, Button,
 } from 'reactstrap';
 import classnames from 'classnames';
 import toTitleCase from 'titlecase';
-import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import uuid from 'uuid';
@@ -14,274 +12,18 @@ import { invokeApig, s3Upload, s3Delete } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import './CourseBuilder.css';
 import config from '../config';
-import CourseUsers from '../components/CourseBuilder/CourseUsers';
-import CourseModules from '../components/CourseBuilder/CourseModules';
+import asyncComponent from '../components/AsyncComponent';
+import {
+  titleNotEmpty, descriptionNotEmpty, priceNotEmpty,
+  keyPointsNotEmpty, validCouponCode,
+} from '../components/CourseBuilder/formValidation';
 
-/*
- * shows which clientst that attended your course
- */
-const ClientTestimonials = props => (
-  <Col>
-    <Row>
-      {
-        props.clientList.map(c => (
-          <Col xs="6" md="2" key={c}>
-            <img className="img-fluid img-grayscale" alt={c} src={`/logos/${c}`} />
-          </Col>
-        ))
-      }
-    </Row>
-    <FormGroup check className="row p-2">
-      {
-        props.companyList.sort((ca, cb) => ca.name > cb.name).map(c => (
-          <Label key={c.name} check className="col-6 col-md-3">
-            <Input
-              type="checkbox"
-              name="companies[]"
-              value={c.logo}
-              onChange={props.toggleCompany}
-              checked={props.clientList.includes(c.logo)}
-            />
-            {` ${c.name}`}
-          </Label>
-        ))
-      }
-    </FormGroup>
-  </Col>
-);
-
-ClientTestimonials.propTypes = {
-  companyList: PropTypes.arrayOf(PropTypes.shape()),
-  clientList: PropTypes.arrayOf(PropTypes.string),
-  toggleCompany: PropTypes.func.isRequired,
-};
-
-ClientTestimonials.defaultProps = {
-  companyList: [
-    { logo: '256x256 BKR-rd.png', name: 'Bank Rakyat' },
-    { logo: '256x256 IIT-rd.png', name: 'Insurance Islam TAIB' },
-    { logo: '256x256 KN-rd.png', name: 'Khazanah Nasional' },
-    { logo: '256x256 TI-rd.png', name: 'Thanachart Insurance' },
-    { logo: '256x256 TMIG-rd.png', name: 'Tokyo Marine Insurance Group' },
-    { logo: '256x256 WBG-rd.png', name: 'World Bank Group' },
-    { logo: 'hsbc_amanah.gif', name: 'HSBC Amanah Takaful' },
-    { logo: '256x80 BankIslam.png', name: 'Bank Islam' },
-    { logo: '256 HLA.png', name: 'Hong Leong Assurance' },
-    { logo: '256x512 Etiqa.png', name: 'Etiqa Insurance' },
-    { logo: '256x256 TuneIns.png', name: 'Tune Insurance' },
-  ],
-  clientList: [],
-};
-
-
-/*
-  course form detaling the course info (name, modules, etc ..)
-*/
-const CourseForm = (props) => {
-  if (props.course === undefined) {
-    return (<div>Course not loaded yet ... </div>);
-  }
-
-  const bgStyling = props.bg_pic_data ?
-    { backgroundImage: `url(${props.bg_pic_data})`, backgroundRepeat: 'no-repeat', backgroundSize: 'cover' } :
-    {};
-  const titleFontStyling = props.course.title_font_color ?
-    { color: props.course.title_font_color } : { color: 'black' };
-  let styling = Object.assign({}, bgStyling);
-  styling = Object.assign(styling, titleFontStyling);
-
-  let bgFileName = '';
-  if (props.bg_handle) {
-    bgFileName = (props.bg_handle instanceof Object ? props.bg_handle.name : props.bg_handle);
-  }
-
-  return (
-    <div>
-      <FormGroup>
-        <Label>Name</Label>
-        <h1 className="text-center">
-          <InputGroup>
-            <Input
-              type="text"
-              placeholder="Course Name. Should be less than 140 characters"
-              className="display-3 text-center"
-              style={{ fontSize: 'inherit' }}
-              maxLength="140"
-              id="name"
-              value={props.course.name}
-              onChange={props.handleChange}
-            />
-            <InputGroupAddon addonType="append" className="text-muted"><InputGroupText>{ 140 - props.course.name.length}</InputGroupText></InputGroupAddon>
-          </InputGroup>
-        </h1>
-      </FormGroup>
-      <FormGroup>
-        <Label>Font Color</Label>
-        <Input
-          type="select"
-          id="title_font_color"
-          value={props.course.title_font_color}
-          onChange={props.handleChange}
-        >
-          <option value="black">Black</option>
-          <option value="darkslategray">Dark Slate Gray</option>
-          <option value="gray">Gray</option>
-          <option value="gainsboro">Gainsboro</option>
-          <option value="ghostwhite">Ghost White</option>
-          <option value="white">White</option>
-        </Input>
-      </FormGroup>
-      <FormGroup>
-        <Label>Background Picture</Label>
-        <Input type="file" placeholder="Background picture" id="bg_pic" onChange={props.handleChange} />
-        <FormText color="muted">JPEG only images. Should fit in 1600x900 pixels and under 2 MB in size.</FormText>
-        {
-          props.course.bg_pic ? <Input disabled value={bgFileName} /> : null
-        }
-      </FormGroup>
-      <p>Preview</p>
-      <Jumbotron fluid style={styling} className="text-center">
-        <Container>
-          <h1 className="display-3 text-center">{props.course.name}</h1>
-          { props.course.tagline !== undefined ? (<p className="lead">{props.course.tagline}</p>) : null}
-          <p><Button outline color="primary">Enrol for RM{props.course.price}</Button></p>
-        </Container>
-      </Jumbotron>
-      <FormGroup>
-        <Label>Tagline</Label>
-        <InputGroup>
-          <Input
-            type="text"
-            placeholder="Tag Line. Should be less than 140 characters"
-            id="tagline"
-            className="lead text-center"
-            maxLength="140"
-            value={props.course.tagline}
-            onChange={props.handleChange}
-          />
-          <InputGroupAddon addonType="append" className="text-muted">
-            <InputGroupText>{ 140 - props.course.tagline.length }</InputGroupText>
-          </InputGroupAddon>
-        </InputGroup>
-      </FormGroup>
-      <FormGroup>
-        <Label>Description / Final Thoughts</Label>
-        <Input className="lead" type="textarea" rows="20" id="description" value={props.course.description} onChange={props.handleChange} />
-      </FormGroup>
-      <FormGroup>
-        <Label>Pricing</Label>
-        <InputGroup>
-          <InputGroupAddon addonType="prepend">RM</InputGroupAddon>
-          <Input type="number" id="price" onChange={props.handleChange} value={props.course.price} />
-        </InputGroup>
-      </FormGroup>
-      <FormGroup>
-        <Label>Coupon Code</Label>
-        <Input
-          className="mb-2"
-          placeholder="Type in your coupon code"
-          id="coupons"
-          onChange={props.handleChange}
-          value={props.course.coupons[0].code}
-        />
-        <Button onClick={props.autoGenCouponCode}>Auto Generate</Button>
-        <br />
-        <small>
-          Students can use the coupon code to instantly purchase the course.
-          Restrictions: 0 or 8 to 16 alphanumeric characters only.
-        </small>
-      </FormGroup>
-      <FormGroup>
-        <Label>Key Points</Label>
-        <CardDeck>
-          {
-            (props.course.key_points === undefined || props.course.key_points.length === 0) ?
-            (<Card body><CardText>No key points configured.</CardText></Card>) :
-            props.course.key_points.map((e, i) => (
-              <Card key={i}>
-                <CardBody>
-                  <FormGroup>
-                    <h4>
-                      <InputGroup className="mb-2">
-                        <Input
-                          type="text"
-                          placeholder={`Title for Point ${i + 1}. Should be less than 70 characters`}
-                          style={{ fontSize: 'inherit' }}
-                          className="card-title text-center"
-                          maxLength="70"
-                          id="key_points"
-                          data-position={i}
-                          data-key="title"
-                          value={e.title}
-                          onChange={props.handleChange}
-                        />
-                        <InputGroupAddon addonType="append" className="text-muted">
-                          <InputGroupText>{ 70 - e.title.length }</InputGroupText>
-                        </InputGroupAddon>
-                      </InputGroup>
-                    </h4>
-                    <InputGroup className="mb-2">
-                      <Input
-                        type="textarea"
-                        placeholder={`Subtext for Point ${i + 1}. Should be less than 140 characters`}
-                        rows="4"
-                        maxLength="140"
-                        id="key_points"
-                        data-position={i}
-                        data-key="subtext"
-                        value={e.subtext}
-                        onChange={props.handleChange}
-                      />
-                      <InputGroupAddon addonType="append" className="text-muted">
-                        <InputGroupText>{ 140 - e.subtext.length }</InputGroupText>
-                      </InputGroupAddon>
-                    </InputGroup>
-                    <Button type="button" color="danger" data-position={i} onClick={props.deleteKeyPoint}><FontAwesomeIcon icon="minus" /></Button>
-                  </FormGroup>
-                </CardBody>
-              </Card>
-            ))
-          }
-          {
-            props.enableAddKeyPoint() ?
-              <Button type="button" onClick={props.newKeyPoint} disabled={!props.enableAddKeyPoint()}>New Key Points</Button> :
-              null
-          }
-        </CardDeck>
-      </FormGroup>
-      <div>
-        <Label>Client attendees</Label>
-        <FormText>
-          Select upto 6 companies that have attended this course.
-          WARNING: We are not liable if you give out false information
-        </FormText>
-        <ClientTestimonials
-          toggleCompany={props.toggleCompany}
-          clientList={props.course.clientList}
-        />
-      </div>
-      <Button color="primary" onClick={props.handleUpdateCourse} disabled={!props.validateGeneralForm()}>Update Course Setting</Button>
-    </div>);
-};
-
-CourseForm.propTypes = {
-  course: PropTypes.shape().isRequired,
-  bg_pic_data: PropTypes.string,
-  bg_handle: PropTypes.oneOfType([PropTypes.string, PropTypes.shape()]),
-  toggleCompany: PropTypes.func.isRequired,
-  enableAddKeyPoint: PropTypes.func.isRequired,
-  newKeyPoint: PropTypes.func.isRequired,
-  handleUpdateCourse: PropTypes.func.isRequired,
-  handleChange: PropTypes.func.isRequired,
-  deleteKeyPoint: PropTypes.func.isRequired,
-  validateGeneralForm: PropTypes.func.isRequired,
-  autoGenCouponCode: PropTypes.func.isRequired,
-};
-
-CourseForm.defaultProps = {
-  bg_pic_data: {},
-  bg_handle: {},
-};
+// asych load each form components
+const CourseForm = asyncComponent(() => import('../components/CourseBuilder/CourseForm'));
+const CourseTOCForm = asyncComponent(() => import('../components/CourseBuilder/CourseTOCForm'));
+const CoursePromo = asyncComponent(() => import('../components/CourseBuilder/CoursePromo'));
+const CourseUsers = asyncComponent(() => import('../components/CourseBuilder/CourseUsers'));
+const CourseModules = asyncComponent(() => import('../components/CourseBuilder/CourseModules'));
 
 /*
   forms to update the course options / publication status
@@ -293,7 +35,7 @@ const CourseOptions = (props) => {
   };
 
   return (
-    <div>
+    <div className="mt-2">
       <FormGroup>
         <Label>Publication Status</Label>
         <Input type="select" id="status" value={course.status} onChange={props.handleChange}>
@@ -352,7 +94,9 @@ export default class CourseBuilder extends Component {
     this.state = {
       settingActiveTab: 'general',
       userDropdownOpen: false,
-      course: null,
+      course: {
+        courseId: '',
+      },
       loading: true,
       bg_handle: null,
       bg_pic_data: null,
@@ -362,16 +106,21 @@ export default class CourseBuilder extends Component {
     // load the course
     const handle = this;
     try {
-      const result = await this.getCourse();
-      result.tagline = result.tagline === undefined || result.tagline === null ? '' : result.tagline;
-      result.key_points =
-        result.key_points === undefined || result.key_points === null ? [] : result.key_points;
-      result.bg_pic = result.bg_pic === undefined || result.bg_pic === null ? '' : result.bg_pic;
-      result.bg_key = result.bg_key === undefined || result.bg_key === null ? '' : result.bg_key;
-      result.clientList =
-        result.clientList === undefined || result.clientList === null ? [] : result.clientList;
-      result.coupons =
-        result.coupons === undefined || result.coupons === null ? [{ code: '', discount: 100.0 }] : result.coupons;
+      const newCourse = await this.getCourse();
+      // take out null entries before reassign default values
+      Object.entries(newCourse).forEach(([k, v]) => {
+        if (v === null) { delete newCourse[k]; }
+      });
+
+      const result = Object.assign({
+        tagline: '',
+        key_points: [],
+        bg_pic: '',
+        bg_key: '',
+        clientList: [],
+        coupons: [{ code: null, discount: 100.0 }],
+        promoContent: '',
+      }, newCourse);
 
       if (result != null) {
         handle.setState({ course: result, loading: false });
@@ -384,7 +133,8 @@ export default class CourseBuilder extends Component {
         this.updatePicture(this.state.course.bg_pic);
       }
     } catch (e) {
-      console.log(e);
+      console.error('Error loading course');
+      console.error(e);
     }
   }
   getCourse = () => invokeApig({ path: `/courses/${this.props.match.params.courseId}` })
@@ -471,7 +221,6 @@ export default class CourseBuilder extends Component {
     const newCourse = this.state.course;
     const handle = this;
 
-    console.log('e.target.id', e.target.id);
     // either handle key points or others
     if (e.target.id === 'key_points') {
       newCourse[e.target.id][parseInt(e.target.dataset.position, 10)][e.target.dataset.key] =
@@ -533,6 +282,11 @@ export default class CourseBuilder extends Component {
 
     this.setState({ course: newCourse });
   }
+  handlePromoChange = (content) => {
+    const newCourse = this.state.course;
+    newCourse.promoContent = content;
+    this.setState({ course: newCourse });
+  }
   updatePicture = (file) => {
     const handle = this;
     if (file instanceof Object) {
@@ -548,18 +302,13 @@ export default class CourseBuilder extends Component {
     handle.setState({ bg_pic_data: file });
   }
   validateGeneralForm = () => {
-    // validate the general form
-    const titleNotEmpty = this.state.course.name.length > 0;
-    const descriptionNotEmpty = this.state.course.description.length > 0;
-    const priceNotEmpty = this.state.course.price !== '';
-    const keyPointsNotEmpty =
-      (this.state.course.key_points === undefined || this.state.course.key_points === null ?
-        true : (
-          this.state.course.key_points.reduce((v, e) =>
-            v && (e.title.length > 0 && e.subtext.length > 0), true)
-        ));
+    const { course } = this.state;
 
-    return titleNotEmpty && descriptionNotEmpty && priceNotEmpty && keyPointsNotEmpty;
+    return titleNotEmpty(course) &&
+      descriptionNotEmpty(course) &&
+      priceNotEmpty(course) &&
+      keyPointsNotEmpty(course) &&
+      validCouponCode(course);
   }
   newKeyPoint = () => {
     const newCourse = this.state.course;
@@ -630,7 +379,24 @@ export default class CourseBuilder extends Component {
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'general' })}
                   onClick={() => { this.toggle('general'); }}
-                >General
+                >General { !titleNotEmpty(this.state.course) ? <span className="text-danger">*</span> : null }
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: this.state.settingActiveTab === 'promo_page' })}
+                  onClick={() => { this.toggle('promo_page'); }}
+                >Promo Page {
+                  !keyPointsNotEmpty(this.state.course) || !validCouponCode(this.state.course) ?
+                    <span className="text-danger">*</span> : null
+                }
+                </NavLink>
+              </NavItem>
+              <NavItem>
+                <NavLink
+                  className={classnames({ active: this.state.settingActiveTab === 'toc_page' })}
+                  onClick={() => { this.toggle('toc_page'); }}
+                >TOC Page { !descriptionNotEmpty(this.state.course) ? <span className="text-danger">*</span> : null }
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -653,13 +419,32 @@ export default class CourseBuilder extends Component {
                 <CourseForm
                   {...this.state}
                   handleChange={this.handleChange}
+                  handleUpdateCourse={this.handleUpdateCourse}
+                  validateGeneralForm={this.validateGeneralForm}
+                />
+              </TabPane>
+              <TabPane tabId="promo_page">
+                <CoursePromo
+                  {...this.state}
+                  {...this.props}
+                  handleChange={this.handleChange}
                   enableAddKeyPoint={this.enableAddKeyPoint}
                   newKeyPoint={this.newKeyPoint}
-                  handleUpdateCourse={this.handleUpdateCourse}
                   deleteKeyPoint={this.deleteKeyPoint}
-                  validateGeneralForm={this.validateGeneralForm}
                   toggleCompany={this.toggleCompany}
                   autoGenCouponCode={this.autoGenCouponCode}
+                  handlePromoChange={this.handlePromoChange}
+                  validateGeneralForm={this.validateGeneralForm}
+                  handleUpdateCourse={this.handleUpdateCourse}
+                />
+              </TabPane>
+              <TabPane tabId="toc_page">
+                <CourseTOCForm
+                  {...this.state}
+                  {...this.props}
+                  handleChange={this.handleChange}
+                  handleUpdateCourse={this.handleUpdateCourse}
+                  validateGeneralForm={this.validateGeneralForm}
                 />
               </TabPane>
               <TabPane tabId="pub_status">

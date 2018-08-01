@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Jumbotron, Row, CardDeck, Card, CardBody, CardTitle, CardText, Button } from 'reactstrap';
+import { Container, Jumbotron, Row, Col, CardDeck, Card, CardBody, CardTitle, CardText, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
@@ -9,6 +9,7 @@ import config from '../config';
 import CTOC from '../components/CTOC';
 import Notice from '../components/Notice';
 import './CoursePromo.css';
+import Editor from '../components/Editor';
 
 /* button to enrol or show TOC */
 const EnrolButton = (props) => {
@@ -102,13 +103,19 @@ export default class CoursePromo extends Component {
       console.log(e);
     }
 
+    // display the promo content or description depending on availability
+    if (this.editor) {
+      this.editor
+        .setEditorStateFromRaw(this.state.course.promoContent || this.state.course.description);
+    }
+
     // skip enrolment if there's no current user
     if (this.props.currentUser === null) {
       return;
     }
 
+    // no enrolment for demo mode
     if (this.props.demoMode) {
-      // no enrolment for demo mode
       return;
     }
 
@@ -121,6 +128,7 @@ export default class CoursePromo extends Component {
         console.log('item not found');
       }
     }
+
   }
   getCourse = () => {
     const courseId = this.props.demoMode ?
@@ -184,7 +192,7 @@ export default class CoursePromo extends Component {
         <Helmet>
           <title>{this.state.course.name} - {config.site_name}</title>
         </Helmet>
-        <Jumbotron fluid style={styling}>
+        <Jumbotron fluid style={styling} className="text-center">
           <Container>
             <h1 className="display-3 text-center course-promo-title">{this.state.course.name}</h1>
             { this.state.course.tagline !== undefined ? (<p className="lead">{this.state.course.tagline}</p>) : null}
@@ -229,16 +237,28 @@ export default class CoursePromo extends Component {
         </Container>
         <Container>
           <Row>
-            <div className="col-12 text-center course-promo-description">
-              {
-                this.state.course.description.split('\n').map(e => (
-                  <p className="lead" key={parseInt(Math.random() * 1000, 10)}>{e}</p>
-                ))
-              }
-              { /* Show put tag here */ }
-            </div>
+            {
+              this.state.course.promoContent ? (
+                <Col>
+                  <Editor
+                    className="course-promo-description col-12"
+                    ref={(editor) => { this.editor = editor; }}
+                    readOnly
+                  />
+                </Col>
+              ) : (
+                <Col className="text-center course-promo-description">
+                  {
+                    this.state.course.description.split('\n').map(e => (
+                      <p className="lead" key={parseInt(Math.random() * 1000, 10)}>{e}</p>
+                    ))
+                  }
+                  { /* Show put tag here */ }
+                </Col>
+            )
+          }
           </Row>
-          <Row>
+          <Row className="text-center">
             <div className="col-12">
               <h4 className="display-4">Table of Contents</h4>
             </div>
@@ -246,7 +266,7 @@ export default class CoursePromo extends Component {
           </Row>
         </Container>
         { clientList }
-        <Jumbotron fluid>
+        <Jumbotron fluid className="text-center">
           <Container>
             <h1 className="display-3">Pricing</h1>
             <p className="lead">RM{this.state.course.price}</p>

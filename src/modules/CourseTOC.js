@@ -20,7 +20,7 @@ const CourseTOC = (props) => {
 
   return (
     <div>
-      <Jumbotron fluid style={styling}>
+      <Jumbotron fluid style={styling} className="text-center">
         <Container>
           <h1 className="display-3 course-toc-title">Welcome to {props.module.name}</h1>
           <p className="lead">{props.module.tagline}</p>
@@ -33,7 +33,7 @@ const CourseTOC = (props) => {
             { props.module.description.split('\n').map(para => (<p key={parseInt(Math.random() * 1000, 10)} className="lead text-left">{para}</p>)) }
           </Col>
           <Col xs="12">
-            <h3 className="display-4 course-toc">Table of Contents</h3>
+            <h3 className="display-4 course-toc text-center">Table of Contents</h3>
             <CTOC
               course={props.module}
               {...props}

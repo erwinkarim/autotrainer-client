@@ -216,6 +216,7 @@ export default class CourseModules extends Component {
     <Row className="mt-3">
       <div className="col-12">
         <h3>Module Manager</h3>
+        <hr />
         <Navbar color="light" light>
           <Nav>
             <UncontrolledDropdown tag="li" className="nav-item">

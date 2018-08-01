@@ -145,11 +145,12 @@ CourseMenu.propTypes = {
   moduleId: PropTypes.string,
   buildMode: PropTypes.bool,
   history: PropTypes.shape().isRequired,
-  enrolment: PropTypes.shape().isRequired,
+  enrolment: PropTypes.shape(),
 };
 
 CourseMenu.defaultProps = {
   courseId: '4c082890-e510-11e7-bd48-59001745cb8e',
   moduleId: '0e1e3b80-ff48-11e7-b64f-c32e5e53678a',
   buildMode: false,
+  enrolment: null,
 };

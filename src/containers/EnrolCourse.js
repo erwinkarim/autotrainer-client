@@ -25,6 +25,7 @@ import Notice from '../components/Notice';
   * 2. credit card: somehow use api to validate payment, etc and update
         enrolment status
   * 3. contact author: maybe later
+  * 4. free enrolment: if you invited and the course is free. allow free enrolment
   */
 
 const CouponCard = props => (
@@ -93,6 +94,21 @@ const CreditCard = () => (
   </Col>
 );
 
+const FreeEnrolment = props => (
+  <Col xs="12" md="6" className="mb-2">
+    <Card body>
+      <CardText>
+        You have been invited to enrol into this free course. Click below to complete the enrolment
+      </CardText>
+      <Button color="primary" onClick={props.handleFreeEnrolment}>Enrol</Button>
+    </Card>
+  </Col>
+);
+
+FreeEnrolment.propTypes = {
+  handleFreeEnrolment: PropTypes.func.isRequired,
+};
+
 /**
  * Adds two numbers together.
  * @param {int} body The first number.
@@ -113,6 +129,7 @@ export default class EnrolCourse extends Component {
       isLoading: true,
       course: null,
       enrolment: null,
+      invited: false,
       paymentInfo: {
         couponCode: '',
         nameOnCard: '',
@@ -141,6 +158,17 @@ export default class EnrolCourse extends Component {
       console.log('error loading enrolment');
       console.log(e);
     }
+
+    // check if i'm invited
+    try {
+      const results = await this.checkInvitation();
+      this.setState({
+        invited: results.reduce((c, v) => c || (v.courseId === this.state.course.courseId), false),
+      });
+    } catch (e) {
+      console.log('error checking invitation');
+      console.log(e);
+    }
   }
   getCourse = () => {
     const courseId = this.props.match.params.id;
@@ -150,6 +178,10 @@ export default class EnrolCourse extends Component {
   getEnrolmentStatus = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
     path: `/enrolment/${this.props.match.params.id}`,
+  })
+  checkInvitation = () => invokeApig({
+    path: '/enrolment/invited',
+    queryParams: { email: this.props.currentUser.email },
   })
   purchaseCourse = body => invokeApig({
     method: 'POST',
@@ -183,9 +215,25 @@ export default class EnrolCourse extends Component {
       console.log(e);
     }
   }
+  handleFreeEnrolment = async () => {
+    try {
+      const result = await this.purchaseCourse({
+        method: 'invitedFree',
+        email: this.props.currentUser.email,
+      });
+
+      // successfully enroled
+      this.setState({ enrolment: result });
+    } catch (e) {
+      console.log('error when trying to enrol');
+      console.log(e);
+    }
+  }
   render = () => {
     const { isAuthenticated } = this.props;
-    const { isLoading, course, enrolment } = this.state;
+    const {
+      isLoading, course, enrolment, invited,
+    } = this.state;
 
     if (!isAuthenticated) {
       return <Notice content="Unauthenticated" />;
@@ -195,31 +243,43 @@ export default class EnrolCourse extends Component {
       return <Notice content="Loading ..." />;
     }
 
-    if (!course.published) {
+    if (course.status !== 'published') {
       return <Notice content="Course not yet published" />;
     }
 
-    const body = (enrolment === undefined || enrolment === null) ? (
-      <Row>
-        <Col xs="12">
-          <p>You may enrol into {course.name} via those two methods :-</p>
-        </Col>
-        <CouponCard
-          {...this.props}
-          {...this.state}
-          handleCouponPurchase={this.handleCouponPurchase}
-          hadndleFormChange={this.hadndleFormChange}
-        />
-        <CreditCard {...this.props} />
-      </Row>
-    ) : (
-      <Row>
-        <Col>
-          <p>Congratulations, you have enrolled in {course.name}. </p>
-          <Button color="primary" tag={Link} to={`/courses/toc/${course.courseId}`}>Continue to Table of Contents</Button>
-        </Col>
-      </Row>
-    );
+    let body = null;
+    if (invited && parseInt(course.price, 10) === 0) {
+      body = (
+        <Row>
+          <FreeEnrolment {...this.state} handleFreeEnrolment={this.handleFreeEnrolment} />
+        </Row>
+      );
+    } else if (enrolment === undefined || enrolment === null) {
+      body = (
+        <Row>
+          <Col xs="12">
+            <p>You may enrol into {course.name} via those two methods :-</p>
+          </Col>
+          <CouponCard
+            {...this.props}
+            {...this.state}
+            handleCouponPurchase={this.handleCouponPurchase}
+            hadndleFormChange={this.hadndleFormChange}
+          />
+          <CreditCard {...this.props} />
+        </Row>
+      );
+    } else {
+      // enrolment is defined
+      body = (
+        <Row>
+          <Col>
+            <p>Congratulations, you have enrolled in {course.name}. </p>
+            <Button color="primary" tag={Link} to={`/courses/toc/${course.courseId}`}>Continue to Table of Contents</Button>
+          </Col>
+        </Row>
+      );
+    }
 
     // doing the styling
     const bgStyling = this.state.course.bg_pic ?
