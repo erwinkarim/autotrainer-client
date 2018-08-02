@@ -21,7 +21,7 @@ const EnrolButton = (props) => {
   } = props;
 
   // check enrolment status
-  // point to enrolment payment page if no enrolment yet
+  // check if user is logged in, point to login button
   return enrolment === null ?
     (<Button color="primary" tag={Link} to={`/courses/enrol/${course.courseId}`}>{enrolText}</Button>) :
     (<Button tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);

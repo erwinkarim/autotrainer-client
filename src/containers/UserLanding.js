@@ -45,6 +45,9 @@ class CourseHighLights extends Component {
  * @returns {null} The sum of the two numbers.
  */
 export default class UserLanding extends Component {
+  componentDidMount = () => {
+    // check if got redirect request in local storage
+  }
   componentDidUpdate = async (prevProps) => {
     if (prevProps.currentUser !== this.props.currentUser) {
       try {
