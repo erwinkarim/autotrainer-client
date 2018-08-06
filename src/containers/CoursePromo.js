@@ -128,7 +128,6 @@ export default class CoursePromo extends Component {
         console.log('item not found');
       }
     }
-
   }
   getCourse = () => {
     const courseId = this.props.demoMode ?
@@ -200,14 +199,9 @@ export default class CoursePromo extends Component {
               <EnrolButton
                 id="course-enrol-button-1"
                 outline
+                {...this.props}
                 {...this.state}
                 {...{ enrolText: `Enrol for RM${this.state.course.price}`, handleEnrolCourse: this.handleEnrolCourse }}
-                {...{
-                  auth: this.props.auth,
-                  isAuthenticated: this.props.isAuthenticated,
-                  addNotification: this.props.addNotification,
-                  }
-                }
               />
             </p>
           </Container>
@@ -274,12 +268,7 @@ export default class CoursePromo extends Component {
               <EnrolButton
                 id="course-enrol-button-2"
                 {...this.state}
-                {...{
-                  auth: this.props.auth,
-                  isAuthenticated: this.props.isAuthenticated,
-                  addNotification: this.props.addNotification,
-                  }
-                }
+                {...this.props}
                 handleEnrolCourse={this.handleEnrolCourse}
                 className="mx-auto"
               />

@@ -9,6 +9,7 @@ import Helmet from 'react-helmet';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import Notice from '../components/Notice';
+import LoginBox from '../components/LoginBox';
 
 /*
  * course enrolment form
@@ -236,7 +237,7 @@ export default class EnrolCourse extends Component {
     } = this.state;
 
     if (!isAuthenticated) {
-      return <Notice content="Unauthenticated" />;
+      return <LoginBox {...this.props} />;
     }
 
     if (isLoading) {

@@ -46,7 +46,13 @@ class CourseHighLights extends Component {
  */
 export default class UserLanding extends Component {
   componentDidMount = () => {
-    // check if got redirect request in local storage
+    // check for login redirects
+    const newLocation = window.localStorage.getItem('login_redirect');
+
+    if (newLocation) {
+      window.localStorage.removeItem('login_redirect');
+      this.props.history.push(newLocation);
+    }
   }
   componentDidUpdate = async (prevProps) => {
     if (prevProps.currentUser !== this.props.currentUser) {
