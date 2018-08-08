@@ -45,7 +45,19 @@ class CourseHighLights extends Component {
  * @returns {null} The sum of the two numbers.
  */
 export default class UserLanding extends Component {
-  componentDidMount = () => {
+  componentDidMount = async () => {
+    // check if need for auto enrolment
+    const enrolCourse = window.localStorage.getItem('enrol_course');
+    if (enrolCourse) {
+      try {
+        window.localStorage.removeItem('enrol_course');
+        this.autoEnrolCourse(enrolCourse);
+      } catch (e) {
+        console.log('problem trying to enrol course');
+        console.log(e);
+      }
+    }
+
     // check for login redirects
     const newLocation = window.localStorage.getItem('login_redirect');
 
@@ -69,6 +81,11 @@ export default class UserLanding extends Component {
     method: 'POST',
     path: '/ident/check',
     queryParams: { username: this.props.currentUser['cognito:username'] },
+  })
+  autoEnrolCourse = courseId => invokeApig({
+    method: 'POST',
+    path: '/enrolment',
+    body: { courseId },
   })
   render = () => {
     const handle = this;
@@ -133,6 +150,7 @@ UserLanding.propTypes = {
   isAuthenticating: PropTypes.bool.isRequired,
   currentUser: PropTypes.shape(),
   demoMode: PropTypes.bool,
+  history: PropTypes.shape().isRequired,
 };
 
 UserLanding.defaultProps = {
