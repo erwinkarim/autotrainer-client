@@ -45,6 +45,6 @@ const TutorialDoc = props => (
     step={5}
     openingStatement={desc}
   />
-)
+);
 
 export default TutorialDoc;

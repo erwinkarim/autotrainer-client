@@ -57,7 +57,7 @@ EnrolButton.propTypes = {
   enrolment: PropTypes.shape(),
   course: PropTypes.shape().isRequired,
   currentUser: PropTypes.shape(),
-  auth: PropTypes.auth.shape(),
+  auth: PropTypes.shape(),
 };
 
 EnrolButton.defaultProps = {

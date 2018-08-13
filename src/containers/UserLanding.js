@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Container, Row } from 'reactstrap';
+import { Container, Row, Alert } from 'reactstrap';
 import { HashLink as Link } from 'react-router-hash-link';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
@@ -109,14 +109,14 @@ export default class UserLanding extends Component {
               <img height="32" src={handle.props.currentUser.picture} alt={handle.props.currentUser.name} className="rounded-circle mr-2" />
               Welcome, {handle.props.currentUser.name}
             </p>
+            {
+              this.props.demoMode ? null : (
+                <Alert color="info">To make the most out of learn@AP, please head out to the <Link href="/" to="/tutorials">tutorials</Link></Alert>
+              )
+            }
           </div>
           <div className="col-12 col-md-8 mb-3">
             <ul>
-              {
-                this.props.demoMode ? null : (
-                  <li><Link href="/" to="/tutorials">Tutorial</Link></li>
-                )
-              }
               <li><Link href="/" to="#enrolled">Enrolled Courses</Link></li>
               <li><Link href="/" to="#invited">Invited Courses</Link></li>
               {
