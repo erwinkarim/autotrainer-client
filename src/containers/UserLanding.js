@@ -1,50 +1,32 @@
 import React, { Component } from 'react';
-import { Container, Row, Alert } from 'reactstrap';
-import { HashLink as Link } from 'react-router-hash-link';
-import PropTypes from 'prop-types';
+import { Container, Row, Col, Alert, Navbar, Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
+import { Link } from 'react-router-dom';
 import Helmet from 'react-helmet';
-import Notice from '../components/Notice';
-import './UserLanding.css';
-import './CertCheck.css';
-import config from '../config';
+import PropTypes from 'prop-types';
 import { invokeApig } from '../libs/awsLibs';
 import EnrolledCourses from '../components/UserLanding/EnrolledCourses';
 import InvitedCourses from '../components/UserLanding/InvitedCourses';
 import CourseManager from '../components/UserLanding/CourseManager';
-
-/*
-class CourseHighLights extends Component {
-  render(){
-    return (
-      <div className="col-12 mb-3">
-        <h3 id="highlights">Course Highlights</h3>
-        <hr />
-        <p>This one not yet implemented</p>
-        <CardDeck>{ Array.from( Array(3).keys() ).map( (e,i) => {
-          return (<Card key={i}>
-            <CardImg top src= 'https://placehold.it/128x128'/>
-            <CardBody>
-              <h4 className="display-5 text-center">{loremIpsum()}</h4>
-              <CardText>{loremIpsum({count:randomInt(3,5), unit:'paragraphs'})}</CardText>
-              <CardText>RM 34.99</CardText>
-            </CardBody>
-            <CardFooter className="text-center">
-              <Button color="primary">Learn More</Button>
-            </CardFooter>
-          </Card>);
-        }) }</CardDeck>
-      </div>
-    );
-  }
-}
-*/
+import config from '../config';
 
 /**
- * The Constructor
+ * User Landing Component
  * @param {json} props the props
  * @returns {null} The sum of the two numbers.
  */
-export default class UserLanding extends Component {
+class UserLanding extends Component {
+  /**
+   * The Constructor
+   * @param {json} props the props
+   * @returns {null} The sum of the two numbers.
+   */
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      activeTab: 'enrolled',
+    };
+  }
   componentDidMount = async () => {
     // check if need for auto enrolment
     const enrolCourse = window.localStorage.getItem('enrol_course');
@@ -67,6 +49,7 @@ export default class UserLanding extends Component {
     }
   }
   componentDidUpdate = async (prevProps) => {
+    console.log('componentDidUpdate');
     if (prevProps.currentUser !== this.props.currentUser) {
       try {
         await this.checkIdent();
@@ -87,59 +70,90 @@ export default class UserLanding extends Component {
     path: '/enrolment',
     body: { courseId },
   })
+  toggleTab = (tab) => {
+    this.setState({ activeTab: tab });
+  }
   render = () => {
-    const handle = this;
+    const { currentUser, isAuthenticated, isAuthenticating } = this.props;
 
-    if (this.props.isAuthenticating) {
-      return <Notice content="Authenticating session ..." />;
+    if (isAuthenticating) {
+      return (<div>Checking auth ...</div>);
     }
 
-    if (!this.props.isAuthenticated) {
-      return (<div>User is not authenticated</div>);
+    if (!isAuthenticated) {
+      return (<div>User not authenticated</div>);
+    }
+
+    if (!currentUser) {
+      return (<div>User not detected</div>);
     }
 
     return (
-      <Container className="text-left mt-2">
+      <Container className="mt-2">
         <Helmet>
-          <title className="user-landing-welcome">{`Welcome, ${handle.props.currentUser.name}`} - {config.site_name}</title>
+          <title className="user-landing-welcome">{`Welcome, ${currentUser.name}`} - {config.site_name}</title>
         </Helmet>
         <Row>
-          <div className="col-12">
+          <Col>
             <p className="lead">
-              <img height="32" src={handle.props.currentUser.picture} alt={handle.props.currentUser.name} className="rounded-circle mr-2" />
-              Welcome, {handle.props.currentUser.name}
+              <img height="32" src={currentUser.picture} alt={currentUser.name} className="rounded-circle mr-2" />
+              Welcome, {currentUser.name}
             </p>
-            {
-              this.props.demoMode ? null : (
-                <Alert color="info">To make the most out of learn@AP, please head out to the <Link href="/" to="/tutorials">tutorials</Link></Alert>
-              )
-            }
-          </div>
-          <div className="col-12 col-md-8 mb-3">
-            <ul>
-              <li><Link href="/" to="#enrolled">Enrolled Courses</Link></li>
-              <li><Link href="/" to="#invited">Invited Courses</Link></li>
-              {
-                /* only allow course to be managed by an admin for now */
-                this.props.currentUser['cognito:groups'].includes('admin') ?
-                  <li><Link href="/" to="#managed">Managed Courses</Link></li> :
-                  null
-              }
-            </ul>
-          </div>
+          </Col>
         </Row>
-        <EnrolledCourses {...this.props} />
-        <InvitedCourses email={this.props.currentUser.email} {...this.props} />
         {
-          /*
-          -- to be implemented then you have more than 30 courses
-          <CourseHighLights />
-          */
+          this.props.demoMode ? null : (
+            <Row>
+              <Col>
+                <Alert color="info">To make the most out of learn@AP, please head out to the <Link href="/" to="/tutorials">tutorials</Link></Alert>
+              </Col>
+            </Row>
+          )
         }
-        {
-          /* allow course to be managed by admins for now */
-          this.props.currentUser['cognito:groups'].includes('admin') ? <CourseManager /> : null
-        }
+        <Row>
+          <Col xs="12" md="4" className="mb-2">
+            <Navbar color="light" light>
+              <Nav navbar className="d-flex flex-row flex-md-column justify-content-end justify-content-md-center">
+                <NavItem className="mr-2">
+                  <NavLink
+                    href="#"
+                    active={this.state.activeTab === 'enrolled'}
+                    onClick={() => this.toggleTab('enrolled')}
+                  >
+                    Enrolled
+                  </NavLink>
+                </NavItem>
+                <NavItem className="mr-2">
+                  <NavLink href="#" active={this.state.activeTab === 'invited'} onClick={() => this.toggleTab('invited')}>Invited</NavLink>
+                </NavItem>
+                {
+                  currentUser['cognito:groups'].includes('admin') ? (
+                    <NavItem>
+                      <NavLink href="#" active={this.state.activeTab === 'managed'} onClick={() => this.toggleTab('managed')}>Managed</NavLink>
+                    </NavItem>
+                  ) : null
+                }
+              </Nav>
+            </Navbar>
+          </Col>
+          <Col md="8" className="mb-2">
+            <TabContent activeTab={this.state.activeTab}>
+              <TabPane tabId="enrolled">
+                <EnrolledCourses {...this.props} />
+              </TabPane>
+              <TabPane tabId="invited">
+                <InvitedCourses email={currentUser.email} {...this.props} />
+              </TabPane>
+              {
+                currentUser['cognito:groups'].includes('admin') ? (
+                  <TabPane tabId="managed">
+                    <CourseManager />
+                  </TabPane>
+                ) : null
+              }
+            </TabContent>
+          </Col>
+        </Row>
       </Container>
     );
   }
@@ -157,3 +171,5 @@ UserLanding.defaultProps = {
   currentUser: {},
   demoMode: false,
 };
+
+export default UserLanding;

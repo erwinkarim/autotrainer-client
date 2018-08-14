@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import {
-  Row, CardColumns, Card, CardTitle,
+  Row, Card, CardTitle,
   CardBody, CardText, Button, Modal, ModalBody, ModalFooter,
 } from 'reactstrap';
 import { HashLink as Link } from 'react-router-hash-link';
@@ -62,10 +62,10 @@ export default class EnrolledCourses extends Component {
     const enrolledCourses = this.state.courses.length === 0 ? (
       <div>You haven&amp;t enrolled in any courses yet.</div>
     ) : (
-      <CardColumns>
+      <div>
         {
           this.props.demoMode ? (
-            <Card body className="border border-success enrolled-demo-card">
+            <Card body className="border border-success enrolled-demo-card mb-2">
               <CardTitle className="enrolled-courses-title">
                 <a href="/">Demo Title</a>
               </CardTitle>
@@ -83,7 +83,7 @@ export default class EnrolledCourses extends Component {
           this.state.courses.map((c, i) => {
           const courseComplete = c.progress.length >= c.publishedModuleCount;
           return (
-            <Card key={c.courseId} className={`${courseComplete ? 'border border-success' : ''}`}>
+            <Card key={c.courseId} className={`mb-2 ${courseComplete ? 'border border-success' : ''}`}>
               <CardBody>
                 <CardTitle><Link href="/" to={`/courses/toc/${c.courseId}`}>{c.name}</Link></CardTitle>
                 <CardText><strong>Progress</strong></CardText>
@@ -100,7 +100,7 @@ export default class EnrolledCourses extends Component {
             </Card>);
           })
         }
-      </CardColumns>
+      </div>
     );
 
     const certDate = new Date(this.state.certContents.certIssued);

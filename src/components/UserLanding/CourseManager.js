@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Row, Card, CardTitle, CardBody, CardText, Button } from 'reactstrap';
+import { Row, Col, Card, CardTitle, CardBody, CardText, Button } from 'reactstrap';
 import { HashLink as Link } from 'react-router-hash-link';
 import Notice from '../../components/Notice';
 import '../../containers/UserLanding.css';
@@ -66,12 +66,12 @@ export default class CourseManager extends Component {
 
     return (
       <Row>
-        <div className="col-12">
+        <Col xs="12">
           <h3 id="managed">Your Managed Courses</h3>
           <hr />
           <p>Applicable if you have admin or publisher roles</p>
-        </div>
-        <div className="col-12 col-md-8">
+        </Col>
+        <Col xs="12">
           { this.state.courses.length === 0 ?
               (<Notice className="mb-2" content={this.state.isLoading ? 'Loading courses ...' : 'No courses found.'} />) :
               (
@@ -94,10 +94,10 @@ export default class CourseManager extends Component {
                 </CardBody>
               </Card>))
           )}
-        </div>
-        <div className="col-12">
+        </Col>
+        <Col xs="12">
           <Link href="/" className="btn btn-primary" to="/courses/new">New Course</Link>
-        </div>
+        </Col>
       </Row>
     );
   }
