@@ -8,6 +8,9 @@ import EnrolledCourses from '../components/UserLanding/EnrolledCourses';
 import InvitedCourses from '../components/UserLanding/InvitedCourses';
 import CourseManager from '../components/UserLanding/CourseManager';
 import config from '../config';
+import Notice from '../components/Notice';
+
+const activeTabBorder = 'border-bottom border-secondary';
 
 /**
  * User Landing Component
@@ -77,15 +80,15 @@ class UserLanding extends Component {
     const { currentUser, isAuthenticated, isAuthenticating } = this.props;
 
     if (isAuthenticating) {
-      return (<div>Checking auth ...</div>);
+      return <Notice content="Checking auth ..." />;
     }
 
     if (!isAuthenticated) {
-      return (<div>User not authenticated</div>);
+      return <Notice content="User not authenticated" />;
     }
 
     if (!currentUser) {
-      return (<div>User not detected</div>);
+      return <Notice content="User not detected" />;
     }
 
     return (
@@ -113,23 +116,38 @@ class UserLanding extends Component {
         <Row>
           <Col xs="12" md="4" className="mb-2">
             <Navbar color="light" light>
-              <Nav navbar className="d-flex flex-row flex-md-column justify-content-end justify-content-md-center">
+              <Nav navbar className="d-flex flex-row flex-md-column w-100 justify-content-around justify-content-md-center">
                 <NavItem className="mr-2">
                   <NavLink
                     href="#"
                     active={this.state.activeTab === 'enrolled'}
                     onClick={() => this.toggleTab('enrolled')}
+                    className={this.state.activeTab === 'enrolled' ? activeTabBorder : null}
                   >
                     Enrolled
                   </NavLink>
                 </NavItem>
                 <NavItem className="mr-2">
-                  <NavLink href="#" active={this.state.activeTab === 'invited'} onClick={() => this.toggleTab('invited')}>Invited</NavLink>
+                  <NavLink
+                    href="#"
+                    active={this.state.activeTab === 'invited'}
+                    onClick={() => this.toggleTab('invited')}
+                    className={this.state.activeTab === 'invited' ? activeTabBorder : null}
+                  >
+                    Invited
+                  </NavLink>
                 </NavItem>
                 {
                   currentUser['cognito:groups'].includes('admin') ? (
                     <NavItem>
-                      <NavLink href="#" active={this.state.activeTab === 'managed'} onClick={() => this.toggleTab('managed')}>Managed</NavLink>
+                      <NavLink
+                        href="#"
+                        active={this.state.activeTab === 'managed'}
+                        onClick={() => this.toggleTab('managed')}
+                        className={this.state.activeTab === 'managed' ? activeTabBorder : null}
+                      >
+                        Managed
+                      </NavLink>
                     </NavItem>
                   ) : null
                 }

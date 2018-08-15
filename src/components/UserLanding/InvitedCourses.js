@@ -66,7 +66,11 @@ export default class InvitedCourses extends Component {
           {
             this.state.courses.length === 0 ? (
               <Card body>
-                <CardText>You have not been invited to any courses yet ...</CardText>
+                <CardText>
+                  You have not been invited to any courses yet. Explore courses to
+                  find something that you like.
+                </CardText>
+                <Button color="primary" tag={Link} to="/courses">Explore Courses</Button>
               </Card>
             ) : (
               <div>{ this.state.courses.map(course => (
