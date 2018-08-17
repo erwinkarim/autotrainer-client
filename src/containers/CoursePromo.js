@@ -18,10 +18,34 @@ const EnrolButton = (props) => {
     enrolText,
     enrolledText,
     enrolment,
+    currentUser,
   } = props;
 
+  // setup enrolment and login
+  const enrolAndLogin = () => {
+    console.log('login and enrol clicked');
+
+    // check if already logged in
+    if (props.currentUser) {
+      return;
+    }
+
+    // store redirect url
+    // store enrol id
+    window.localStorage.setItem('login_redirect', window.location.pathname);
+    window.localStorage.setItem('enrol_course', props.course.courseId);
+    // get session
+    props.auth.getSession();
+  };
+
+  // if current user is null and the course price is free, give
+  // the login and enrol button;
+  if (currentUser === null && parseInt(course.price, 0) === 0) {
+    return <Button color="primary" onClick={enrolAndLogin}>Login and Enrol</Button>;
+  }
+
   // check enrolment status
-  // point to enrolment payment page if no enrolment yet
+  // to include a button to login and enrol
   return enrolment === null ?
     (<Button color="primary" tag={Link} to={`/courses/enrol/${course.courseId}`}>{enrolText}</Button>) :
     (<Button tag={Link} to={`/courses/toc/${props.course.courseId}`}>{enrolledText}</Button>);
@@ -32,12 +56,16 @@ EnrolButton.propTypes = {
   enrolledText: PropTypes.string,
   enrolment: PropTypes.shape(),
   course: PropTypes.shape().isRequired,
+  currentUser: PropTypes.shape(),
+  auth: PropTypes.shape(),
 };
 
 EnrolButton.defaultProps = {
   enrolText: 'Enrol',
   enrolledText: 'Table of Contents',
   enrolment: {},
+  currentUser: null,
+  auth: null,
 };
 
 const RecentCustomers = props => (
@@ -128,7 +156,6 @@ export default class CoursePromo extends Component {
         console.log('item not found');
       }
     }
-
   }
   getCourse = () => {
     const courseId = this.props.demoMode ?
@@ -200,14 +227,9 @@ export default class CoursePromo extends Component {
               <EnrolButton
                 id="course-enrol-button-1"
                 outline
+                {...this.props}
                 {...this.state}
                 {...{ enrolText: `Enrol for RM${this.state.course.price}`, handleEnrolCourse: this.handleEnrolCourse }}
-                {...{
-                  auth: this.props.auth,
-                  isAuthenticated: this.props.isAuthenticated,
-                  addNotification: this.props.addNotification,
-                  }
-                }
               />
             </p>
           </Container>
@@ -274,12 +296,7 @@ export default class CoursePromo extends Component {
               <EnrolButton
                 id="course-enrol-button-2"
                 {...this.state}
-                {...{
-                  auth: this.props.auth,
-                  isAuthenticated: this.props.isAuthenticated,
-                  addNotification: this.props.addNotification,
-                  }
-                }
+                {...this.props}
                 handleEnrolCourse={this.handleEnrolCourse}
                 className="mx-auto"
               />

@@ -98,6 +98,21 @@ class App extends Component {
   userHasAuthenticated = (authenticated) => {
     this.setState({ isAuthenticated: authenticated, isAuthenticating: false });
   }
+  handleLogin = () => {
+    // should check if user already autheticated
+    if (this.state.currentUser !== null) {
+      return false;
+    }
+
+    // check auth object
+    if (this.state.auth === null) {
+      return false;
+    }
+    // should check if there's a redirect url to be stored in localStorage
+
+    // now, actually get session
+    return true;
+  }
   initCognitoSDK = () => {
     const handle = this;
     const authData = {

@@ -50,6 +50,8 @@ export default class TutorialBase extends Component {
       tutorialSteps, nextTutorial, component, step, title, openingStatement,
     } = this.props;
 
+    const nextTutorialCaption = nextTutorial === '/tutorials' ? 'End Tutorial' : 'Next Tutorial ...';
+
     const componentStyle = this.state.run ? null : {
       filter: 'blur(2px)',
       '-webkit-filter': 'blue(2px)',
@@ -88,7 +90,7 @@ export default class TutorialBase extends Component {
           <Row>
             <Col>
               <Button className="mr-2" onClick={this.restartTutorial}>Start Again</Button>
-              <Button color="primary" tag={Link} to={nextTutorial} className="next-tutorial">Continue ...</Button>
+              <Button color="primary" tag={Link} to={nextTutorial} className="next-tutorial">{nextTutorialCaption}</Button>
             </Col>
           </Row>
         </Container>
