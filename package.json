@@ -9,6 +9,8 @@
     "adyen-cse-web": "git+https://github.com/Adyen/adyen-cse-web.git#v0.1.21",
     "amazon-cognito-auth-js": "^1.1.0",
     "amazon-cognito-identity-js": "^1.26.0",
+    "aws-amplify": "^1.0.6",
+    "aws-amplify-react": "^1.0.6",
     "aws-sdk": "^2.154.0",
     "bootstrap": "^4.0.0-beta.2",
     "classnames": "^2.2.5",
