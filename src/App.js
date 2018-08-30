@@ -31,12 +31,15 @@ import faRedo from '@fortawesome/fontawesome-free-solid/faRedo';
 import faArrowLeft from '@fortawesome/fontawesome-free-solid/faArrowLeft';
 import faArrowRight from '@fortawesome/fontawesome-free-solid/faArrowRight';
 
+// relative import
 import Routes from './Routes';
 import MainNav from './containers/MainNav';
 import { getAwsCredentials, setAuth } from './libs/awsLibs';
 import config from './config';
+import configureAmp from './libs/amp_config';
 import './App.css';
 
+// setup fontAwesome library
 fontawesome.library.add(
   faBars, faCheck, faCertificate, faHome,
   faAngleLeft, faAngleRight, faMinus, faPlus,
@@ -49,6 +52,9 @@ const map = {
   moveLeft: 'left',
   moveRight: 'right',
 };
+
+// setup AWS Amplify
+configureAmp();
 
 /**
  * Main App Component
@@ -214,7 +220,8 @@ class App extends Component {
               notification => this.setState({
                 notifications: this.state.notifications.delete(notification),
               })
-            } />
+            }
+          />
           <footer className="footer text-muted">
             <Container>
               <p>

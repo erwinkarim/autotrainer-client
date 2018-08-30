@@ -1,0 +1,37 @@
+{
+	"providers": {
+		"awscloudformation": {
+			"AuthRoleName": "autotrainerclient-20180827063415-authRole",
+			"UnauthRoleArn": "arn:aws:iam::167457616767:role/autotrainerclient-20180827063415-unauthRole",
+			"AuthRoleArn": "arn:aws:iam::167457616767:role/autotrainerclient-20180827063415-authRole",
+			"Region": "ap-southeast-1",
+			"DeploymentBucketName": "autotrainerclient-20180827063415-deployment",
+			"UnauthRoleName": "autotrainerclient-20180827063415-unauthRole",
+			"StackName": "autotrainerclient-20180827063415",
+			"StackId": "arn:aws:cloudformation:ap-southeast-1:167457616767:stack/autotrainerclient-20180827063415/29fe4d80-a980-11e8-8128-500c3371662a"
+		}
+	},
+	"hosting": {
+		"S3AndCloudFront": {
+			"service": "S3AndCloudFront",
+			"providerPlugin": "awscloudformation",
+			"providerMetadata": {
+				"s3TemplateURL": "https://s3.amazonaws.com/autotrainerclient-20180827063415-deployment/amplify-cfn-templates/hosting/template.json",
+				"logicalId": "hostingS3AndCloudFront"
+			},
+			"lastPushTimeStamp": "2018-08-27T06:00:33.836Z",
+			"output": {
+				"CloudFrontSecureURL": "https://dhgprkdibgysh.cloudfront.net",
+				"S3BucketSecureURL": "https://autotrainerclient-20180827063600--hostingbucket.s3.amazonaws.com",
+				"WebsiteURL": "http://autotrainerclient-20180827063600--hostingbucket.s3-website-ap-southeast-1.amazonaws.com",
+				"CloudFrontDistributionID": "E1LD4ZYZGZK3OT",
+				"Region": "ap-southeast-1",
+				"HostingBucketName": "autotrainerclient-20180827063600--hostingbucket",
+				"CloudFrontDomainName": "dhgprkdibgysh.cloudfront.net"
+			},
+			"lastPushDirHash": "pPDGpNcwHibDNoCG8twww192B3g="
+		}
+	},
+	"auth": {},
+	"analytics": {}
+}

@@ -1,0 +1,14 @@
+{
+    "providers": {
+        "awscloudformation": {
+            "AuthRoleName": "autotrainerclient-20180827063415-authRole",
+            "UnauthRoleArn": "arn:aws:iam::167457616767:role/autotrainerclient-20180827063415-unauthRole",
+            "AuthRoleArn": "arn:aws:iam::167457616767:role/autotrainerclient-20180827063415-authRole",
+            "Region": "ap-southeast-1",
+            "DeploymentBucketName": "autotrainerclient-20180827063415-deployment",
+            "UnauthRoleName": "autotrainerclient-20180827063415-unauthRole",
+            "StackName": "autotrainerclient-20180827063415",
+            "StackId": "arn:aws:cloudformation:ap-southeast-1:167457616767:stack/autotrainerclient-20180827063415/29fe4d80-a980-11e8-8128-500c3371662a"
+        }
+    }
+}

@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import AppliedRoute from './components/AppliedRoute';
 import asyncComponent from './components/AsyncComponent';
 import CourseTest from './components/CourseTest';
+import AuthTest from './AuthTest';
 
 const AsyncHome = asyncComponent(() => import('./containers/Home'));
 const AsyncLogin = asyncComponent(() => import('./containers/Login'));
@@ -88,6 +89,7 @@ const Routes = ({ childProps }) =>
       <AppliedRoute path="/team" exact component={AsyncTeam} props={childProps} />
       { process.env.NODE_ENV === 'development' ? <AppliedRoute path="/test" exact component={AsyncTestFn} props={childProps} /> : null}
       { process.env.NODE_ENV === 'development' ? <Route path="/courses/test" exact component={CourseTest} props={childProps} /> : null }
+      { process.env.NODE_ENV === 'development' ? <AppliedRoute path="/authtest" exact component={AuthTest} props={childProps} /> : null}
 
       { /* Finally, catch all unmatched routes */ }
       <Route component={AsyncNotFound} />
