@@ -51,10 +51,20 @@ const AuthSpec = {
   // oauth: oauthSpec,
 };
 
+const ApiSpec = {
+  endpoints: [
+    {
+      name: 'default',
+      endpoint: 'https://apilearn.actuarialpartners.com',
+    },
+  ],
+};
+
 const configureAmp = () => {
   Amplify.configure(awsExports);
   Amplify.configure({
     Auth: AuthSpec,
+    API: ApiSpec,
   });
 };
 

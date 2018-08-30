@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { Container, Row, Col, Button } from 'reactstrap';
-import { Auth } from 'aws-amplify';
+import { Container, Row, Col, Button, Card, CardText } from 'reactstrap';
+import { Auth, API } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 import { federated } from './libs/amp_config';
 
@@ -17,7 +17,7 @@ class AuthTest extends Component {
    */
   constructor(props) {
     super(props);
-    this.state = { user: null };
+    this.state = { user: null, courses: null, };
   }
   componentDidMount = async () => {
     try {
@@ -33,13 +33,24 @@ class AuthTest extends Component {
         this.props.history.push('/');
       });
   }
+  loadCourses = () => {
+    API.get('default', '/courses')
+      .then((response) => { this.setState({ courses: response }); })
+      .catch((err) => { console.log(err); });
+  }
   render = () => (
     <Container className="mt-2">
       <Row>
         <Col>{JSON.stringify(this.state.user)}</Col>
       </Row>
       <Row>
-        <Col><Button color="primary" onClick={this.logOut}>Log out</Button></Col>
+        <Col className="mb-2"><Button color="primary" onClick={this.logOut}>Log out</Button></Col>
+        <Col xs={12}>
+          <Card body>
+            <CardText><Button color="primary" onClick={this.loadCourses}>Load Courses</Button></CardText>
+            <CardText>{ JSON.stringify(this.state.courses)}</CardText>
+          </Card>
+        </Col>
       </Row>
     </Container>
   )
