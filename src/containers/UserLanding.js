@@ -3,6 +3,10 @@ import { Container, Row, Col, Alert, Navbar, Nav, NavItem, NavLink, TabContent, 
 import { Link } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
+import { Auth } from 'aws-amplify';
+import { withAuthenticator } from 'aws-amplify-react';
+
+
 import { invokeApig } from '../libs/awsLibs';
 import EnrolledCourses from '../components/UserLanding/EnrolledCourses';
 import InvitedCourses from '../components/UserLanding/InvitedCourses';
@@ -28,6 +32,8 @@ class UserLanding extends Component {
 
     this.state = {
       activeTab: 'enrolled',
+      isAuthenticating: true,
+      currentUser: { name: '', email: '', picture: '' },
     };
   }
   componentDidMount = async () => {
@@ -50,6 +56,17 @@ class UserLanding extends Component {
       window.localStorage.removeItem('login_redirect');
       this.props.history.push(newLocation);
     }
+
+    // get current user
+    Auth.currentAuthenticatedUser()
+      .then((cu) => {
+        console.log('cu', cu);
+        this.setState({ currentUser: cu, isAuthenticating: false });
+      })
+      .catch((err) => {
+        console.log('error getting current user');
+        console.log(err);
+      });
   }
   componentDidUpdate = async (prevProps) => {
     console.log('componentDidUpdate');
@@ -77,15 +94,19 @@ class UserLanding extends Component {
     this.setState({ activeTab: tab });
   }
   render = () => {
-    const { currentUser, isAuthenticated, isAuthenticating } = this.props;
+    // const { currentUser, isAuthenticated, isAuthenticating } = this.props;
+    // const { currentUser, isAuthenticated, isAuthenticating } = this.props;
+    const { currentUser, isAuthenticating } = this.state;
 
     if (isAuthenticating) {
       return <Notice content="Checking auth ..." />;
     }
 
+    /*
     if (!isAuthenticated) {
       return <Notice content="User not authenticated" />;
     }
+    */
 
     if (!currentUser) {
       return <Notice content="User not detected" />;
@@ -138,6 +159,7 @@ class UserLanding extends Component {
                   </NavLink>
                 </NavItem>
                 {
+                  /*
                   currentUser['cognito:groups'].includes('admin') ? (
                     <NavItem>
                       <NavLink
@@ -150,6 +172,7 @@ class UserLanding extends Component {
                       </NavLink>
                     </NavItem>
                   ) : null
+                  */
                 }
               </Nav>
             </Navbar>
@@ -157,17 +180,19 @@ class UserLanding extends Component {
           <Col md="8" className="mb-2">
             <TabContent activeTab={this.state.activeTab}>
               <TabPane tabId="enrolled">
-                <EnrolledCourses {...this.props} />
+                <EnrolledCourses {...this.props} {...this.state} />
               </TabPane>
               <TabPane tabId="invited">
                 <InvitedCourses email={currentUser.email} {...this.props} />
               </TabPane>
               {
+                /*
                 currentUser['cognito:groups'].includes('admin') ? (
                   <TabPane tabId="managed">
                     <CourseManager />
                   </TabPane>
                 ) : null
+                */
               }
             </TabContent>
           </Col>
@@ -190,4 +215,5 @@ UserLanding.defaultProps = {
   demoMode: false,
 };
 
-export default UserLanding;
+// export default UserLanding;
+export default withAuthenticator(UserLanding);

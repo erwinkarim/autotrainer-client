@@ -6,6 +6,9 @@ import {
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
+import { Auth, API } from 'aws-amplify';
+import { withAuthenticator } from 'aws-amplify-react';
+
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
 import Notice from '../components/Notice';
@@ -99,7 +102,7 @@ const FreeEnrolment = props => (
   <Col xs="12" md="6" className="mb-2">
     <Card body>
       <CardText>
-        You have been invited to enrol into this free course. Click below to complete the enrolment
+        Click below to enrol in this free course.
       </CardText>
       <Button color="primary" onClick={props.handleFreeEnrolment}>Enrol</Button>
     </Card>
@@ -117,7 +120,7 @@ FreeEnrolment.propTypes = {
  * @param {int} courseId The first number.
  * @returns {int} The sum of the two numbers.
  */
-export default class EnrolCourse extends Component {
+class EnrolCourse extends Component {
   /**
    * Adds two numbers together.
    * @param {shape} props The props
@@ -127,6 +130,7 @@ export default class EnrolCourse extends Component {
     super(props);
 
     this.state = {
+      currentUser: null,
       isLoading: true,
       course: null,
       enrolment: null,
@@ -142,7 +146,50 @@ export default class EnrolCourse extends Component {
     };
   }
   componentDidMount = async () => {
+    const courseId = this.props.match.params.id;
+
+    // get currentUser
+    Auth.currentAuthenticatedUser()
+      .then((cu) => {
+        console.log('cu', cu);
+        this.setState({ currentUser: cu });
+
+        // check if i'm invited
+        API.get('default', '/enrolment/invited', { queryStringParameters: { email: this.state.currentUser.email } })
+          .then((response) => {
+            this.setState({
+              invited:
+                response.reduce((c, v) => c || (v.courseId === this.state.course.courseId), false),
+            });
+          })
+          .catch((err) => {
+            console.log('error getting course', err);
+          });
+      })
+      .catch((err) => {
+        console.log('error getting user', err);
+      });
+
     // load basic coourse info
+    API.get('default', `/courses/${courseId}`)
+      .then((response) => {
+        this.setState({ course: response, isLoading: false });
+      })
+      .catch((err) => {
+        console.log('error getting course', err);
+      });
+
+    // check enrolment
+    API.get('default', `/enrolment/${courseId}`)
+      .then((response) => {
+        this.setState({ enrolment: response, isLoading: false });
+      })
+      .catch((err) => {
+        console.log('error getting course', err);
+      });
+
+
+    /*
     try {
       const results = await this.getCourse();
       this.setState({ course: results, isLoading: false });
@@ -170,6 +217,7 @@ export default class EnrolCourse extends Component {
       console.log('error checking invitation');
       console.log(e);
     }
+    */
   }
   getCourse = () => {
     const courseId = this.props.match.params.id;
@@ -200,6 +248,19 @@ export default class EnrolCourse extends Component {
   }
   handleCouponPurchase = async () => {
     console.log('should handle coupon purchase');
+
+    API.post('default', `/courses/${this.props.match.params.id}/purchase`, {
+      body: { method: 'coupon', code: this.state.paymentInfo.couponCode },
+    })
+      .then((response) => {
+        this.setState({ enrolment: response });
+      })
+      .catch((err) => {
+        console.log('error when buying a course through coupon');
+        console.log(err);
+      });
+
+    /*
     try {
       const result = await this.purchaseCourse({
         method: 'coupon',
@@ -215,8 +276,21 @@ export default class EnrolCourse extends Component {
       console.log('error when buying a course through coupon');
       console.log(e);
     }
+    */
   }
   handleFreeEnrolment = async () => {
+    API.post('default', `/courses/${this.props.match.params.id}/purchase`, {
+      body: { method: 'invitedFree', email: this.state.currentUser.email },
+    })
+      .then((response) => {
+        this.setState({ enrolment: response });
+      })
+      .catch((err) => {
+        console.log('error when buying a course through coupon');
+        console.log(err);
+      });
+
+    /*
     try {
       const result = await this.purchaseCourse({
         method: 'invitedFree',
@@ -229,16 +303,27 @@ export default class EnrolCourse extends Component {
       console.log('error when trying to enrol');
       console.log(e);
     }
+    */
   }
   render = () => {
-    const { isAuthenticated } = this.props;
     const {
-      isLoading, course, enrolment, invited,
+      isLoading, course, enrolment, invited, currentUser,
     } = this.state;
+
+    if (!currentUser) {
+      return <LoginBox {...this.props} />;
+    }
+
+    if (course === null) {
+      return <Notice content="Course is loading" />;
+    }
+    /*
+    const { isAuthenticated } = this.props;
 
     if (!isAuthenticated) {
       return <LoginBox {...this.props} />;
     }
+    */
 
     if (isLoading) {
       return <Notice content="Loading ..." />;
@@ -249,7 +334,8 @@ export default class EnrolCourse extends Component {
     }
 
     let body = null;
-    if (invited && parseInt(course.price, 10) === 0) {
+    if ((invited || parseInt(course.price, 10) === 0) && (enrolment === undefined || enrolment === null)) {
+      // the enrolment is not recorded and the course is free
       body = (
         <Row>
           <FreeEnrolment {...this.state} handleFreeEnrolment={this.handleFreeEnrolment} />
@@ -323,3 +409,5 @@ EnrolCourse.propTypes = {
 EnrolCourse.defaultProps = {
   isAuthenticated: false,
 };
+
+export default withAuthenticator(EnrolCourse);

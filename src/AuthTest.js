@@ -17,7 +17,7 @@ class AuthTest extends Component {
    */
   constructor(props) {
     super(props);
-    this.state = { user: null, courses: null, };
+    this.state = { user: null, courses: null };
   }
   componentDidMount = async () => {
     try {
@@ -26,6 +26,11 @@ class AuthTest extends Component {
     } catch (e) {
       console.log(e);
     }
+  }
+  componentDidUpdate = () => {
+    // ask app to check login
+    console.log('trigger log in');
+    // this.props.triggerLogIn();
   }
   logOut = () => {
     Auth.signOut()
@@ -39,7 +44,7 @@ class AuthTest extends Component {
       .catch((err) => { console.log(err); });
   }
   render = () => (
-    <Container className="mt-2">
+    <Container className="mt-2" federated={federated}>
       <Row>
         <Col>{JSON.stringify(this.state.user)}</Col>
       </Row>
@@ -56,4 +61,5 @@ class AuthTest extends Component {
   )
 }
 
-export default withAuthenticator(AuthTest, null, [], federated);
+
+export default withAuthenticator(AuthTest);

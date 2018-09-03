@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import { Row, Col, Card, CardImg, CardTitle, CardBody, CardText, Button } from 'reactstrap';
 import { HashLink as Link } from 'react-router-hash-link';
 import PropTypes from 'prop-types';
+import { API } from 'aws-amplify';
+
 import Notice from '../../components/Notice';
 import '../../containers/UserLanding.css';
 import '../../containers/CertCheck.css';
@@ -28,6 +30,7 @@ export default class InvitedCourses extends Component {
   componentDidMount = async () => {
     // load invited courses
     this.setState({ isLoading: true });
+    /*
     try {
       const result = await this.loadInvitedCourses();
       this.setState({ courses: result, isLoading: false });
@@ -35,6 +38,14 @@ export default class InvitedCourses extends Component {
       console.log('error loading invited courses');
       console.log(e);
     }
+    */
+    API.get('default', '/enrolment/invited', { queryStringParameters: { email: this.props.email } })
+      .then((response) => {
+        this.setState({ courses: response, isLoading: false });
+      })
+      .catch((err) => {
+        console.log('error getting course invites', err);
+      });
   }
   loadInvitedCourses = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,

@@ -7,6 +7,8 @@ import React, { Component } from 'react';
 import { CardColumns, Card, CardBody, CardTitle, CardText } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { API } from 'aws-amplify';
+
 import Notice from './Notice';
 import config from '../config';
 import { invokeApig } from '../libs/awsLibs';
@@ -35,6 +37,16 @@ export default class CTOC extends Component {
     const newOptions = Object.assign(this.props.defaultOptions, this.props.options);
     handle.setState({ options: newOptions });
 
+    API.get('default', '/modules', { queryStringParameters: { courseId: this.props.course.courseId } })
+      .then((response) => {
+        this.setState({ modules: response, loading: false });
+      })
+      .catch((err) => {
+        console.log('error getting modules');
+        console.log(err);
+      });
+
+    /*
     // get the modules
     try {
       const results = await this.getModules();
@@ -43,6 +55,7 @@ export default class CTOC extends Component {
       console.log('error getting modules');
       console.log(e);
     }
+    */
   }
   getModules = () => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,

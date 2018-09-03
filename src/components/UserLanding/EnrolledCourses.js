@@ -5,6 +5,8 @@ import {
 } from 'reactstrap';
 import { HashLink as Link } from 'react-router-hash-link';
 import PropTypes from 'prop-types';
+import { API } from 'aws-amplify';
+
 import Notice from '../../components/Notice';
 import '../../containers/UserLanding.css';
 import '../../containers/CertCheck.css';
@@ -30,6 +32,7 @@ export default class EnrolledCourses extends Component {
   }
   componentDidMount = async () => {
     console.log('attempt to get enrolled courses');
+    /*
     try {
       this.setState({ isLoading: true });
       const results = await this.loadEnrolledCourses();
@@ -38,6 +41,15 @@ export default class EnrolledCourses extends Component {
       console.log('error getting enrolled courses');
       console.log(e);
     }
+    */
+    this.setState({ isLoading: true });
+    API.get('default', '/enrolment')
+      .then((response) => {
+        this.setState({ courses: response, isLoading: false });
+      })
+      .catch((err) => {
+        console.log('error getting enrolment', err);
+      });
   }
   loadEnrolledCourses = () => invokeApig({
     endpoint: config.apiGateway.ENROLMENT_URL,
@@ -60,7 +72,7 @@ export default class EnrolledCourses extends Component {
     }
 
     const enrolledCourses = this.state.courses.length === 0 ? (
-      <div>You haven&amp;t enrolled in any courses yet.</div>
+      <div>You have not enrolled in any courses yet.</div>
     ) : (
       <div>
         {

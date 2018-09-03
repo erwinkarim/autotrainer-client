@@ -2,7 +2,8 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Card, CardBody, CardTitle, CardText, CardFooter, Button } from 'reactstrap';
 import PropTypes from 'prop-types';
-import AWS from 'aws-sdk';
+import { Auth } from 'aws-amplify';
+// import AWS from 'aws-sdk';
 
 /**
  * Course Cards
@@ -11,7 +12,14 @@ import AWS from 'aws-sdk';
  * @returns {int} The sum of the two numbers.
  */
 const CourseCard = (props) => {
-  const identityId = AWS.config.credentials._identityId;
+  // const identityId = AWS.config.credentials._identityId;
+  // should get identity Id from Auth
+  let identityId = '';
+
+  const cred = Auth.currentUserCredentials();
+  identityId = cred._identityId;
+
+  // const identityId = '';
   const { className } = props;
   let footer;
 

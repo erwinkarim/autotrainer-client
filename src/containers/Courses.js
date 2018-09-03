@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, CardColumns, Card, Form, FormGroup, Label, Input } from 'reactstrap';
 import Helmet from 'react-helmet';
-import AWS from 'aws-sdk';
 import PropTypes from 'prop-types';
-import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
+import { API, Auth } from 'aws-amplify';
 import Notice from '../components/Notice';
 import config from '../config';
 import CourseCard from '../components/CourseCard';
+// import { getUnauthCredentials, invokeApig } from '../libs/awsLibs';
 
 
 /**
@@ -31,51 +31,50 @@ export default class Courses extends Component {
   }
   componentDidMount = async () => {
     // attemp tto get courses, handle cases where credentials does not exists;
+    /*
     try {
       if (AWS.config.credentials === null) {
         await getUnauthCredentials();
       }
 
-      const results = await this.getCourses();
+      const results = await invokeApig({ path: '/courses' });
       this.setState({ courses: results, loading: false });
     } catch (e) {
       console.log(`${Date.now()}: Error getting courses`);
       console.log(e);
     }
+    */
+    this.loadCourses();
 
-    // attempt to get enrolment
+    // get enrolment if authenticated
     try {
-      if (this.props.currentUser === null) {
-        return;
+      const currentUser = await Auth.currentAuthenticatedUser();
+      if (currentUser) {
+        API
+          .get('default', '/enrolment')
+          .then((response) => { this.setState({ enrolments: response }); });
       }
-
-      const enrolmentResults = await this.getEnrolment();
-      this.setState({ enrolments: enrolmentResults });
     } catch (e) {
-      console.log('Error getting enrolment');
+      console.log('error when tryinig to get enrolment');
       console.log(e);
     }
   }
-  getEnrolment = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    path: '/enrolment',
-  })
-  getCourses = () => invokeApig({
-    path: '/courses',
-    queryParams: { show_mode: this.state.show_mode },
-  })
+  loadCourses = () => {
+    console.log('attempt to get courses');
+    API
+      .get('default', '/courses', { queryStringParameters: { show_mode: this.state.show_mode } })
+      .then((response) => {
+        this.setState({ courses: response, loading: false });
+      })
+      .catch((err) => {
+        console.log('error getting courses');
+        console.log(err);
+      });
+  }
   handleAdminChange = async (e) => {
     const newPublishMode = e.target.value;
     await this.setState({ show_mode: newPublishMode });
-
-    // reload the course w/ new option
-    try {
-      const results = await this.getCourses();
-      this.setState({ courses: results });
-    } catch (err) {
-      console.log('error reloading courses');
-      console.error(err);
-    }
+    this.loadCourses();
   }
   render = () => {
     if (this.state.loading) {

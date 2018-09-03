@@ -6,6 +6,7 @@ import { NotificationStack } from 'react-notification';
 import { OrderedSet } from 'immutable';
 import { HotKeys } from 'react-hotkeys';
 import randomInt from 'random-int';
+import { Hub, Logger, Auth } from 'aws-amplify';
 
 // font awesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -36,7 +37,7 @@ import Routes from './Routes';
 import MainNav from './containers/MainNav';
 import { getAwsCredentials, setAuth } from './libs/awsLibs';
 import config from './config';
-import configureAmp from './libs/amp_config';
+import configureAmp, { federated } from './libs/amp_config';
 import './App.css';
 
 // setup fontAwesome library
@@ -55,6 +56,7 @@ const map = {
 
 // setup AWS Amplify
 configureAmp();
+
 
 /**
  * Main App Component
@@ -79,6 +81,7 @@ class App extends Component {
       isAuthenticated: false,
       isAuthenticating: false,
       currentUser: null,
+      currentUser2: null,
       auth: null,
       notifications: OrderedSet(),
     };
@@ -96,6 +99,14 @@ class App extends Component {
     const currentUser = auth.getCurrentUser();
     if (currentUser != null) {
       auth.getSession();
+    }
+
+    try {
+      const cu2 = await Auth.currentAuthenticatedUser();
+      this.setState({ currentUser2: cu2 });
+    } catch (e) {
+      console.log('error getting amp auth');
+      console.log(e);
     }
 
     console.log('attempt to focus');
@@ -188,7 +199,12 @@ class App extends Component {
   render() {
     const childProps = {
       ...this.state,
-      ...{ addNotification: this.addNotification, removeNotification: this.removeNotification },
+      ...{
+        addNotification: this.addNotification,
+        removeNotification: this.removeNotification,
+        federated,
+        triggerLogIn: this.triggerLogIn,
+      },
     };
 
     const topBanner = config.banner.showBanner ? (
@@ -241,3 +257,30 @@ class App extends Component {
 }
 
 export default App;
+
+
+const alex = new Logger('Alexander_the_auth_watcher');
+
+alex.onHubCapsule = (capsule) => {
+  switch (capsule.payload.event) {
+    case 'signIn':
+      alex.error('user signed in');
+      break;
+    case 'signUp':
+      alex.error('user signed up');
+      break;
+    case 'signOut':
+      alex.error('user signed out');
+      break;
+    case 'signIn_failure':
+      alex.error('user sign in failed');
+      break;
+    case 'configured':
+      alex.error('the Auth module is configured');
+      break;
+    default:
+      alex.error('something happened');
+  }
+};
+
+Hub.listen('auth', alex);

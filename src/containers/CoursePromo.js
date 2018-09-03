@@ -4,6 +4,8 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
 import AWS from 'aws-sdk/global';
+import { API, Auth } from 'aws-amplify';
+
 import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
 import config from '../config';
 import CTOC from '../components/CTOC';
@@ -40,9 +42,11 @@ const EnrolButton = (props) => {
 
   // if current user is null and the course price is free, give
   // the login and enrol button;
+  /*
   if (currentUser === null && parseInt(course.price, 0) === 0) {
     return <Button color="primary" onClick={enrolAndLogin}>Login and Enrol</Button>;
   }
+  */
 
   // check enrolment status
   // to include a button to login and enrol
@@ -108,6 +112,36 @@ export default class CoursePromo extends Component {
     };
   }
   componentDidMount = async () => {
+    const courseId = this.props.demoMode ? this.props.courseId : this.props.match.params.id;
+    API.get('default', `/courses/${courseId}`)
+      .then((response) => {
+        this.setState({ course: response, loading: false });
+
+        // display the promo content or description depending on availability
+        if (this.editor) {
+          this.editor
+            .setEditorStateFromRaw(this.state.course.promoContent || this.state.course.description);
+        }
+      })
+      .catch((err) => {
+        console.log('error getting course info');
+        console.log(err);
+      });
+
+    // get enrolment data
+    if (this.props.demoMode) {
+      return;
+    }
+
+    API.get('default', `/enrolment/${courseId}`)
+      .then((response) => {
+        this.setState({ enrolment: response });
+      })
+      .catch((err) => {
+        console.log('error getting enrolment info');
+        console.log(err);
+      });
+    /*
     if (AWS.config.credentials === null) {
       console.log('should get Unauthenticated creds');
       try {
@@ -156,6 +190,7 @@ export default class CoursePromo extends Component {
         console.log('item not found');
       }
     }
+    */
   }
   getCourse = () => {
     const courseId = this.props.demoMode ?

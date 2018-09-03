@@ -17,7 +17,7 @@ const AuthSpec = {
 
   // OPTIONAL - Amazon Cognito Federated Identity Pool Region
   // Required only if it's different from Amazon Cognito Region
-  // identityPoolRegion: 'XX-XXXX-X',
+  identityPoolRegion: 'ap-southeast-1',
 
   // OPTIONAL - Amazon Cognito User Pool ID
   userPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID,
@@ -66,6 +66,14 @@ const configureAmp = () => {
     Auth: AuthSpec,
     API: ApiSpec,
   });
+
+  // set logger, comment out this on prod
+  /*
+  Amplify.Logger.LOG_LEVEL = 'DEBUG';
+  const logger = new Logger('foo', 'INFO');
+  const data = '';
+  logger.debug('callback data', data);
+  */
 };
 
 export default configureAmp;
