@@ -10,9 +10,11 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Container, Row, Col, Jumbotron } from 'reactstrap';
 import Helmet from 'react-helmet';
+import { API } from 'aws-amplify';
+import { withAuthenticator } from 'aws-amplify-react';
+
 import Notice from '../components/Notice';
 import config from '../config';
-import { invokeApig } from '../libs/awsLibs';
 import CourseMenu from '../components/CourseMenu';
 import CourseBottomNav from '../components/CourseBottomNav';
 import asyncComponent from '../components/AsyncComponent';
@@ -30,7 +32,7 @@ const CourseProgress = asyncComponent(() => import('../modules/CourseProgress'))
  * @param {json} props the props
  * @returns {null} The sum of the two numbers.
  */
-export default class Module extends Component {
+class Module extends Component {
   /**
    * Module
    * @param {json} props the props
@@ -47,11 +49,6 @@ export default class Module extends Component {
     this.loadModule();
     this.loadEnrolment();
   }
-  /**
-   * Module
-   * @param {json} prevProps the props
-   * @returns {null} The sum of the two numbers.
-   */
   componentDidUpdate = (prevProps) => {
     const prevModuleId = this.props.demoMode ?
       prevProps.moduleId :
@@ -65,85 +62,80 @@ export default class Module extends Component {
       this.loadModule();
     }
   }
-  getModule = () => {
-    const moduleId = this.props.demoMode ?
-      this.props.moduleId :
-      this.props.match.params.moduleId;
-    const courseId = this.props.demoMode ?
-      this.props.courseId :
-      this.props.match.params.courseId;
-
-    return invokeApig({
-      endpoint: config.apiGateway.MODULE_URL,
-      path: `/modules/${moduleId}`,
-      queryParams: { courseId },
-    });
-  }
-  getModuleListings = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: '/modules',
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
-  getCourse = () => {
-    const courseId = this.props.demoMode ?
-      this.props.courseId :
-      this.props.match.params.courseId;
-
-    return invokeApig({
-      path: `/courses/${courseId}`,
-    });
-  }
-  getEnrolment = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    path: `/enrolment/${this.props.match.params.courseId}`,
-  })
-  notifyProgress = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    method: 'POST',
-    path: `/enrolment/${this.state.module.courseId}/attend/${this.state.module.moduleId}`,
-    body: {},
-  })
-  loadModule = async () => {
+  loadModule = () => {
     const moduleType = this.props.demoMode ?
       this.props.moduleType : this.props.match.params.moduleType;
 
     // the async fn to invoke apiGateway to get the module
     this.setState({ loading: true });
-    try {
-      let result = null;
-      if (moduleType === 'toc') {
-        result = await this.getCourse();
-      } else if (moduleType === 'progress') {
-        result = Object.assign(
-          { title: 'Progress', description: 'Some description here' },
-          { modules: (await this.getModuleListings()) },
-        );
-      } else {
-        result = await this.getModule();
-      }
-      // const result = await
-      // (this.props.match.params.moduleType === 'toc' ? this.getCourse() : this.getModule());
-      this.setState({ loading: false, module: result });
-    } catch (e) {
-      console.log('error getting module');
-      console.log(e);
+
+    if (moduleType === 'toc') {
+      const courseId = this.props.demoMode ?
+        this.props.courseId :
+        this.props.match.params.courseId;
+      API.get('default', `/courses/${courseId}`)
+        .then((response) => {
+          this.setState({ module: response, loading: false });
+        })
+        .catch((err) => {
+          console.log('error loading course toc');
+          console.log(err);
+        });
+    } else if (moduleType === 'progress') {
+      // load progress page
+      API.get(
+        'default', '/modules',
+        {
+          queryStringParameters: { courseId: this.props.match.params.courseId },
+        },
+      )
+        .then((response) => {
+          this.setState({
+            module: {
+              title: 'Progress', description: 'Some description here', modules: response,
+            },
+            loading: false,
+          });
+        })
+        .catch((err) => {
+          console.log('error gettng course progress');
+          console.log(err);
+        });
+    } else {
+      // default choice, load normal modules
+      const moduleId = this.props.demoMode ?
+        this.props.moduleId :
+        this.props.match.params.moduleId;
+      const courseId = this.props.demoMode ?
+        this.props.courseId :
+        this.props.match.params.courseId;
+
+      API.get('default', `/modules/${moduleId}`, { queryStringParameters: { courseId } })
+        .then((response) => {
+          this.setState({ module: response, loading: false });
+        })
+        .catch((err) => {
+          console.log('error getting module content');
+          console.log(err);
+        });
     }
   }
-  loadEnrolment = async () => {
+  loadEnrolment = () => {
     if (this.props.demoMode) {
       // skip if demo mode
       this.setState({ enrolment: { progress: [] } });
       return;
     }
 
-    try {
-      const result = await this.getEnrolment();
-      this.setState({ enrolment: result });
-    } catch (e) {
-      console.log('error getting enrolment status');
-      console.log('ignore if you own this course');
-      console.log(e);
-    }
+    API.get('default', `/enrolment/${this.props.match.params.courseId}`)
+      .then((response) => {
+        this.setState({ enrolment: response });
+      })
+      .catch((err) => {
+        console.log('error getting enrolment status');
+        console.log('ignore if you own this course');
+        console.log(err);
+      });
   }
   triggerAttendance = async () => {
     const handle = this;
@@ -155,30 +147,29 @@ export default class Module extends Component {
     if (this.state.enrolment !== null) {
       // check if you already attend this article
       if (!handle.state.enrolment.progress.includes(handle.state.module.moduleId)) {
-        try {
-          // check attendance
-          let result = await this.notifyProgress();
+        const { courseId, moduleId } = this.state.module;
 
-          this.props.addNotification('We remark that you have read this article');
+        API.post('default', `/enrolment/${courseId}/attend/${moduleId}`)
+          .then((response) => {
+            this.props.addNotification('We remark that you have read this article');
 
-          if (result.status === 0) {
-            this.props.addNotification('Course complete. View your certificate at the landing page');
-          }
+            if (response.status === 0) {
+              this.props.addNotification('Course complete. View your certificate at the landing page');
+            }
 
-          // update the erolment
-          result = await this.getEnrolment();
-
-          handle.setState({ enrolment: result });
-        } catch (e) {
-          console.log('error getting attendance');
-          console.log(e);
-        }
+            // update enrolment
+            this.loadEnrolment();
+          })
+          .catch((err) => {
+            console.log('error marking attendance');
+            console.log(err);
+          });
       } // if()
     }
   }
   render = () => {
     const { module, enrolment, loading } = this.state;
-    const { demoMode, currentUser } = this.props;
+    const { demoMode } = this.props;
     const courseId = demoMode ?
       this.props.courseId :
       this.props.match.params.courseId;
@@ -196,9 +187,11 @@ export default class Module extends Component {
     }
 
     // check if the user is logged in
+    /*
     if (currentUser === null) {
       return (<Notice title="Unauthorized" content="You have not logged in yet ..." />);
     }
+    */
 
     // render the layout based on the moduleType / loading state ...
     if (loading) {
@@ -286,3 +279,5 @@ Module.defaultProps = {
   demoMode: false,
   moduleType: '',
 };
+
+export default withAuthenticator(Module);

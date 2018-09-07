@@ -5,9 +5,10 @@ import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import { Auth } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
+// import { withOAuth } from 'aws-amplify-react';
 
 
-import { invokeApig } from '../libs/awsLibs';
+// import { invokeApig } from '../libs/awsLibs';
 import EnrolledCourses from '../components/UserLanding/EnrolledCourses';
 import InvitedCourses from '../components/UserLanding/InvitedCourses';
 import CourseManager from '../components/UserLanding/CourseManager';
@@ -37,6 +38,8 @@ class UserLanding extends Component {
     };
   }
   componentDidMount = async () => {
+    /*
+    not using this anymore because using amplify withAuthenticator tag
     // check if need for auto enrolment
     const enrolCourse = window.localStorage.getItem('enrol_course');
     if (enrolCourse) {
@@ -56,12 +59,21 @@ class UserLanding extends Component {
       window.localStorage.removeItem('login_redirect');
       this.props.history.push(newLocation);
     }
+    */
 
     // get current user
     Auth.currentAuthenticatedUser()
       .then((cu) => {
         console.log('cu', cu);
         this.setState({ currentUser: cu, isAuthenticating: false });
+
+        Auth.currentUserInfo()
+          .then((info) => {
+            console.log('info', info);
+          })
+          .catch((infoErr) => {
+            console.log(infoErr);
+          });
       })
       .catch((err) => {
         console.log('error getting current user');
@@ -79,6 +91,7 @@ class UserLanding extends Component {
       }
     }
   }
+  /*
   checkIdent = () => invokeApig({
     endpoint: config.apiGateway.IDENT_URL,
     method: 'POST',
@@ -90,6 +103,7 @@ class UserLanding extends Component {
     path: '/enrolment',
     body: { courseId },
   })
+  */
   toggleTab = (tab) => {
     this.setState({ activeTab: tab });
   }
@@ -217,3 +231,4 @@ UserLanding.defaultProps = {
 
 // export default UserLanding;
 export default withAuthenticator(UserLanding);
+// export default withOAuth(UserLanding);

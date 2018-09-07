@@ -2,10 +2,12 @@ import React, { Component } from 'react';
 import { Container, Row, Col, FormGroup, Input, Button } from 'reactstrap';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
-import AWS from 'aws-sdk';
+// import AWS from 'aws-sdk';
+import { API } from 'aws-amplify';
+
 import Notice from '../components/Notice';
 import config from '../config';
-import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
+// import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
 import './CertCheck.css';
 
 const Cert = (props) => {
@@ -63,22 +65,24 @@ export default class CertCheck extends Component {
     super(props);
     this.state = {
       certNo: '',
-      cert: null,
+      cert: {},
       checking: false,
       checked: false,
       found: false,
     };
   }
   componentDidMount = async () => {
+    this.retrieveCertFromUrl();
+    /*
     try {
       if (AWS.config.credentials === null) {
         await getUnauthCredentials();
       }
-      this.retrieveCertFromUrl();
     } catch (e) {
       console.log('error getting credentials');
       console.log(e);
     }
+    */
     /*
     if (this.props.isAuthenticated) {
     }
@@ -102,7 +106,23 @@ export default class CertCheck extends Component {
     const urlState = new URL(window.location.href);
     const certNo = urlState.searchParams.get('certNo');
 
+    /*
+    try {
+      await this.setState({ certNo, checking: true, found: false });
+    } catch (e) {
+      console.log('error setting state');
+    }
+    */
+
     if (certNo) {
+      try {
+        await this.setState({ certNo, checking: true, found: false });
+      } catch (e) {
+        console.log('error setting state');
+      }
+
+      this.checkCert();
+      /*
       try {
         await this.setState({ certNo, checking: true, found: false });
         const result = await this.checkCert();
@@ -112,14 +132,19 @@ export default class CertCheck extends Component {
       } catch (e) {
         console.log(e);
       }
+      */
       this.setState({ checking: false, checked: true });
     }
   }
   handleCheckCert = async () => {
+    const { certNo } = this.state;
     this.setState({ checking: true, found: false });
-    this.props.history.push(`/verify_cert?certNo=${this.state.certNo}`);
+    this.props.history.push(`/verify_cert?certNo=${certNo}`);
+
+    this.checkCert();
 
     // re-write the url
+    /*
     try {
       const result = await this.checkCert();
       if (result) {
@@ -129,17 +154,21 @@ export default class CertCheck extends Component {
       console.log('error cert lookup');
       console.log(err);
     }
+    */
 
     // always happens
     this.setState({ checking: false, checked: true });
   }
-  checkCert = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    method: 'POST',
-    path: '/enrolment/cert_lookup',
-    queryParams: { certId: this.state.certNo },
-  })
-  enableBtn = () => (this.state.certNo.length > 0 || !this.state.checking)
+  checkCert = () => API
+    .post('default', '/enrolment/cert_lookup', { queryStringParameters: { certId: this.state.certNo } })
+    .then((response) => {
+      this.setState({ found: true, cert: response });
+    })
+    .catch((err) => {
+      console.log('error cert lookup');
+      console.log(err);
+    })
+  enableBtn = () => true // (this.state.certNo.length > 0 || !this.state.checking)
   render = () => {
     // check if authenticated
     /*

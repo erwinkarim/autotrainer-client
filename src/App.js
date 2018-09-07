@@ -7,6 +7,7 @@ import { OrderedSet } from 'immutable';
 import { HotKeys } from 'react-hotkeys';
 import randomInt from 'random-int';
 import { Hub, Logger, Auth } from 'aws-amplify';
+import { withOAuth } from 'aws-amplify-react';
 
 // font awesome
 import fontawesome from '@fortawesome/fontawesome';
@@ -228,7 +229,7 @@ class App extends Component {
       <HotKeys keyMap={map}>
         <div className="App">
           { topBanner }
-          <MainNav {...this.state} />
+          <MainNav {...this.state} {...this.props} />
           <Routes childProps={childProps} />
           <NotificationStack
             notifications={this.state.notifications.toArray()}
@@ -256,27 +257,29 @@ class App extends Component {
   }
 }
 
-export default App;
+// export default App;
+export default withOAuth(App);
 
 
 const alex = new Logger('Alexander_the_auth_watcher');
+Logger.LOG_LEVEL = 'INFO';
 
 alex.onHubCapsule = (capsule) => {
   switch (capsule.payload.event) {
     case 'signIn':
-      alex.error('user signed in');
+      alex.info('user signed in');
       break;
     case 'signUp':
-      alex.error('user signed up');
+      alex.info('user signed up');
       break;
     case 'signOut':
-      alex.error('user signed out');
+      alex.info('user signed out');
       break;
     case 'signIn_failure':
       alex.error('user sign in failed');
       break;
     case 'configured':
-      alex.error('the Auth module is configured');
+      alex.info('the Auth module is configured');
       break;
     default:
       alex.error('something happened');

@@ -7,6 +7,39 @@ export const federated = {
   amazon_client_id: '',
 };
 
+/*
+to be used for hosted authenticatioin. gives more info on user, but also causes issues.
+will try internal authentication, but figure out how to get cognito artibutes
+const oauthSpec = {
+  // Domain name
+  // domain: 'your-domain-prefix.auth.us-east-1.amazoncognito.com',
+  domain: process.env.REACT_APP_APP_WEB_DOMAIN,
+
+  // Authorized scopes
+  // scope: ['phone', 'email', 'profile', 'openid','aws.cognito.signin.user.admin'],
+  scope: ['email', 'openid'],
+
+  // Callback URL
+  // redirectSignIn: 'http://www.example.com/signin',
+  redirectSignIn: `${window.location.protocol}//${window.location.host}/welcome`,
+
+  // Sign out URL
+  // redirectSignOut: 'http://www.example.com/signout',
+  redirectSignOut: `${window.location.protocol}//${window.location.host}/logout`,
+
+  // 'code' for Authorization code grant,
+  // 'token' for Implicit grant
+  responseType: 'code',
+
+  // optional, for Cognito hosted ui specified options
+  options: {
+    // Indicates if the data collection is enabled to support Cognito advanced
+    // security features. By default, this flag is set to true.
+    AdvancedSecurityDataCollectionFlag: false,
+  },
+};
+*/
+
 const AuthSpec = {
   // REQUIRED only for Federated Authentication - Amazon Cognito Identity Pool ID
   // identityPoolId: 'XX-XXXX-X:XXXXXXXX-XXXX-1234-abcd-1234567890ab',

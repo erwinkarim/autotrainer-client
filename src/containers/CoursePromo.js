@@ -3,10 +3,10 @@ import { Container, Jumbotron, Row, Col, CardDeck, Card, CardBody, CardTitle, Ca
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Helmet from 'react-helmet';
-import AWS from 'aws-sdk/global';
-import { API, Auth } from 'aws-amplify';
+// import AWS from 'aws-sdk/global';
+import { API } from 'aws-amplify';
 
-import { invokeApig, getUnauthCredentials } from '../libs/awsLibs';
+import { invokeApig } from '../libs/awsLibs';
 import config from '../config';
 import CTOC from '../components/CTOC';
 import Notice from '../components/Notice';
@@ -20,10 +20,10 @@ const EnrolButton = (props) => {
     enrolText,
     enrolledText,
     enrolment,
-    currentUser,
   } = props;
 
   // setup enrolment and login
+  /*
   const enrolAndLogin = () => {
     console.log('login and enrol clicked');
 
@@ -39,6 +39,7 @@ const EnrolButton = (props) => {
     // get session
     props.auth.getSession();
   };
+  */
 
   // if current user is null and the course price is free, give
   // the login and enrol button;

@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
 import { Nav, NavLink, NavItem, NavbarBrand, Navbar, Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
+import { Auth, Hub } from 'aws-amplify';
+
 import './MainNav.css';
 
 /**
  * The Constructor
- * @param {json} props the props
+ * @param {object} capsule listener
+ * @param {object} props the props
  * @returns {null} The sum of the two numbers.
  */
 export default class MainNav extends Component {
@@ -18,28 +20,47 @@ export default class MainNav extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isOpen: false,
+      isAuthenticated: false,
     };
+
+    // setup listener
+    Hub.listen('auth', this, 'MyListener');
+  }
+  componentDidMount = () => {
+    // check authentication
+    Auth.currentAuthenticatedUser()
+      .then(() => {
+        this.setState({ isAuthenticated: true });
+      })
+      .catch(() => {
+        this.setState({ isAuthenticated: false });
+      });
+  }
+  onHubCapsule = (capsule) => {
+    const { channel, payload } = capsule;
+    if (channel === 'auth') {
+      switch (payload.event) {
+        case 'signIn':
+          // update the user creds
+          this.setState({ isAuthenticated: true });
+          break;
+        case 'signOut':
+          // delete the user creds
+          this.setState({ isAuthenticated: false });
+          break;
+        default:
+          console.log('unhandled event');
+      }
+      console.log('payload', payload);
+    }
   }
   signInUser = () => {
-    /*
-    if (this.props.auth != null) {
-      this.props.auth.getSession();
-    } else {
-      console.log('auth is null');
-    }
-    */
     window.location = '/welcome';
   }
   signOutUser = () => {
-    if (this.props.auth != null) {
-      this.props.auth.signOut();
-    } else {
-      console.log('auth is null');
-    }
+    Auth.signOut();
+    window.location = '/';
   }
-  toggle = () => this.setState({ isOpen: !this.state.isOpen })
-  toggleSession = () => this.setState({ sessionIsOpen: !this.state.sessionIsOpen })
   render = () => (
     <Navbar className="bg-light flex-column flex-md-row" light expand tag="header">
       <NavbarBrand className="mr-0 mr-md-2" tag={Link} to="/">
@@ -50,7 +71,7 @@ export default class MainNav extends Component {
       </NavbarBrand>
       <div className="navbar-nav-scroll ml-md-auto">
         {
-          this.props.isAuthenticated ?
+          this.state.isAuthenticated ?
             <Nav className="flex-scroll" navbar>
               <NavItem><NavLink tag={Link} to="/">Home</NavLink></NavItem>
               <NavItem><NavLink tag={Link} to="/courses" className="courses-nav">Courses</NavLink></NavItem>
@@ -67,13 +88,3 @@ export default class MainNav extends Component {
     </Navbar>
   )
 }
-
-MainNav.propTypes = {
-  auth: PropTypes.shape(),
-  isAuthenticated: PropTypes.bool,
-};
-
-MainNav.defaultProps = {
-  auth: null,
-  isAuthenticated: false,
-};

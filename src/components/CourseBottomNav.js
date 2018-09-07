@@ -7,8 +7,7 @@ import { Pagination, PaginationItem, PaginationLink } from 'reactstrap';
 import { Link } from 'react-router-dom';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import { invokeApig } from '../libs/awsLibs';
-import config from '../config';
+import { API } from 'aws-amplify';
 
 /**
  * CourseBottomNav class
@@ -26,19 +25,15 @@ export default class CourseBottomNav extends Component {
     this.state = { modules: [] };
   }
   componentDidMount = async () => {
-    try {
-      const results = await this.getCourseModules();
-      this.setState({ modules: results });
-    } catch (e) {
-      console.log('error getting courses');
-      console.log(e);
-    }
+    API.get('default', '/modules', { queryStringParameters: { courseId: this.props.courseId } })
+      .then((response) => {
+        this.setState({ modules: response });
+      })
+      .catch((err) => {
+        console.log('error getting courses');
+        console.log(err);
+      });
   }
-  getCourseModules = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: '/modules',
-    queryParams: { courseId: this.props.courseId },
-  })
   render = () => {
     /*
       plan:
@@ -110,5 +105,10 @@ export default class CourseBottomNav extends Component {
 
 CourseBottomNav.propTypes = {
   courseId: PropTypes.string.isRequired,
-  moduleId: PropTypes.string.isRequired,
+  moduleId: PropTypes.string,
+  moduleType: PropTypes.string.isRequired,
+};
+
+CourseBottomNav.defaultProps = {
+  moduleId: '',
 };

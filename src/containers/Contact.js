@@ -8,6 +8,7 @@ import ReCAPTCHA from 'react-google-recaptcha';
 import PropTypes from 'prop-types';
 import { compose, withProps } from 'recompose';
 import { withScriptjs, withGoogleMap, GoogleMap, Marker } from 'react-google-maps';
+import { Auth } from 'aws-amplify';
 
 const MyMapComponent = compose(
   withProps({
@@ -43,15 +44,26 @@ export default class Contact extends Component {
       comment: '',
       captchaPassed: false,
       delivered: false,
+      currentUser: null,
     };
   }
   componentDidMount = () => {
-    console.log(this.props.currentUser);
+    // console.log(this.props.currentUser);
     /*
     if (this.props.currentUser != null) {
       this.setState({ email: this.props.currentUser.email });
     }
     */
+
+    // load current authenticated user
+    Auth.currentAuthenticatedUser()
+      .then((cu) => {
+        this.setState({ currentUser: cu });
+      })
+      .catch((err) => {
+        console.log('no user detected');
+        console.log(err);
+      });
   }
   handleSubmit = (e) => {
     e.preventDefault();
@@ -66,7 +78,7 @@ export default class Contact extends Component {
 
     const emailParams = {
       Destination: {
-        ToAddresses: ['enquiry@actuarialpartners.com', this.props.currentUser.email],
+        ToAddresses: ['enquiry@actuarialpartners.com', this.state.currentUser.email],
       },
       Message: {
         Body: {
@@ -80,14 +92,14 @@ export default class Contact extends Component {
           },
         },
         Subject: {
-          Data: `Enquiry / Comment from ${this.props.currentUser.name}`,
+          Data: `Enquiry / Comment from ${this.state.currentUser.name}`,
           Charset: 'UTF-8',
         },
       },
       Source: 'enquiry@actuarialpartners.com',
       // SourceArn: 'arn:aws:iam::167457616767:user/ses-smtp-user.20180110-122353',
       // ConfigurationSetName: 'STRING_VALUE',
-      ReplyToAddresses: [this.props.currentUser.email],
+      ReplyToAddresses: [this.state.currentUser.email],
     };
 
     // send contents to enquiry@actuarialpartners.com
@@ -115,7 +127,9 @@ export default class Contact extends Component {
   }
   render = () => {
     let contactForm = null;
-    if (this.props.currentUser === null) {
+    const { currentUser } = this.state;
+
+    if (currentUser === null) {
       contactForm = (
         <Card body>
           <CardTitle>You must login to send comments</CardTitle>
@@ -139,7 +153,7 @@ export default class Contact extends Component {
         <Form onSubmit={this.handleSubmit} className="text-left">
           <FormGroup>
             <Label>Email:</Label>
-            <Input id="email" type="email" placeholder="Email" value={this.props.currentUser.email} disabled />
+            <Input id="email" type="email" placeholder="Email" value={currentUser.email} disabled />
           </FormGroup>
           <FormGroup>
             <Label>Comment / Suggestion</Label>

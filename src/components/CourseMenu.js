@@ -7,9 +7,9 @@ import { Navbar, NavbarBrand, NavbarToggler, Nav, NavItem, NavLink, Collapse } f
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { API } from 'aws-amplify';
+
 import './CourseMenu.css';
-import { invokeApig } from '../libs/awsLibs';
-import config from '../config';
 
 /**
  * The Constructor
@@ -29,32 +29,29 @@ export default class CourseMenu extends Component {
     };
   }
   componentDidMount = async () => {
+    const { courseId, buildMode } = this.props;
+    this.setState({ loaded: false });
+
     // load the course info
-    try {
-      const result = await this.getCourseInfo();
-      this.setState({ courseInfo: result });
-    } catch (e) {
-      console.log('error getting course info');
-      console.log(e);
-    }
+    API.get('default', `/courses/${courseId}`)
+      .then((response) => {
+        this.setState({ courseInfo: response, loaded: true });
+      })
+      .catch((err) => {
+        console.log('error getting course info');
+        console.log(err);
+      });
 
     // load the course modules based on courseId
-    try {
-      const results = await this.getCourseModules();
-      this.setState({ modules: results.sort((a, b) => a.order > b.order), loaded: true });
-    } catch (e) {
-      console.log('error getting modules');
-      console.log(e);
-    }
+    API.get('default', '/modules', { queryStringParameters: { courseId, buildMode } })
+      .then((response) => {
+        this.setState({ modules: response.sort((a, b) => a.order > b.order) });
+      })
+      .catch((err) => {
+        console.log('error getting modules');
+        console.log(err);
+      });
   }
-  getCourseInfo = () => invokeApig({
-    path: `/courses/${this.props.courseId}`,
-  })
-  getCourseModules = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: '/modules',
-    queryParams: { courseId: this.props.courseId, publish_status: this.props.buildMode ? 'all' : 'published' },
-  })
   toggleNavbar = () => { this.setState({ collapse: !this.state.collapse }); }
   handleClick = (e) => {
     // should close the navbar and push to history

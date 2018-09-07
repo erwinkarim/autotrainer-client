@@ -4,9 +4,7 @@ import PropTypes from 'prop-types';
 import EmailValidator from 'email-validator';
 import Waypoint from 'react-waypoint';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
-import config from '../config';
-import { invokeApig } from '../libs/awsLibs';
-
+import { API } from 'aws-amplify';
 
 /**
  * The SignUpModal
@@ -42,30 +40,24 @@ export default class SignUpModal extends Component {
 
     this.setState({ signing_up: true });
 
-    try {
-      await this.signUpEmail();
-    } catch (e) {
-      console.log('error signing up email');
-      console.log(e);
-    }
-
-    this.props.addNotification('Thank you for signing up', 'info');
-
-    // reset
-    this.setState({
-      signing_up: false, showNewsletterModal: false, signup_email: '', first_name: '', last_name: '',
-    });
+    API.post('default', '/misc/register_email', {
+      body: {
+        FNAME: this.state.first_name,
+        LNAME: this.state.last_name,
+        email: this.state.signup_email,
+      },
+    })
+      .then(() => {
+        this.setState({
+          signing_up: false, showNewsletterModal: false, signup_email: '', first_name: '', last_name: '',
+        });
+        this.props.addNotification('Thank you for signing up', 'info');
+      })
+      .catch((err) => {
+        console.log('error signing up email');
+        console.log(err);
+      });
   }
-  signUpEmail = () => invokeApig({
-    endpoint: config.apiGateway.MISC_URL,
-    method: 'POST',
-    path: '/misc/register_email',
-    body: {
-      FNAME: this.state.first_name,
-      LNAME: this.state.last_name,
-      email: this.state.signup_email,
-    },
-  })
   toggleModal = () => this.setState({ showNewsletterModal: !this.state.showNewsletterModal })
   triggerWaypoint = () => {
     // trigger the waypoint only once per render
