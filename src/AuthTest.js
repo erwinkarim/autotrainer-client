@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { Container, Row, Col, Button, Card, CardText } from 'reactstrap';
-import { Auth, API } from 'aws-amplify';
+import { Auth, API, Cache } from 'aws-amplify';
 import AWS from 'aws-sdk'
 import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-native';
 import { federated } from './libs/amp_config';
@@ -60,24 +60,14 @@ class AuthTest extends Component {
       .catch(err => console.log('error getting document client', err));
     // figure out how to get cognito ident
 
-    /*
-    Auth.currentCredentials()
-      .then((response) => {
-        console.log(response);
-        this.setState({ cognitoIdent: response });
-      })
-      .catch((err) => {
-        this.setState({ cognitoGetErr: err });
-      })
-    */
+    console.log('federatedInfo', Cache.getItem('federatedInfo'));
+
     getCognitoClient()
       .then((client) => {
-        const { accessKeyId } = this.state.credential;
-        console.log(`getting user info using token ${accessKeyId}`);
+        const token = this.state.credential.webIdentityCredentials.params.Logins['accounts.google.com'];
 
-        client.adminGetUser(
-          // { AccessToken: this.state.credential.accessKeyId },
-          { Username: 'Google_102133342031484433874', UserPoolId: process.env.REACT_APP_COGNITO_USER_POOL_ID },
+        client.getUser(
+          { AccessToken: token },
           (err, data) => {
             if (err) {
               this.setState({ cognitoGetErr: err });

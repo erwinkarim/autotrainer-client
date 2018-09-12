@@ -7,7 +7,6 @@ import { Auth } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
 // import { withOAuth } from 'aws-amplify-react';
 
-
 // import { invokeApig } from '../libs/awsLibs';
 import EnrolledCourses from '../components/UserLanding/EnrolledCourses';
 import InvitedCourses from '../components/UserLanding/InvitedCourses';
@@ -19,6 +18,7 @@ const activeTabBorder = 'border-bottom border-secondary';
 
 /**
  * User Landing Component
+ * @param {json} prevProps the previous props
  * @param {json} props the props
  * @returns {null} The sum of the two numbers.
  */
@@ -38,29 +38,6 @@ class UserLanding extends Component {
     };
   }
   componentDidMount = async () => {
-    /*
-    not using this anymore because using amplify withAuthenticator tag
-    // check if need for auto enrolment
-    const enrolCourse = window.localStorage.getItem('enrol_course');
-    if (enrolCourse) {
-      try {
-        window.localStorage.removeItem('enrol_course');
-        this.autoEnrolCourse(enrolCourse);
-      } catch (e) {
-        console.log('problem trying to enrol course');
-        console.log(e);
-      }
-    }
-
-    // check for login redirects
-    const newLocation = window.localStorage.getItem('login_redirect');
-
-    if (newLocation) {
-      window.localStorage.removeItem('login_redirect');
-      this.props.history.push(newLocation);
-    }
-    */
-
     // get current user
     Auth.currentAuthenticatedUser()
       .then((cu) => {
@@ -81,6 +58,8 @@ class UserLanding extends Component {
       });
   }
   componentDidUpdate = async (prevProps) => {
+    // should convert to event based
+
     console.log('componentDidUpdate');
     if (prevProps.currentUser !== this.props.currentUser) {
       try {

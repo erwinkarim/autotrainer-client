@@ -32,11 +32,11 @@ export default class SignUpModal extends Component {
     };
   }
   launchNewsletterModal = () => {
-    console.log('should launch news letter modal');
+    // console.log('should launch news letter modal');
     this.setState({ showNewsletterModal: true });
   }
   handleNewsletterSignUp = async () => {
-    console.log('should send email to sendgrid / mailchimp');
+    // console.log('should send email to sendgrid / mailchimp');
 
     this.setState({ signing_up: true });
 
