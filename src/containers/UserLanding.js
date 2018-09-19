@@ -3,8 +3,9 @@ import { Container, Row, Col, Alert, Navbar, Nav, NavItem, NavLink, TabContent, 
 import { Link } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
-import { Auth } from 'aws-amplify';
+import { Auth, API } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
+import { decode } from 'jsonwebtoken';
 // import { withOAuth } from 'aws-amplify-react';
 
 // import { invokeApig } from '../libs/awsLibs';
@@ -38,29 +39,37 @@ class UserLanding extends Component {
     };
   }
   componentDidMount = async () => {
-    // get current user
-    Auth.currentAuthenticatedUser()
-      .then((cu) => {
-        console.log('cu', cu);
-        this.setState({ currentUser: cu, isAuthenticating: false });
-
-        Auth.currentUserInfo()
-          .then((info) => {
-            console.log('info', info);
-          })
-          .catch((infoErr) => {
-            console.log(infoErr);
-          });
+    // load currentUser based on session / creds
+    Auth.currentSession()
+      .then((res) => {
+        // cognito user
+        // Cache.setItem('userinfo', res.idToken.payload);
+        this.setState({ currentUser: res.idToken.payload, isAuthenticating: false });
       })
-      .catch((err) => {
-        console.log('error getting current user');
-        console.log(err);
+      .catch(() => {
+        // google user: store userinfo from jwt token
+        Auth.currentCredentials()
+          .then((cred) => {
+            const result = decode(cred.webIdentityCredentials.params.Logins['accounts.google.com']);
+            // console.log('decode result', result);
+            this.setState({ currentUser: result, isAuthenticating: false });
+
+            // send identity id to be checked / registered
+            API.post('default', '/ident/check', {
+              body: {
+                username: `Google_${result.sub}`,
+              },
+            });
+          })
+          .catch((err) => {
+            console.log('error getting user credentials');
+            console.log(err);
+          });
       });
   }
   componentDidUpdate = async (prevProps) => {
     // should convert to event based
-
-    console.log('componentDidUpdate');
+    /*
     if (prevProps.currentUser !== this.props.currentUser) {
       try {
         await this.checkIdent();
@@ -69,18 +78,14 @@ class UserLanding extends Component {
         console.log(e);
       }
     }
+    */
   }
   /*
   checkIdent = () => invokeApig({
     endpoint: config.apiGateway.IDENT_URL,
     method: 'POST',
     path: '/ident/check',
-    queryParams: { username: this.props.currentUser['cognito:username'] },
-  })
-  autoEnrolCourse = courseId => invokeApig({
-    method: 'POST',
-    path: '/enrolment',
-    body: { courseId },
+    queryParams: { username: `Google_${this.state.currentUser.sub}` },
   })
   */
   toggleTab = (tab) => {
@@ -95,12 +100,6 @@ class UserLanding extends Component {
       return <Notice content="Checking auth ..." />;
     }
 
-    /*
-    if (!isAuthenticated) {
-      return <Notice content="User not authenticated" />;
-    }
-    */
-
     if (!currentUser) {
       return <Notice content="User not detected" />;
     }
@@ -108,13 +107,17 @@ class UserLanding extends Component {
     return (
       <Container className="mt-2">
         <Helmet>
-          <title className="user-landing-welcome">{`Welcome, ${currentUser.name}`} - {config.site_name}</title>
+          <title className="user-landing-welcome">{`Welcome, ${currentUser.name || currentUser.email}`} - {config.site_name}</title>
         </Helmet>
         <Row>
           <Col>
             <p className="lead">
-              <img height="32" src={currentUser.picture} alt={currentUser.name} className="rounded-circle mr-2" />
-              Welcome, {currentUser.name}
+              {
+                currentUser.picture ? (
+                  <img height="32" src={currentUser.picture} alt={currentUser.name || currentUser.email} className="rounded-circle mr-2" />
+                ) : null
+              }
+              Welcome, {currentUser.name || currentUser.email}
             </p>
           </Col>
         </Row>
@@ -210,4 +213,5 @@ UserLanding.defaultProps = {
 
 // export default UserLanding;
 export default withAuthenticator(UserLanding);
+// export default customAuthenticator(UserLanding);
 // export default withOAuth(UserLanding);

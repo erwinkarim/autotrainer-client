@@ -51,7 +51,6 @@ export default class MainNav extends Component {
         default:
           console.log('unhandled event');
       }
-      console.log('payload', payload);
     }
   }
   signInUser = () => {
@@ -62,7 +61,7 @@ export default class MainNav extends Component {
     window.location = '/';
   }
   render = () => (
-    <Navbar className="bg-light flex-column flex-md-row" light expand tag="header">
+    <Navbar className="bg-light flex-column flex-md-row mb-2" light expand tag="header">
       <NavbarBrand className="mr-0 mr-md-2" tag={Link} to="/">
         <img src="/logos/learn.part1.png" alt="learn@ap" height="30" />
       </NavbarBrand>
