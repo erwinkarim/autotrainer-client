@@ -36,6 +36,7 @@ class UserLanding extends Component {
       activeTab: 'enrolled',
       isAuthenticating: true,
       currentUser: { name: '', email: '', picture: '' },
+      userInfo: null,
     };
   }
   componentDidMount = async () => {
@@ -67,34 +68,29 @@ class UserLanding extends Component {
           });
       });
   }
-  componentDidUpdate = async (prevProps) => {
-    // should convert to event based
-    /*
-    if (prevProps.currentUser !== this.props.currentUser) {
-      try {
-        await this.checkIdent();
-      } catch (e) {
-        console.log('error checking username');
-        console.log(e);
-      }
-    }
-    */
+  componentDidUpdate = (prevProps, prevState) => {
+    if (prevState.currentUser.name === '' && this.state.currentUser.name !== '') {
+      console.log('should get user info when user updated from empty');
+      const { currentUser } = this.state;
+      const username = currentUser.iss === 'accounts.google.com' ? `Google_${currentUser.sub}` : currentUser.sub;
+
+      API.post('default', '/ident/user_info', { body: { username } })
+        .then((res) => {
+          this.setState({ userInfo: res });
+        })
+        .catch((err) => {
+          console.log('error getting userinfo');
+          console.log(err);
+        });
+    } // if
   }
-  /*
-  checkIdent = () => invokeApig({
-    endpoint: config.apiGateway.IDENT_URL,
-    method: 'POST',
-    path: '/ident/check',
-    queryParams: { username: `Google_${this.state.currentUser.sub}` },
-  })
-  */
   toggleTab = (tab) => {
     this.setState({ activeTab: tab });
   }
   render = () => {
     // const { currentUser, isAuthenticated, isAuthenticating } = this.props;
     // const { currentUser, isAuthenticated, isAuthenticating } = this.props;
-    const { currentUser, isAuthenticating } = this.state;
+    const { currentUser, isAuthenticating, userInfo } = this.state;
 
     if (isAuthenticating) {
       return <Notice content="Checking auth ..." />;
@@ -102,6 +98,13 @@ class UserLanding extends Component {
 
     if (!currentUser) {
       return <Notice content="User not detected" />;
+    }
+
+    let adminUser = false;
+    if (userInfo) {
+      if (userInfo.Groups) {
+        adminUser = userInfo.Groups.reduce((a, v) => a || v.GroupName === 'admin', false);
+      }
     }
 
     return (
@@ -155,8 +158,7 @@ class UserLanding extends Component {
                   </NavLink>
                 </NavItem>
                 {
-                  /*
-                  currentUser['cognito:groups'].includes('admin') ? (
+                  adminUser ? (
                     <NavItem>
                       <NavLink
                         href="#"
@@ -168,7 +170,6 @@ class UserLanding extends Component {
                       </NavLink>
                     </NavItem>
                   ) : null
-                  */
                 }
               </Nav>
             </Navbar>
@@ -182,13 +183,11 @@ class UserLanding extends Component {
                 <InvitedCourses email={currentUser.email} {...this.props} />
               </TabPane>
               {
-                /*
-                currentUser['cognito:groups'].includes('admin') ? (
+                adminUser ? (
                   <TabPane tabId="managed">
                     <CourseManager />
                   </TabPane>
                 ) : null
-                */
               }
             </TabContent>
           </Col>

@@ -1,10 +1,11 @@
 import React, { Component } from 'react';
 import { Row, Col, Card, CardTitle, CardBody, CardText, Button } from 'reactstrap';
 import { HashLink as Link } from 'react-router-hash-link';
+import { API } from 'aws-amplify';
+
 import Notice from '../../components/Notice';
 import '../../containers/UserLanding.css';
 import '../../containers/CertCheck.css';
-import { invokeApig } from '../../libs/awsLibs';
 
 /**
  * The Constructor
@@ -25,38 +26,28 @@ export default class CourseManager extends Component {
     };
   }
   componentDidMount = async () => {
-    const handle = this;
     console.log('attempt to get user related courses');
-    try {
-      handle.setState({ isLoading: true });
-      const results = await this.getCourses();
-      handle.setState({ courses: results, isLoading: false });
-    } catch (e) {
-      console.log('error fetching user related courses');
-      console.log(e);
-    }
+    this.getCourses();
   }
-  getCourses = () => invokeApig({
-    path: '/courses/user',
-  })
-  deleteCourse = id => invokeApig({
-    path: `/courses/${id}`,
-    method: 'DELETE',
-  })
+  getCourses = () => API.get('default', '/courses/user')
+    .then((res) => {
+      this.setState({ courses: res, isLoading: false });
+    })
+    .catch((err) => {
+      console.log('error fetching user related courses');
+      console.log(err);
+    })
   handleDelete = async (e) => {
-    const handle = this;
-
     if (window.confirm('Really delete?')) {
       console.log('now should relaly delete them;');
-      try {
-        await this.deleteCourse(e.target.id);
-        // TODO: remove from state instead of polling again from server
-        const results = await this.getCourses();
-        handle.setState({ courses: results });
-      } catch (err) {
-        console.log('Error trying to delete');
-        console.log(err);
-      }
+      API.del('default', `/courses/${e.target.id}`)
+        .then(() => {
+          this.getCourses();
+        })
+        .catch((err) => {
+          console.log('Error trying to delete');
+          console.log(err);
+        });
     }
   }
   render = () => {
