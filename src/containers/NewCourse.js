@@ -7,12 +7,11 @@ import { Link } from 'react-router-dom';
 import toTitleCase from 'titlecase';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
-import { Auth, API } from 'aws-amplify';
+import { API } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
-import { decode } from 'jsonwebtoken';
 
 import './NewCourse.css';
-import { invokeApig } from '../libs/awsLibs';
+import { userInfo } from '../libs/awsLibs';
 import Notice from '../components/Notice';
 import config from '../config';
 
@@ -31,53 +30,14 @@ class NewCourse extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      title: '', description: '', currentUser: null, userInfo: null,
+      title: '', description: '', currentUser: null,
     };
   }
   componentDidMount = () => {
-    // get current User session
-    Auth.currentSession()
+    userInfo()
       .then((res) => {
-        // cognito user
-        // Cache.setItem('userinfo', res.idToken.payload);
-        this.setState({ currentUser: res.idToken.payload });
-      })
-      .catch(() => {
-        // google user: store userinfo from jwt token
-        Auth.currentCredentials()
-          .then((cred) => {
-            const result = decode(cred.webIdentityCredentials.params.Logins['accounts.google.com']);
-            // console.log('decode result', result);
-            this.setState({ currentUser: result });
-
-            // send identity id to be checked / registered
-            API.post('default', '/ident/check', {
-              body: {
-                username: `Google_${result.sub}`,
-              },
-            });
-          })
-          .catch((err) => {
-            console.log('error getting user credentials');
-            console.log(err);
-          });
+        this.setState({ currentUser: res });
       });
-  }
-  componentDidUpdate = (prevProps, prevState) => {
-    if (!prevState.currentUser && this.state.currentUser.name !== '') {
-      console.log('should get user info when user updated from empty');
-      const { currentUser } = this.state;
-      const username = currentUser.iss === 'accounts.google.com' ? `Google_${currentUser.sub}` : currentUser.sub;
-
-      API.post('default', '/ident/user_info', { body: { username } })
-        .then((res) => {
-          this.setState({ userInfo: res });
-        })
-        .catch((err) => {
-          console.log('error getting userinfo');
-          console.log(err);
-        });
-    } // if
   }
   handleChange = (e) => {
     this.setState({ [e.target.id]: (e.target.id === 'title' ? toTitleCase(e.target.value) : e.target.value) });
@@ -96,23 +56,16 @@ class NewCourse extends Component {
         console.log(err);
       });
   }
-  createCourse = course => invokeApig({
-    path: '/courses',
-    method: 'POST',
-    body: course,
-  })
   validateForm = () => (this.state.title.length > 0 && this.state.description.length > 0)
   render = () => {
-    const { currentUser, userInfo } = this.state;
+    const { currentUser } = this.state;
 
-    let adminUser = false;
-    if (userInfo) {
-      adminUser = userInfo.Groups.reduce((a, v) => a || v.GroupName === 'admin', false);
-    }
-
-    if (!adminUser) {
+    if (!currentUser) {
+      return <Notice content="Checking auth ..." />;
+    } else if (!currentUser.isAdmin) {
       return <Notice title="Unauthorized" content="You are not an admin user" />;
     }
+
 
     return (
       <Container className="mt-2">
@@ -166,12 +119,7 @@ class NewCourse extends Component {
 }
 
 NewCourse.propTypes = {
-  currentUser: PropTypes.shape(),
   history: PropTypes.shape().isRequired,
-};
-
-NewCourse.defaultProps = {
-  currentUser: {},
 };
 
 export default withAuthenticator(NewCourse);

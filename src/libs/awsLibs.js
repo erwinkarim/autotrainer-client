@@ -2,9 +2,76 @@ import { CognitoAuth } from 'amazon-cognito-auth-js/dist/amazon-cognito-auth';
 // import AWS from 'aws-sdk'
 import AWS from 'aws-sdk/global';
 import S3 from 'aws-sdk/clients/s3';
+import { Auth, API } from 'aws-amplify';
+import { decode } from 'jsonwebtoken';
+
 // import CognitoIdentityCredentials from 'aws-sdk/lib/credentials/cognito_identity_credentials';
 import sigV4Client from './sigV4Client';
 import config from '../config';
+
+/**
+ * returns current user info, based on web creds or not
+ * also have field isAdmin to show this guy is admin or not
+ * @returns {shape} user info, throws error if something is wrong
+ */
+export async function userInfo() {
+  // problem need to do things sequentially
+
+  let username = '';
+  let userinfo = {};
+
+  const getUserInfo = async () => {
+    // console.log(`entered getUserInfo as ${username}`);
+    await API.post('default', '/ident/user_info', { body: { username } })
+      .then(async (res) => {
+        // console.log('got user info');
+        res.isAdmin = res.Groups.reduce((a, v) => a || v.GroupName === 'admin', false);
+        await res.UserAttributes.forEach((i) => {
+          // console.log(`setting ${i.Name} as ${i.Value}`);
+          res[i.Name] = i.Value;
+        });
+        userinfo = res;
+      })
+      .catch((err) => {
+        console.log('something went wrong');
+        console.log(err);
+      });
+  };
+
+  // get cognito username
+  const getCurrentUser = async () => {
+    // console.log('entered current user');
+    await Auth.currentSession()
+      .then((res) => {
+        // cognito user
+        username = res;
+        // console.log(`set username as ${username}`);
+      })
+      .catch(async () => {
+        // google user: store userinfo from jwt token
+        // console.log('no session, get creds');
+        await Auth.currentCredentials()
+          .then((cred) => {
+            const result = decode(cred.webIdentityCredentials.params.Logins['accounts.google.com']);
+            // console.log('decode result', result);
+            username = `Google_${result.sub}`;
+            // console.log(`set username as ${username}`);
+          })
+          .catch((err) => {
+            console.log('error getting user credentials');
+            console.log(err);
+          });
+      });
+  };
+
+  // await getCurrentUser();
+  for( const fn of [getCurrentUser, getUserInfo]) {
+    await fn();
+  }
+
+  // console.log('return userinfo');
+  return Promise.resolve(userinfo);
+}
 
 /**
  * Get Unauthenticated credentials from identity pool

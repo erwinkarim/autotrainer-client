@@ -10,11 +10,12 @@ import toTitleCase from 'titlecase';
 import PropTypes from 'prop-types';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import { Link } from 'react-router-dom';
+import { API } from 'aws-amplify';
+import { withAuthenticator } from 'aws-amplify-react';
 
 import ModuleRootEditor from '../components/ModuleRootEditor';
 import Notice from '../components/Notice';
 import config from '../config';
-import { invokeApig } from '../libs/awsLibs';
 import asyncComponent from '../components/AsyncComponent';
 
 const ArticleBuilder = asyncComponent(() => import('../modules/ArticleBuilder'));
@@ -31,7 +32,7 @@ const defaultModule = { title: '', description: '', moduleType: null };
  * @param {int} body module.body to be updated
  * @returns {int} The sum of the two numbers.
  */
-export default class ModuleBuilder extends Component {
+class ModuleBuilder extends Component {
   /**
    * Adds two numbers together.
    * @param {shape} props The first number.
@@ -53,26 +54,17 @@ export default class ModuleBuilder extends Component {
       this.loadModule();
     }
   }
-  getModule = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: `/modules/${this.props.match.params.moduleId}`,
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
   setUpdatingState = (updatingState) => {
     // use this to allow modules to set updating state
     // useful if the module is updating files (which can take a while)
     this.setState({ updating: updatingState });
   }
-  updateModule = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    method: 'PUT',
-    path: `/modules/${this.props.match.params.moduleId}`,
-    body: this.state.module,
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
   handleUpdate = async () => {
     // should update module
     let isValidBody = false;
+    const { courseId, moduleId } = this.props.match.params;
+    const { module } = this.state;
+
     try {
       isValidBody = await this.moduleHandle.theRef.validBody();
     } catch (e) {
@@ -87,15 +79,16 @@ export default class ModuleBuilder extends Component {
     }
 
     // now things are properly valid
-    try {
-      this.setState({ updating: true });
-      await this.updateModule();
-      this.props.addNotification('Module updated', 'success');
-      this.setState({ updating: false });
-    } catch (e) {
-      console.log('error updating module');
-      console.log(e);
-    }
+    this.setState({ updating: true });
+    API.put('default', `/modules/${moduleId}`, { body: module, queryStringParameters: { courseId } })
+      .then(() => {
+        this.props.addNotification('Module updated', 'success');
+        this.setState({ updating: false });
+      })
+      .catch((err) => {
+        console.log('error updating module');
+        console.log(err);
+      });
   }
   handleChange = (e) => {
     // should update the title, description
@@ -114,21 +107,24 @@ export default class ModuleBuilder extends Component {
   }
   validateForm = () => this.state.module.title.length > 0 &&
     this.state.module.description.length > 0
-  loadModule = async () => {
+  loadModule = () => {
     // should load/reload the module
     this.setState({ module: defaultModule, loading: true });
-    try {
-      const result = await this.getModule();
-
-      this.setState({ module: result, loading: false });
-    } catch (e) {
-      console.log('error getting module');
-      console.log(e);
-    }
+    const { moduleId, courseId } = this.props.match.params;
+    API.get('default', `/modules/${moduleId}`, { queryStringParameters: { courseId } })
+      .then((res) => {
+        this.setState({ module: res, loading: false });
+      })
+      .catch((err) => {
+        console.log('error getting module');
+        console.log(err);
+      });
   }
   render = () => {
     // check auth
-    if (!this.props.isAuthenticated) {
+    if (!this.props.currentUser) {
+      return (<Notice content="User is not authenticated." />);
+    } else if (!this.props.currentUser.isAdmin) {
       return (<Notice content="User is not authenticated." />);
     }
 
@@ -214,4 +210,7 @@ ModuleBuilder.propTypes = {
   match: PropTypes.shape().isRequired,
   isAuthenticated: PropTypes.bool.isRequired,
   addNotification: PropTypes.func.isRequired,
+  currentUser: PropTypes.shape().isRequired,
 };
+
+export default withAuthenticator(ModuleBuilder);

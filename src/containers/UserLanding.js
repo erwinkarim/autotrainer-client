@@ -3,9 +3,7 @@ import { Container, Row, Col, Alert, Navbar, Nav, NavItem, NavLink, TabContent, 
 import { Link } from 'react-router-dom';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
-import { Auth, API } from 'aws-amplify';
 import { withAuthenticator } from 'aws-amplify-react';
-import { decode } from 'jsonwebtoken';
 // import { withOAuth } from 'aws-amplify-react';
 
 // import { invokeApig } from '../libs/awsLibs';
@@ -14,6 +12,7 @@ import InvitedCourses from '../components/UserLanding/InvitedCourses';
 import CourseManager from '../components/UserLanding/CourseManager';
 import config from '../config';
 import Notice from '../components/Notice';
+import { userInfo } from '../libs/awsLibs';
 
 const activeTabBorder = 'border-bottom border-secondary';
 
@@ -41,48 +40,10 @@ class UserLanding extends Component {
   }
   componentDidMount = async () => {
     // load currentUser based on session / creds
-    Auth.currentSession()
+    userInfo()
       .then((res) => {
-        // cognito user
-        // Cache.setItem('userinfo', res.idToken.payload);
-        this.setState({ currentUser: res.idToken.payload, isAuthenticating: false });
-      })
-      .catch(() => {
-        // google user: store userinfo from jwt token
-        Auth.currentCredentials()
-          .then((cred) => {
-            const result = decode(cred.webIdentityCredentials.params.Logins['accounts.google.com']);
-            // console.log('decode result', result);
-            this.setState({ currentUser: result, isAuthenticating: false });
-
-            // send identity id to be checked / registered
-            API.post('default', '/ident/check', {
-              body: {
-                username: `Google_${result.sub}`,
-              },
-            });
-          })
-          .catch((err) => {
-            console.log('error getting user credentials');
-            console.log(err);
-          });
+        this.setState({ currentUser: res, isAuthenticating: false });
       });
-  }
-  componentDidUpdate = (prevProps, prevState) => {
-    if (prevState.currentUser.name === '' && this.state.currentUser.name !== '') {
-      console.log('should get user info when user updated from empty');
-      const { currentUser } = this.state;
-      const username = currentUser.iss === 'accounts.google.com' ? `Google_${currentUser.sub}` : currentUser.sub;
-
-      API.post('default', '/ident/user_info', { body: { username } })
-        .then((res) => {
-          this.setState({ userInfo: res });
-        })
-        .catch((err) => {
-          console.log('error getting userinfo');
-          console.log(err);
-        });
-    } // if
   }
   toggleTab = (tab) => {
     this.setState({ activeTab: tab });
@@ -90,7 +51,7 @@ class UserLanding extends Component {
   render = () => {
     // const { currentUser, isAuthenticated, isAuthenticating } = this.props;
     // const { currentUser, isAuthenticated, isAuthenticating } = this.props;
-    const { currentUser, isAuthenticating, userInfo } = this.state;
+    const { currentUser, isAuthenticating } = this.state;
 
     if (isAuthenticating) {
       return <Notice content="Checking auth ..." />;
@@ -100,12 +61,15 @@ class UserLanding extends Component {
       return <Notice content="User not detected" />;
     }
 
+    /*
     let adminUser = false;
     if (userInfo) {
       if (userInfo.Groups) {
         adminUser = userInfo.Groups.reduce((a, v) => a || v.GroupName === 'admin', false);
       }
     }
+    */
+    const adminUser = currentUser.isAdmin;
 
     return (
       <Container className="mt-2">

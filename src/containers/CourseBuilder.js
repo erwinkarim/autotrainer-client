@@ -8,8 +8,11 @@ import toTitleCase from 'titlecase';
 import Helmet from 'react-helmet';
 import PropTypes from 'prop-types';
 import uuid from 'uuid';
+import { API } from 'aws-amplify';
+
 import { invokeApig, s3Upload, s3Delete } from '../libs/awsLibs';
 import Notice from '../components/Notice';
+
 import './CourseBuilder.css';
 import config from '../config';
 import asyncComponent from '../components/AsyncComponent';
@@ -103,41 +106,42 @@ export default class CourseBuilder extends Component {
     };
   }
   componentDidMount = async () => {
-    // load the course
-    const handle = this;
-    try {
-      const newCourse = await this.getCourse();
-      // take out null entries before reassign default values
-      Object.entries(newCourse).forEach(([k, v]) => {
-        if (v === null) { delete newCourse[k]; }
+    // load the user then the course
+    const { course } = this.state;
+
+    API.get('default', `/courses/${this.props.match.params.courseId}`)
+      .then((res) => {
+        // take out null entries before reassign default values
+        Object.entries(res).forEach(([k, v]) => {
+          if (v === null) { delete res[k]; }
+        });
+
+        const result = Object.assign({
+          tagline: '',
+          key_points: [],
+          bg_pic: '',
+          bg_key: '',
+          clientList: [],
+          coupons: [{ code: null, discount: 100.0 }],
+          promoContent: '',
+        }, res);
+
+        if (result != null) {
+          this.setState({ course: result, loading: false });
+        }
+
+        // setup the picture preview
+        if (course.bg_pic !== null && course.bg_pic !== '') {
+          // course.bg_pic should be a string
+          this.setState({ bg_handle: course.bg_pic });
+          this.updatePicture(course.bg_pic);
+        }
+      })
+      .catch((err) => {
+        console.log('something went wrong');
+        console.log(err);
       });
-
-      const result = Object.assign({
-        tagline: '',
-        key_points: [],
-        bg_pic: '',
-        bg_key: '',
-        clientList: [],
-        coupons: [{ code: null, discount: 100.0 }],
-        promoContent: '',
-      }, newCourse);
-
-      if (result != null) {
-        handle.setState({ course: result, loading: false });
-      }
-
-      // setup the picture preview
-      if (this.state.course.bg_pic !== null && this.state.course.bg_pic !== '') {
-        // course.bg_pic should be a string
-        this.setState({ bg_handle: this.state.course.bg_pic });
-        this.updatePicture(this.state.course.bg_pic);
-      }
-    } catch (e) {
-      console.error('Error loading course');
-      console.error(e);
-    }
   }
-  getCourse = () => invokeApig({ path: `/courses/${this.props.match.params.courseId}` })
   toggleCompany = (e) => {
     // update company list
     if (e.target.value !== undefined) {
@@ -173,8 +177,10 @@ export default class CourseBuilder extends Component {
   }
   handleUpdateCourse = async (e) => {
     e.preventDefault();
-    const handle = this;
+    const { course } = this.state;
 
+    // need a better way to handle s3 files
+    /*
     // upload new file
     if (handle.state.bg_handle instanceof Object) {
       // delete old one, upload new one
@@ -201,22 +207,20 @@ export default class CourseBuilder extends Component {
         return;
       }
     }
+    */
 
-    console.log('should send updates on new course settings');
-    try {
-      await this.updateCourse();
-      // so annoying when doing multple updates ...
-      // this.props.history.push(`/courses/promo/${this.state.course.courseId}`);
-      this.props.addNotification('Course updated ...');
-    } catch (err) {
-      console.log(err);
-    }
+    // console.log('should send updates on new course settings');
+    API.put('default', `/courses/${this.props.match.params.courseId}`, {
+      body: { course },
+    })
+      .then(() => {
+        this.props.addNotification('Course updated ...');
+      })
+      .catch((err) => {
+        console.log('error getting courses');
+        console.log(err);
+      });
   }
-  updateCourse = () => invokeApig({
-    path: `/courses/${this.props.match.params.courseId}`,
-    method: 'PUT',
-    body: this.state.course,
-  })
   handleChange = (e) => {
     const newCourse = this.state.course;
     const handle = this;
@@ -332,41 +336,21 @@ export default class CourseBuilder extends Component {
     return this.state.course.key_points.length < 3;
   }
   render = () => {
-    if (this.state.loading) {
+    const { course, loading } = this.state;
+    const { currentUser } = this.props;
+
+    if (!currentUser) {
+      return (<Notice content="User is not authenticated." />);
+    } else if (!currentUser.isAdmin) {
+      return <Notice content="You need to be admin to manage a course" />;
+    } else if (loading) {
       return <Notice content="Loading course ..." />;
     }
-
-    // user is authenticated
-    if (!this.props.isAuthenticated) {
-      return (<Notice content="User is not authenticated." />);
-    }
-
-    // you need to be admin to see this for now
-    if (!this.props.currentUser['cognito:groups'].includes('admin')) {
-      return <Notice content="You need to be admin to manage a course" />;
-    }
-
-    // course has been loaded
-    if (this.state.course === null) {
-      // return note('Course is note loaded yet ...')
-      return (<Notice content="Course is not loaded yet ..." />);
-    }
-
-    /*
-      userId in dynamoDb is identity pool id *which links to user pool id*, but
-      what we only got is user pool id
-    console.log("currentUser", this.props.currentUser);
-    console.log("course.userId", this.state.course.userId);
-    console.log("cognito:username", this.props.currentUser["cognito:username"]);
-    if(this.state.course.userId !== this.props.currentUser["cognito:username"]){
-      return (<Notice title="Unauthorized" content="You can't access this resource" />);
-    }
-    */
 
     return (
       <div className="mt-2 text-left">
         <Helmet>
-          <title>Course Builder for {this.state.course.name} - {config.site_name}</title>
+          <title>Course Builder for {course.name} - {config.site_name}</title>
         </Helmet>
         <Row className="mb-2">
           <Col xs="12">
@@ -379,7 +363,7 @@ export default class CourseBuilder extends Component {
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'general' })}
                   onClick={() => { this.toggle('general'); }}
-                >General { !titleNotEmpty(this.state.course) ? <span className="text-danger">*</span> : null }
+                >General { !titleNotEmpty(course) ? <span className="text-danger">*</span> : null }
                 </NavLink>
               </NavItem>
               <NavItem>
@@ -387,7 +371,7 @@ export default class CourseBuilder extends Component {
                   className={classnames({ active: this.state.settingActiveTab === 'promo_page' })}
                   onClick={() => { this.toggle('promo_page'); }}
                 >Promo Page {
-                  !keyPointsNotEmpty(this.state.course) || !validCouponCode(this.state.course) ?
+                  !keyPointsNotEmpty(course) || !validCouponCode(course) ?
                     <span className="text-danger">*</span> : null
                 }
                 </NavLink>
@@ -396,7 +380,7 @@ export default class CourseBuilder extends Component {
                 <NavLink
                   className={classnames({ active: this.state.settingActiveTab === 'toc_page' })}
                   onClick={() => { this.toggle('toc_page'); }}
-                >TOC Page { !descriptionNotEmpty(this.state.course) ? <span className="text-danger">*</span> : null }
+                >TOC Page { !descriptionNotEmpty(course) ? <span className="text-danger">*</span> : null }
                 </NavLink>
               </NavItem>
               <NavItem>

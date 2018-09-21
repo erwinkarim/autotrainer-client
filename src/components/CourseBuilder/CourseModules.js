@@ -9,6 +9,8 @@ import Sticky from 'react-sticky-el';
 import toTitleCase from 'titlecase';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
+import { API } from 'aws-amplify';
+
 import { invokeApig, s3Delete } from '../../libs/awsLibs';
 import config from '../../config';
 
@@ -66,6 +68,7 @@ export default class CourseModules extends Component {
     };
   }
   componentDidMount = async () => {
+    /*
     try {
       const results = await this.getModules();
       this.setState({ modules: results });
@@ -73,6 +76,18 @@ export default class CourseModules extends Component {
       console.log('error getting modules');
       console.log(e);
     }
+    */
+    const { courseId } = this.props.course;
+    const { publish_status } = this.state;
+
+    API.get('default', '/modules', { queryStringParameters: { courseId, publish_status } })
+      .then((res) => {
+        this.setState({ modules: res });
+      })
+      .catch((err) => {
+        console.log('error getting modules');
+        console.log(err);
+      });
   }
   getModuleDetail = (courseId, moduleId) => invokeApig({
     endpoint: config.apiGateway.MODULE_URL,
@@ -199,10 +214,24 @@ export default class CourseModules extends Component {
   })
   handleCreateModule = async (e) => {
     // creat the module based on type then go to the appropite module builder
-    const handle = this;
     const moduleType = e.target.dataset.type;
     const { courseId } = this.props.course;
     console.log(`create new ${moduleType} for course ${courseId}`);
+
+    API.post('default', '/modules', {
+      body: {
+        courseId, title: `New ${moduleType}`, description: `Content for new ${moduleType}`, moduleType, order: this.state.modules.length + 1,
+      },
+    })
+      .then((res) => {
+        this.props.history.push(`/user/builder/${res.courseId}/${res.moduleId}`);
+      })
+      .catch((err) => {
+        this.props.addNotification('Problem creating a new module');
+        console.log('error creating a new module');
+        console.log(err);
+      });
+    /*
     try {
       const result = await this.createModule(moduleType, courseId);
       handle.props.history.push(`/user/builder/${result.courseId}/${result.moduleId}`);
@@ -211,6 +240,7 @@ export default class CourseModules extends Component {
       console.log('error creating a new module');
       console.log(err);
     }
+    */
   }
   render = () => (
     <Row className="mt-3">

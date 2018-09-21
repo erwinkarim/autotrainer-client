@@ -2,8 +2,8 @@ import React, { Component } from 'react';
 import { Container, Row, Col, Button } from 'reactstrap';
 import FontAwesomeIcon from '@fortawesome/react-fontawesome';
 import PropTypes from 'prop-types';
-import { invokeApig } from '../../libs/awsLibs';
-import config from '../../config';
+import { API } from 'aws-amplify';
+
 import CourseUser from './CourseUser';
 import InviteBox from './InviteBox';
 
@@ -32,44 +32,29 @@ export default class CourseUsers extends Component {
     this.handleLoadStudents();
     this.handleLoadModules();
   }
-  loadStudents = () => invokeApig({
-    endpoint: config.apiGateway.ENROLMENT_URL,
-    path: `/enrolment/${this.props.match.params.courseId}/students`,
-  })
-  loadModules = () => invokeApig({
-    endpoint: config.apiGateway.MODULE_URL,
-    path: '/modules',
-    queryParams: { courseId: this.props.match.params.courseId },
-  })
-  handleLoadStudents = async () => {
-    const handle = this;
-    // load enrolled users
-    try {
-      const results = await handle.loadStudents();
-      handle.setState({ students: results });
-    } catch (e) {
+  loadStudents = () => API.get('default', `/enrolment/${this.props.match.params.courseId}/students`)
+    .then((students) => {
+      this.setState({ students });
+    })
+    .catch((err) => {
       console.log('error getting students');
-      console.log(e);
-    }
+      console.log(err);
+    })
+  handleLoadStudents = () => this.loadStudents()
+  handleLoadModules = () => {
+    const { courseId } = this.props.match.params;
+    API.get('default', '/modules', { queryStringParameters: { courseId } })
+      .then((modules) => {
+        this.setState({ modules });
+      })
+      .catch((err) => {
+        console.log('error loading modules');
+        console.log(err);
+      });
   }
-  handleLoadModules = async () => {
-    try {
-      const results = await this.loadModules();
-      this.setState({ modules: results });
-    } catch (e) {
-      console.log('error loading modules');
-      console.log(e);
-    }
-  }
-  handleRefreshStudents = async () => {
+  handleRefreshStudents = () => {
     this.setState({ students: [] });
-    try {
-      const result = await this.loadStudents();
-      this.setState({ students: result });
-    } catch (e) {
-      console.log('error refreshing student list');
-      console.log(e);
-    }
+    this.loadStudents();
   }
   render = () => (
     <Container className="mt-2">

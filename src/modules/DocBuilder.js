@@ -54,6 +54,7 @@ export default class DocBuilder extends Component {
   }
   validBody = async () => {
     // valid body is called before file is updated
+    // need better way to manage s3
 
     const handle = this;
 

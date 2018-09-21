@@ -43,7 +43,7 @@ export default class CourseMenu extends Component {
       });
 
     // load the course modules based on courseId
-    API.get('default', '/modules', { queryStringParameters: { courseId, buildMode } })
+    API.get('default', '/modules', { queryStringParameters: { courseId, publish_status: buildMode ? 'all' : 'published' } })
       .then((response) => {
         this.setState({ modules: response.sort((a, b) => a.order > b.order) });
       })

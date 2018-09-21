@@ -6,6 +6,7 @@ import { withAuthenticator } from 'aws-amplify-react'; // or 'aws-amplify-react-
 import { decode } from 'jsonwebtoken';
 
 import { federated } from './libs/amp_config';
+import { userInfo } from './libs/awsLibs';
 
 
 // get new cognito idp
@@ -210,11 +211,6 @@ class AuthTest extends Component {
         this.setState({ userAuthErr: err });
       });
   }
-  loadCourses = () => {
-    API.get('default', '/courses')
-      .then((response) => { this.setState({ courses: response }); })
-      .catch((err) => { console.log(err); });
-  }
   clearCourse = () => { this.setState({ courses: null }); }
   apiCheck = (e) => {
     const { id } = e.target;
@@ -240,6 +236,22 @@ class AuthTest extends Component {
       default:
         console.log('unknown target');
     }
+  }
+  userInfoTest = async () => {
+    console.log('invoked user info test');
+    /*
+    try {
+      const result = await userInfo();
+      console.log('done await userinfo');
+      this.setState({ libUserInfoRes: result });
+    } catch (e) {
+      this.setState({ libUserInfoErr: e });
+    }
+    */
+    userInfo()
+      .then((res) => {
+        this.setState({ libUserInfoRes: res });
+      });
   }
   logOut = () => {
     Auth.signOut()
@@ -302,6 +314,11 @@ class AuthTest extends Component {
             <CardText><Button color="primary" onClick={this.getOpenId}>Get OpenId</Button></CardText>
             <CardText>session info: { JSON.stringify(this.state.userAuthRes) }</CardText>
             <CardText>Error Msg: { JSON.stringify(this.state.userAuthErr) }</CardText>
+          </Card>
+          <Card body className="mt-2">
+            <CardText><Button color="primary" onClick={this.userInfoTest}>User Info Library Test</Button></CardText>
+            <CardText>userInfo info: { JSON.stringify(this.state.libUserInfoRes) }</CardText>
+            <CardText>Error Msg: { JSON.stringify(this.state.libUserInfoErr) }</CardText>
           </Card>
         </Col>
       </Row>
