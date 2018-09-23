@@ -11,12 +11,7 @@ const Team = () => (
             <tr>
               <td><img src="/images/team/malek.jpg" height="64" width="64" className="rounded-circle" alt="Malek Erwin" />Malek Erwin</td>
               <td><img src="/images/team/izad.png" height="64" width="64" className="rounded-circle" alt="Khairul Izad" />Khairul Izad</td>
-              <td><img src="/images/team/penny.png" height="64" width="64" className="rounded-circle" alt="Penny Cheok" />Penny Cheok </td>
-            </tr>
-            <tr>
-              <td colSpan="3">
-                <img src="/images/team/hamadah.png" height="64" width="64" className="rounded-circle" alt="Hamadah Othman" />Hamadah Othman
-              </td>
+              <td><img src="/images/team/hamadah.png" height="64" width="64" className="rounded-circle" alt="Hamadah Othman" />Hamadah Othman</td>
             </tr>
           </tbody>
         </table>

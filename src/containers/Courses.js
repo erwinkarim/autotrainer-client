@@ -7,6 +7,7 @@ import Notice from '../components/Notice';
 import config from '../config';
 import CourseCard from '../components/CourseCard';
 // import { getUnauthCredentials, invokeApig } from '../libs/awsLibs';
+import { userInfo } from '../libs/awsLibs';
 
 
 /**
@@ -30,34 +31,26 @@ export default class Courses extends Component {
     };
   }
   componentDidMount = async () => {
-    // attemp tto get courses, handle cases where credentials does not exists;
-    /*
-    try {
-      if (AWS.config.credentials === null) {
-        await getUnauthCredentials();
-      }
+    // get currentuser
+    userInfo()
+      .then((res) => {
+        this.setState({ currentUser: res });
+      })
+      .catch((err) => {
+        console.log('getting user info error');
+        console.log(err);
+      });
 
-      const results = await invokeApig({ path: '/courses' });
-      this.setState({ courses: results, loading: false });
-    } catch (e) {
-      console.log(`${Date.now()}: Error getting courses`);
-      console.log(e);
-    }
-    */
+    // attemp tto get courses, handle cases where credentials does not exists;
     this.loadCourses();
 
     // get enrolment if authenticated
-    try {
-      const currentUser = await Auth.currentAuthenticatedUser();
-      if (currentUser) {
-        API
-          .get('default', '/enrolment')
-          .then((response) => { this.setState({ enrolments: response }); });
-      }
-    } catch (e) {
-      console.log('error when tryinig to get enrolment');
-      console.log(e);
-    }
+    API
+      .get('default', '/enrolment')
+      .then((response) => { this.setState({ enrolments: response }); })
+      .catch(() => {
+        console.log('user is not authenticated');
+      });
   }
   loadCourses = () => {
     console.log('attempt to get courses');
@@ -85,7 +78,7 @@ export default class Courses extends Component {
       return (<Notice content="Courses not found" />);
     }
 
-    const isAdmin = this.props.currentUser === null ? false : this.props.currentUser['cognito:groups'].includes('admin');
+    const isAdmin = this.state.currentUser && this.state.currentUser.isAdmin;
     const adminBar = isAdmin ? (
       <Col xs="12" className="mb-2">
         <Card body>
